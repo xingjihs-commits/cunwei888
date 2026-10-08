@@ -3,6 +3,14 @@
 ## 当前版本
 V1.7
 
+## 仓库与交接（2026-10-09 会话）
+- 已纳入 git 并推送：https://github.com/xingjihs-commits/cunwei888 （分支 `main`，首个提交 `c47d296`）
+- 项目规则见 `.claude/CLAUDE.md`（根目录布局、构建/测试/lint 命令、红线、约定）
+- 工程状态：`npm run build:mp-weixin` 通过、`npm test` 30/30、`npm run lint` 0 error/0 warning、`npm run check:doc` 一致
+- 踩坑记录：uni CLI 默认找 `src/`（本项目是根目录布局，已用 `scripts/uni-cli.js` 设 `UNI_INPUT_DIR`）；
+  `deepseek_delegate` 可能超时但后台继续写入，派工后需等文件时间稳定再校验
+- 部分 `docs/` 为旧版本快照（12 写 v2.0、35 写 v1.4、11 说 29 文件），未随 V1.7 更新
+
 ## 红线（不许碰）
 1. 不改业务逻辑（云函数核心逻辑不动）
 2. 不改颜色体系（中国红 #C41E24 保留）
