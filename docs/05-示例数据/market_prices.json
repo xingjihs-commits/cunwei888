@@ -1,0 +1,44 @@
+[
+  {
+    "_id": "price_001",
+    "productName": "小麦",
+    "price": 1.45,
+    "unit": "元/斤",
+    "market": "村集市",
+    "trend": "up",
+    "remark": "近期收购价上涨，建议观望",
+    "expired": false,
+    "publisher": "admin_openid_001",
+    "createTime": "2026-01-18T08:00:00.000Z",
+    "updateTime": "2026-01-18T08:00:00.000Z",
+    "_openid": "admin_openid_001"
+  },
+  {
+    "_id": "price_002",
+    "productName": "玉米",
+    "price": 1.32,
+    "unit": "元/斤",
+    "market": "村集市",
+    "trend": "stable",
+    "remark": "价格稳定，需求平稳",
+    "expired": false,
+    "publisher": "admin_openid_001",
+    "createTime": "2026-01-18T08:00:00.000Z",
+    "updateTime": "2026-01-18T08:00:00.000Z",
+    "_openid": "admin_openid_001"
+  },
+  {
+    "_id": "price_003",
+    "productName": "水稻",
+    "price": 1.55,
+    "unit": "元/斤",
+    "market": "村集市",
+    "trend": "up",
+    "remark": "优质稻收购价上浮",
+    "expired": false,
+    "publisher": "admin_openid_001",
+    "createTime": "2026-01-18T08:00:00.000Z",
+    "updateTime": "2026-01-18T08:00:00.000Z",
+    "_openid": "admin_openid_001"
+  }
+]

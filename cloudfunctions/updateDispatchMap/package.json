@@ -1,0 +1,9 @@
+{
+  "name": "updateDispatchMap",
+  "version": "1.0.0",
+  "description": "更新分配地图",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

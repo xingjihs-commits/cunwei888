@@ -1,0 +1,9 @@
+{
+  "name": "publishTask",
+  "version": "1.0.0",
+  "description": "发布落实任务",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "name": "getPerformanceDashboard",
+  "version": "1.0.0",
+  "description": "考核看板",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

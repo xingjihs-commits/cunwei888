@@ -1,0 +1,36 @@
+[
+  {
+    "_id": "task_001",
+    "title": "2026年耕地地力保护补贴申报",
+    "content": "按照县农业农村局《关于做好2026年耕地地力保护补贴申报工作的通知》要求，需在2月28日前完成我村农户耕地补贴申报工作。请各户核实耕地面积，填写申报表，附身份证、土地承包合同复印件，于2月25日前交村委办公室。村委将组织入户核实，确保不漏一户、不错一亩。",
+    "assignee": "王秀英",
+    "assigneeOpenid": "admin_openid_002",
+    "assigneeRole": "村会计",
+    "deadline": "2026-02-28T17:00:00.000Z",
+    "urgentLevel": "urgent",
+    "policySource": "县农业农村局通知",
+    "status": "assigned",
+    "progress": 0,
+    "isOverdue": false,
+    "createTime": "2026-01-20T09:00:00.000Z",
+    "updateTime": "2026-01-20T09:00:00.000Z",
+    "_openid": "admin_openid_001"
+  },
+  {
+    "_id": "task_002",
+    "title": "2026年城乡居民医保集中缴费",
+    "content": "2026年度城乡居民医保集中缴费期（2025年12月-2026年3月），请各户在3月31日前完成缴费。缴费标准：每人380元/年。缴费方式：1.微信小程序缴费；2.村委办公室代缴（仅限老年人）；3.银行柜台缴费。村委将逐户通知，确保参保率不低于98%。",
+    "assignee": "张明华",
+    "assigneeOpenid": "admin_openid_002",
+    "assigneeRole": "村委会主任",
+    "deadline": "2026-03-31T17:00:00.000Z",
+    "urgentLevel": "normal",
+    "policySource": "县医保局通知",
+    "status": "processing",
+    "progress": 45,
+    "isOverdue": false,
+    "createTime": "2025-12-15T09:00:00.000Z",
+    "updateTime": "2026-01-15T09:00:00.000Z",
+    "_openid": "admin_openid_001"
+  }
+]

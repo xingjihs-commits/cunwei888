@@ -1,0 +1,9 @@
+{
+  "name": "dispatchRecord",
+  "version": "1.0.0",
+  "description": "书记手动分配工单",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

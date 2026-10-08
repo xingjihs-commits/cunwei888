@@ -1,0 +1,9 @@
+{
+  "name": "submitSecretaryMail",
+  "version": "1.0.0",
+  "description": "书记信箱提交",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

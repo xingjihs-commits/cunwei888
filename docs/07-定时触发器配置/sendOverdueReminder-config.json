@@ -1,0 +1,10 @@
+{
+  "triggers": [
+    {
+      "name": "dailyOverdueReminder",
+      "type": "timer",
+      "config": "0 0 8 * * * *",
+      "remark": "每天上午8点执行，检查超时工单，通知承办人，写入整改记录"
+    }
+  ]
+}

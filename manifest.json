@@ -1,0 +1,78 @@
+{
+  "name": "村务连心桥",
+  "appid": "__UNI__VILLAGE01",
+  "description": "村级掌上连心桥 - 民生服务、书记权威、对上汇报",
+  "versionName": "1.7.0",
+  "versionCode": "170",
+  "transformPx": false,
+  "app-plus": {
+    "usingComponents": true,
+    "nvueStyleCompiler": "uni-app",
+    "compilerVersion": 3,
+    "splashscreen": {
+      "alwaysShowBeforeRender": true,
+      "waiting": true,
+      "autoclose": true,
+      "delay": 0
+    },
+    "modules": {},
+    "distribute": {
+      "android": {
+        "permissions": [
+          "<uses-permission android:name=\"android.permission.RECORD_AUDIO\"/>",
+          "<uses-permission android:name=\"android.permission.CAMERA\"/>",
+          "<uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\"/>",
+          "<uses-permission android:name=\"android.permission.CALL_PHONE\"/>"
+        ]
+      },
+      "ios": {},
+      "sdkConfigs": {}
+    }
+  },
+  "quickapp": {},
+  "mp-weixin": {
+    "_comment_appid": "上线前必须替换为微信公众平台真实 AppID（共 16 位 wx 开头）",
+    "appid": "wxVILLAGE00000001",
+    "setting": {
+      "_comment_urlCheck": "上线前改为 true，并在微信公众平台配置 request 合法域名（如百度 ASR 域名 vop.baidu.com）",
+      "urlCheck": false,
+      "es6": true,
+      "enablePostcss": true,
+      "minified": true,
+      "postcss": true
+    },
+    "usingComponents": true,
+    "permission": {
+      "scope.userLocation": {
+        "desc": "仅在随手拍提交问题时获取您的位置，用于定位问题地点"
+      },
+      "scope.record": {
+        "desc": "仅在您主动使用语音输入时使用麦克风"
+      },
+      "scope.camera": {
+        "desc": "仅在随手拍拍照时使用相机"
+      }
+    },
+    "requiredPrivateInfos": [
+      "getLocation",
+      "chooseLocation"
+    ],
+    "cloudfunctionRoot": "cloudfunctions/",
+    "extEnable": true,
+    "ext": {
+      "_comment": "上线前替换为本村实际配置",
+      "villageName": "示范村",
+      "cloudEnv": "village-bridge-prod"
+    }
+  },
+  "vueVersion": "3",
+  "h5": {
+    "router": {
+      "mode": "hash"
+    },
+    "devServer": {
+      "port": 8080
+    },
+    "title": "村务连心桥"
+  }
+}

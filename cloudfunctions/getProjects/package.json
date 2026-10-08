@@ -1,0 +1,9 @@
+{
+  "name": "getProjects",
+  "version": "1.0.0",
+  "description": "查询项目收益",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

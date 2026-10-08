@@ -1,0 +1,129 @@
+{
+  "desc": "村务连心桥 sitemap 配置。仅允许公开内容被微信索引，内部页（admin/auth/secretary/隐私/举报）禁止收录",
+  "rules": [
+    {
+      "action": "allow",
+      "page": "pages/index/index"
+    },
+    {
+      "action": "allow",
+      "page": "pages/news/list"
+    },
+    {
+      "action": "allow",
+      "page": "pages/news/detail"
+    },
+    {
+      "action": "allow",
+      "page": "pages/notice/list"
+    },
+    {
+      "action": "allow",
+      "page": "pages/notice/detail"
+    },
+    {
+      "action": "allow",
+      "page": "pages/finance/list"
+    },
+    {
+      "action": "allow",
+      "page": "pages/finance/detail"
+    },
+    {
+      "action": "allow",
+      "page": "pages/project/list"
+    },
+    {
+      "action": "allow",
+      "page": "pages/market/list"
+    },
+    {
+      "action": "allow",
+      "page": "pages/market/detail"
+    },
+    {
+      "action": "allow",
+      "page": "pages/team/index"
+    },
+    {
+      "action": "allow",
+      "page": "pages/team/member-detail"
+    },
+    {
+      "action": "allow",
+      "page": "pages/vote/list"
+    },
+    {
+      "action": "allow",
+      "page": "pages/vote/detail"
+    },
+    {
+      "action": "allow",
+      "page": "pages/meeting/list"
+    },
+    {
+      "action": "allow",
+      "page": "pages/meeting/detail"
+    },
+    {
+      "action": "allow",
+      "page": "pages/service/guide"
+    },
+    {
+      "action": "allow",
+      "page": "pages/service/guide-detail"
+    },
+    {
+      "action": "allow",
+      "page": "pages/agri/calendar"
+    },
+    {
+      "action": "allow",
+      "page": "pages/agreement/index"
+    },
+    {
+      "action": "allow",
+      "page": "pages/privacy/index"
+    },
+    {
+      "action": "disallow",
+      "page": "pages/admin/*"
+    },
+    {
+      "action": "disallow",
+      "page": "pages/auth/*"
+    },
+    {
+      "action": "disallow",
+      "page": "pages/secretary/*"
+    },
+    {
+      "action": "disallow",
+      "page": "pages/feedback/*"
+    },
+    {
+      "action": "disallow",
+      "page": "pages/snapshot/*"
+    },
+    {
+      "action": "disallow",
+      "page": "pages/lost-found/*"
+    },
+    {
+      "action": "disallow",
+      "page": "pages/mine/*"
+    },
+    {
+      "action": "disallow",
+      "page": "pages/message/*"
+    },
+    {
+      "action": "disallow",
+      "page": "pages/task/*"
+    },
+    {
+      "action": "disallow",
+      "page": "pages/report/*"
+    }
+  ]
+}

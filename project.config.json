@@ -1,0 +1,58 @@
+{
+  "miniprogramRoot": "./",
+  "projectname": "village-bridge",
+  "description": "村务连心桥 - 村级掌上连心桥微信小程序",
+  "_comment_appid": "上线前必须替换为微信公众平台真实 AppID",
+  "appid": "wxVILLAGE00000001",
+  "setting": {
+    "_comment_urlCheck": "上线前改为 true，并在微信公众平台配置 request 合法域名",
+    "urlCheck": false,
+    "es6": true,
+    "enhance": true,
+    "postcss": true,
+    "preloadBackgroundData": false,
+    "minified": true,
+    "newFeature": true,
+    "coverView": true,
+    "nodeModules": false,
+    "autoAudits": false,
+    "showShadowRootInWxmlPanel": true,
+    "scopeDataCheck": false,
+    "uglifyFileName": false,
+    "checkInvalidKey": true,
+    "checkSiteMap": true,
+    "uploadWithSourceMap": true,
+    "compileHotReLoad": false,
+    "lazyloadPlaceholderEnable": false,
+    "useMultiFrameRuntime": true,
+    "useApiHook": true,
+    "useApiHostProcess": true,
+    "babelSetting": {
+      "ignore": [],
+      "disablePlugins": [],
+      "disableUseStrict": false,
+      "outputPath": ""
+    },
+    "enableEngineNative": false,
+    "useIsolateContext": true,
+    "userConfirmedBundleSwitch": false,
+    "packNpmManually": false,
+    "packNpmRelationList": [],
+    "minifyWXSS": true,
+    "showES6CompileOption": false,
+    "minifyWXML": true,
+    "babelSettingMode": "all"
+  },
+  "compileType": "miniprogram",
+  "libVersion": "2.32.3",
+  "srcMiniprogramRoot": "./",
+  "packOptions": {
+    "ignore": [],
+    "include": []
+  },
+  "condition": {},
+  "editorSetting": {
+    "tabIndent": "auto",
+    "tabSize": 2
+  }
+}

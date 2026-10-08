@@ -1,0 +1,47 @@
+[
+  {
+    "_id": "member_001",
+    "name": "李建国",
+    "role": "党支部书记",
+    "type": "committee",
+    "avatar": "",
+    "phone": "13800138001",
+    "division": "主持村党支部全面工作，分管党建、人事、综治",
+    "commitment": "廉洁奉公，勤政为民，自觉接受村民监督，全心全意为村民服务",
+    "sortOrder": 1,
+    "enabled": true,
+    "createTime": "2026-01-01T00:00:00.000Z",
+    "updateTime": "2026-01-01T00:00:00.000Z",
+    "_openid": "admin_openid_001"
+  },
+  {
+    "_id": "member_002",
+    "name": "张明华",
+    "role": "村委会主任",
+    "type": "committee",
+    "avatar": "",
+    "phone": "13800138002",
+    "division": "主持村委会全面工作，分管村务、财务、项目建设",
+    "commitment": "公开透明，廉洁自律，为村民办实事、解难事",
+    "sortOrder": 2,
+    "enabled": true,
+    "createTime": "2026-01-01T00:00:00.000Z",
+    "updateTime": "2026-01-01T00:00:00.000Z",
+    "_openid": "admin_openid_001"
+  },
+  {
+    "_id": "member_003",
+    "name": "王秀英",
+    "role": "村会计",
+    "type": "committee",
+    "avatar": "",
+    "phone": "13800138003",
+    "division": "财务会计、三资管理、统计",
+    "commitment": "账目清楚，一尘不染，主动公示接受监督",
+    "sortOrder": 3,
+    "enabled": true,
+    "createTime": "2026-01-01T00:00:00.000Z",
+    "updateTime": "2026-01-01T00:00:00.000Z",
+    "_openid": "admin_openid_001"
+  }
+]

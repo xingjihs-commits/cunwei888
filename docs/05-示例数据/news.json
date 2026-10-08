@@ -1,0 +1,53 @@
+[
+  {
+    "_id": "news_001",
+    "title": "县委书记来村视察调研乡村振兴工作",
+    "content": "今日上午，县委书记张书记一行到我村视察调研乡村振兴工作。张书记先后实地察看了村集体果园、村民文化广场、污水处理设施等重点项目，详细了解我村产业发展、环境整治、民生改善情况。在随后的座谈会上，张书记对我村近年来的工作给予充分肯定，特别表扬了村务连心桥小程序在村务公开透明方面的创新做法，要求继续深化'互联网+村务'模式，让更多村民享受数字治理红利。村党支部书记李建国汇报了工作，表示将继续努力，把示范村建设得更好。",
+    "category": "村务",
+    "coverImage": "cloud://village-bridge-prod.7665-village-bridge-prod-1300000000/news/news_001.jpg",
+    "images": [],
+    "source": "村委办",
+    "isTop": true,
+    "viewCount": 156,
+    "likeCount": 42,
+    "likeUsers": [],
+    "publisher": "admin_openid_001",
+    "createTime": "2026-01-15T10:30:00.000Z",
+    "updateTime": "2026-01-15T10:30:00.000Z",
+    "_openid": "admin_openid_001"
+  },
+  {
+    "_id": "news_002",
+    "title": "村支书在行动：走访慰问困难群众送温暖",
+    "content": "春节将至，村党支部书记李建国带领村两委班子成员，深入困难群众家中走访慰问。李书记先后走访了5户困难家庭，包括2户低保户、1户五保户、1户残疾人家庭、1户大病家庭。每到一户，李书记都详细询问生活情况、身体状况，送去米面油、慰问金，并协调解决实际困难。李书记表示，村委将一如既往关心困难群众，通过村务连心桥小程序及时公示帮扶情况，接受村民监督。困难群众纷纷表示感谢党和政府的关怀。",
+    "category": "党建",
+    "coverImage": "cloud://village-bridge-prod.7665-village-bridge-prod-1300000000/news/news_002.jpg",
+    "images": [],
+    "source": "村委办",
+    "isTop": false,
+    "viewCount": 89,
+    "likeCount": 28,
+    "likeUsers": [],
+    "publisher": "admin_openid_001",
+    "createTime": "2026-01-12T14:20:00.000Z",
+    "updateTime": "2026-01-12T14:20:00.000Z",
+    "_openid": "admin_openid_001"
+  },
+  {
+    "_id": "news_003",
+    "title": "民生实事：村主干道路灯全面亮化",
+    "content": "经过2个月的施工，我村主干道路灯亮化工程全面完工。本次工程共安装LED路灯86盏，覆盖村主干道3.2公里，惠及村民280户。路灯采用太阳能供电，无需电费，每天自动开关，极大方便了村民夜间出行。工程总投入8.6万元，其中村集体资金5万元、上级补助3.6万元。村民张大爷高兴地说：'以前晚上出门要打手电，现在路灯亮堂堂的，孩子们放学回家也安全了。'下一步，村委将推进支路亮化工程，让每家每户都能亮起来。",
+    "category": "村务",
+    "coverImage": "",
+    "images": [],
+    "source": "村委办",
+    "isTop": false,
+    "viewCount": 124,
+    "likeCount": 35,
+    "likeUsers": [],
+    "publisher": "admin_openid_001",
+    "createTime": "2026-01-10T09:15:00.000Z",
+    "updateTime": "2026-01-10T09:15:00.000Z",
+    "_openid": "admin_openid_001"
+  }
+]

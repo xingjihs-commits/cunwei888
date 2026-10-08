@@ -1,0 +1,9 @@
+{
+  "name": "publishNotice",
+  "version": "1.0.0",
+  "description": "发布公示",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

@@ -1,0 +1,478 @@
+{
+  "pages": [
+    {
+      "path": "pages/index/index",
+      "style": {
+        "navigationBarTitleText": "村务连心桥",
+        "enablePullDownRefresh": true,
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/feedback/feedback",
+      "style": {
+        "navigationBarTitleText": "村民反映",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/feedback/my-feedback",
+      "style": {
+        "navigationBarTitleText": "我的反映",
+        "enablePullDownRefresh": true
+      }
+    },
+    {
+      "path": "pages/feedback/detail",
+      "style": {
+        "navigationBarTitleText": "工单详情"
+      }
+    },
+    {
+      "path": "pages/snapshot/snapshot",
+      "style": {
+        "navigationBarTitleText": "随手拍",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/snapshot/my-snapshots",
+      "style": {
+        "navigationBarTitleText": "我的随手拍",
+        "enablePullDownRefresh": true
+      }
+    },
+    {
+      "path": "pages/snapshot/detail",
+      "style": {
+        "navigationBarTitleText": "随手拍详情"
+      }
+    },
+    {
+      "path": "pages/snapshot/wall",
+      "style": {
+        "navigationBarTitleText": "公示墙",
+        "enablePullDownRefresh": true
+      }
+    },
+    {
+      "path": "pages/notice/list",
+      "style": {
+        "navigationBarTitleText": "信息公示",
+        "enablePullDownRefresh": true
+      }
+    },
+    {
+      "path": "pages/notice/detail",
+      "style": {
+        "navigationBarTitleText": "公示详情"
+      }
+    },
+    {
+      "path": "pages/project/list",
+      "style": {
+        "navigationBarTitleText": "项目收益",
+        "enablePullDownRefresh": true
+      }
+    },
+    {
+      "path": "pages/market/list",
+      "style": {
+        "navigationBarTitleText": "惠农信息",
+        "enablePullDownRefresh": true
+      }
+    },
+    {
+      "path": "pages/market/detail",
+      "style": {
+        "navigationBarTitleText": "价格详情"
+      }
+    },
+    {
+      "path": "pages/task/list",
+      "style": {
+        "navigationBarTitleText": "政策落实",
+        "enablePullDownRefresh": true
+      }
+    },
+    {
+      "path": "pages/task/detail",
+      "style": {
+        "navigationBarTitleText": "任务详情"
+      }
+    },
+    {
+      "path": "pages/task/my-progress",
+      "style": {
+        "navigationBarTitleText": "我的办理"
+      }
+    },
+    {
+      "path": "pages/team/index",
+      "style": {
+        "navigationBarTitleText": "村委班子",
+        "enablePullDownRefresh": true
+      }
+    },
+    {
+      "path": "pages/team/member-detail",
+      "style": {
+        "navigationBarTitleText": "成员详情"
+      }
+    },
+    {
+      "path": "pages/news/list",
+      "style": {
+        "navigationBarTitleText": "村务新闻",
+        "enablePullDownRefresh": true
+      }
+    },
+    {
+      "path": "pages/news/detail",
+      "style": {
+        "navigationBarTitleText": "新闻详情"
+      }
+    },
+    {
+      "path": "pages/mine/mine",
+      "style": {
+        "navigationBarTitleText": "我的",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/mine/profile",
+      "style": {
+        "navigationBarTitleText": "个人信息"
+      }
+    },
+    {
+      "path": "pages/auth/verify",
+      "style": {
+        "navigationBarTitleText": "村民认证"
+      }
+    },
+    {
+      "path": "pages/admin/feedback-list",
+      "style": {
+        "navigationBarTitleText": "工单管理"
+      }
+    },
+    {
+      "path": "pages/admin/feedback-handle",
+      "style": {
+        "navigationBarTitleText": "工单处理"
+      }
+    },
+    {
+      "path": "pages/admin/publish",
+      "style": {
+        "navigationBarTitleText": "内容发布"
+      }
+    },
+    {
+      "path": "pages/admin/dashboard",
+      "style": {
+        "navigationBarTitleText": "考核看板"
+      }
+    },
+    {
+      "path": "pages/admin/responsible",
+      "style": {
+        "navigationBarTitleText": "责任人管理"
+      }
+    },
+    {
+      "path": "pages/admin/module-config",
+      "style": {
+        "navigationBarTitleText": "模块配置"
+      }
+    },
+    {
+      "path": "pages/agreement/index",
+      "style": {
+        "navigationBarTitleText": "服务协议"
+      }
+    },
+    {
+      "path": "pages/privacy/index",
+      "style": {
+        "navigationBarTitleText": "隐私政策"
+      }
+    },
+    {
+      "path": "pages/report/index",
+      "style": {
+        "navigationBarTitleText": "举报"
+      }
+    },
+    {
+      "path": "pages/secretary/mailbox",
+      "style": {
+        "navigationBarTitleText": "书记信箱",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/secretary/broadcast",
+      "style": {
+        "navigationBarTitleText": "书记广播",
+        "enablePullDownRefresh": true
+      }
+    },
+    {
+      "path": "pages/secretary/my-mails",
+      "style": {
+        "navigationBarTitleText": "我的来信"
+      }
+    },
+    {
+      "path": "pages/secretary/mail-detail",
+      "style": {
+        "navigationBarTitleText": "信件详情"
+      }
+    },
+    {
+      "path": "pages/service/index",
+      "style": {
+        "navigationBarTitleText": "服务",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/service/more",
+      "style": {
+        "navigationBarTitleText": "更多服务"
+      }
+    },
+    {
+      "path": "pages/category/list",
+      "style": {
+        "navigationBarTitleText": "分类"
+      }
+    },
+    {
+      "path": "pages/service/guide",
+      "style": {
+        "navigationBarTitleText": "办事指南"
+      }
+    },
+    {
+      "path": "pages/service/guide-detail",
+      "style": {
+        "navigationBarTitleText": "办事详情"
+      }
+    },
+    {
+      "path": "pages/meeting/list",
+      "style": {
+        "navigationBarTitleText": "村务会议",
+        "enablePullDownRefresh": true
+      }
+    },
+    {
+      "path": "pages/meeting/detail",
+      "style": {
+        "navigationBarTitleText": "会议详情"
+      }
+    },
+    {
+      "path": "pages/finance/list",
+      "style": {
+        "navigationBarTitleText": "财务三资",
+        "enablePullDownRefresh": true
+      }
+    },
+    {
+      "path": "pages/finance/detail",
+      "style": {
+        "navigationBarTitleText": "财务详情"
+      }
+    },
+    {
+      "path": "pages/message/center",
+      "style": {
+        "navigationBarTitleText": "消息中心",
+        "enablePullDownRefresh": true
+      }
+    },
+    {
+      "path": "pages/lost-found/list",
+      "style": {
+        "navigationBarTitleText": "失物招领",
+        "enablePullDownRefresh": true
+      }
+    },
+    {
+      "path": "pages/lost-found/publish",
+      "style": {
+        "navigationBarTitleText": "发布"
+      }
+    },
+    {
+      "path": "pages/agri/calendar",
+      "style": {
+        "navigationBarTitleText": "农事日历"
+      }
+    },
+    {
+      "path": "pages/agri/checkin",
+      "style": {
+        "navigationBarTitleText": "每日签到"
+      }
+    },
+    {
+      "path": "pages/admin/dispatch",
+      "style": {
+        "navigationBarTitleText": "分配工单"
+      }
+    },
+    {
+      "path": "pages/admin/projection",
+      "style": {
+        "navigationBarTitleText": "投屏模式",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/admin/dispatch-config",
+      "style": {
+        "navigationBarTitleText": "分配地图配置"
+      }
+    },
+    {
+      "path": "pages/admin/secret-list",
+      "style": {
+        "navigationBarTitleText": "亲阅件"
+      }
+    },
+    {
+      "path": "pages/admin/auth-list",
+      "style": {
+        "navigationBarTitleText": "认证审核"
+      }
+    },
+    {
+      "path": "pages/admin/vote-create",
+      "style": {
+        "navigationBarTitleText": "发起表决"
+      }
+    },
+    {
+      "path": "pages/admin/meeting-create",
+      "style": {
+        "navigationBarTitleText": "创建会议"
+      }
+    },
+    {
+      "path": "pages/admin/secretary-mails",
+      "style": {
+        "navigationBarTitleText": "书记信箱管理"
+      }
+    },
+    {
+      "path": "pages/admin/mail-detail",
+      "style": {
+        "navigationBarTitleText": "信件详情"
+      }
+    },
+    {
+      "path": "pages/admin/upper-reports",
+      "style": {
+        "navigationBarTitleText": "对上汇报"
+      }
+    },
+    {
+      "path": "pages/admin/audit-queue",
+      "style": {
+        "navigationBarTitleText": "人工复审"
+      }
+    },
+    {
+      "path": "pages/admin/finance-publish",
+      "style": {
+        "navigationBarTitleText": "财务公示"
+      }
+    },
+    {
+      "path": "pages/admin/my-dispatched",
+      "style": {
+        "navigationBarTitleText": "我的派单"
+      }
+    },
+    {
+      "path": "pages/leader/list",
+      "style": {
+        "navigationBarTitleText": "书记风采",
+        "enablePullDownRefresh": true
+      }
+    },
+    {
+      "path": "pages/leader/detail",
+      "style": {
+        "navigationBarTitleText": "详情"
+      }
+    },
+    {
+      "path": "pages/admin/name-config",
+      "style": {
+        "navigationBarTitleText": "名称配置"
+      }
+    },
+    {
+      "path": "pages/admin/leader-publish",
+      "style": {
+        "navigationBarTitleText": "书记风采发布"
+      }
+    },
+    {
+      "path": "pages/settings/accessibility",
+      "style": {
+        "navigationBarTitleText": "适老化设置"
+      }
+    }
+  ],
+  "globalStyle": {
+    "navigationBarTextStyle": "white",
+    "navigationBarTitleText": "村务连心桥",
+    "navigationBarBackgroundColor": "#C41E24",
+    "backgroundColor": "#FAF7F2",
+    "backgroundTextStyle": "dark"
+  },
+  "tabBar": {
+    "color": "#757575",
+    "selectedColor": "#C41E24",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+        "iconPath": "static/tabbar/home.png",
+        "selectedIconPath": "static/tabbar/home-active.png"
+      },
+      {
+        "pagePath": "pages/service/index",
+        "text": "服务",
+        "iconPath": "static/tabbar/service.png",
+        "selectedIconPath": "static/tabbar/service-active.png"
+      },
+      {
+        "pagePath": "pages/message/center",
+        "text": "消息",
+        "iconPath": "static/tabbar/message.png",
+        "selectedIconPath": "static/tabbar/message-active.png"
+      },
+      {
+        "pagePath": "pages/mine/mine",
+        "text": "我的",
+        "iconPath": "static/tabbar/mine.png",
+        "selectedIconPath": "static/tabbar/mine-active.png"
+      }
+    ]
+  },
+  "easycom": {
+    "autoscan": true,
+    "custom": {}
+  }
+}

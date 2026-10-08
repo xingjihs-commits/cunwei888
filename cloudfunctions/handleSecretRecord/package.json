@@ -1,0 +1,9 @@
+{
+  "name": "handleSecretRecord",
+  "version": "1.0.0",
+  "description": "书记亲阅敏感件",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

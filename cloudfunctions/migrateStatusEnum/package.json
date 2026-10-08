@@ -1,0 +1,9 @@
+{
+  "name": "migrateStatusEnum",
+  "version": "1.0.0",
+  "description": "一次性迁移：把英文 status 统一为中文（运维执行）",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

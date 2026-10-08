@@ -1,0 +1,270 @@
+/**
+ * uni.scss - 村务连心桥 全局样式变量
+ * 用途：定义中国红色彩体系、字号、间距、阴影等全局变量
+ * 所有页面必须使用这些变量，不直接写色值
+ */
+
+/* ===================== 主色——中国红 ===================== */
+$primary: #C41E24;          // 顶部栏、主按钮、选中态
+$primary-dark: #A01820;    // 按压态
+$primary-light: #FDE8E8;   // 标签底色、选中背景
+
+/* ===================== 辅助色——金色 ===================== */
+$gold: #D4A843;            // 荣誉、表彰
+$gold-light: #F5E6C8;     // 荣誉卡片背景
+
+/* ===================== 中性色 ===================== */
+$white: #FFFFFF;           // 卡片
+$bg: #FAF7F2;              // 页面底色（米白）
+$text-main: #212121;       // 标题、正文
+$text-sub: #757575;        // 辅助说明
+$text-weak: #9E9E9E;       // 占位、禁用（修复WCAG AA对比度）
+$border: #EEEEEE;          // 分割线
+
+/* ===================== 功能色 ===================== */
+$success: #2E7D32;         // 已完成、通过
+$warning: #E65100;         // 超时、待处理
+$danger: #C62828;          // 拒绝、紧急
+$price: #E63946;           // 价格数字
+
+/* ===================== 字号（适老化） ===================== */
+$font-title: 40rpx;        // 页面标题
+$font-card-title: 36rpx;   // 卡片标题
+$font-body: 32rpx;         // 正文
+$font-sub: 28rpx;          // 辅助文字
+$font-btn: 36rpx;          // 按钮文字
+$font-number: 48rpx;       // 数字强调
+$font-micro: 24rpx;        // 最小字号（不推荐用于正文，仅辅助标签）
+$font-large-number: 56rpx; // 大数字（看板排行榜）
+
+/* 兼容旧变量名（历史页面 privacy / report 使用） */
+$font-small: $font-sub;     // 小字号 → 28rpx
+$font-h3: $font-card-title; // 三级标题 → 36rpx
+
+/* ===================== 奖牌色（排行榜） ===================== */
+$medal-gold: #FFD700;
+$medal-silver: #C0C0C0;
+$medal-bronze: #CD7F32;
+$medal-gold-bg: linear-gradient(135deg, #FFD700, #FFA500);
+$medal-silver-bg: linear-gradient(135deg, #E0E0E0, #B0B0B0);
+$medal-bronze-bg: linear-gradient(135deg, #CD7F32, #8B4513);
+
+/* ===================== 适老化字号倍数 ===================== */
+/* 通过 storage 字号倍数动态放大（1.0 / 1.2 / 1.4），实现见 App.vue 全局 apply */
+$font-scale: 1.0;
+
+/* ===================== 间距（4 倍数体系，全项目统一） ===================== */
+$space-xs: 8rpx;           // 极小间距（标签内边距、icon 间距）
+$space-sm: 12rpx;          // 小间距（按钮内边距、紧凑元素）
+$space-md: 16rpx;          // 中间距（输入框内边距、行间距）
+$space-lg: 24rpx;          // 大间距（卡片内边距、卡片间距）
+$space-xl: 32rpx;          // 页面边距（左右）
+$space-2xl: 48rpx;         // 大段间距（章节间距）
+
+/* 兼容旧变量名（保留向后兼容） */
+$page-padding: $space-xl;  // 页面左右边距
+$card-padding: $space-lg;  // 卡片内边距
+$card-gap: $space-lg;      // 卡片间距
+
+/* 兼容旧变量名（历史页面 privacy / report 使用） */
+$spacing-xs: $space-xs;
+$spacing-sm: $space-sm;
+$spacing-md: $space-md;
+$spacing-lg: $space-lg;
+$spacing-xl: $space-xl;
+
+/* ===================== 圆角（统一体系） ===================== */
+$radius-xs: 4rpx;          // 极小圆角（标签、徽章）
+$radius-sm: 8rpx;          // 小圆角（按钮、输入框）
+$radius-md: 12rpx;         // 中圆角（图片缩略图）
+$radius-lg: 16rpx;         // 大圆角（卡片）
+$radius-xl: 24rpx;         // 超大圆角（弹窗、特殊卡片）
+$radius-full: 9999rpx;     // 全圆角（圆形按钮、头像）
+
+/* 兼容旧变量名 */
+$card-radius: $radius-lg;  // 卡片圆角
+$btn-radius: $radius-full; // 按钮圆角（胶囊形）
+$btn-height: 88rpx;        // 按钮高度（适老化）
+
+/* ===================== 阴影（统一体系） ===================== */
+$shadow-sm: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);     // 轻阴影（次要卡片）
+$shadow-md: 0 2rpx 12rpx rgba(0, 0, 0, 0.06);     // 中阴影（主要卡片，默认）
+$shadow-lg: 0 4rpx 16rpx rgba(0, 0, 0, 0.08);      // 重阴影（弹窗、置顶卡片）
+$shadow-top: 0 -2rpx 12rpx rgba(0, 0, 0, 0.06);   // 顶部阴影（底部固定栏）
+
+/* 兼容旧变量名 */
+$card-shadow: $shadow-md;  // 卡片阴影
+
+
+/* ===================== 全局通用样式 ===================== */
+/* 页面容器 */
+.page-container {
+  min-height: 100vh;
+  background-color: $bg;
+  padding: $page-padding;
+  box-sizing: border-box;
+}
+
+/* 卡片基础样式 */
+.card {
+  background-color: $white;
+  border-radius: $card-radius;
+  padding: $card-padding;
+  box-shadow: $card-shadow;
+  margin-bottom: $card-gap;
+}
+
+/* 主按钮 */
+.btn-primary {
+  background-color: $primary;
+  color: $white;
+  font-size: $font-btn;
+  height: $btn-height;
+  line-height: $btn-height;
+  border-radius: $btn-radius;
+  text-align: center;
+  
+  &:active {
+    background-color: $primary-dark;
+  }
+}
+
+/* 次按钮 */
+.btn-default {
+  background-color: $bg;
+  color: $primary;
+  font-size: $font-btn;
+  height: $btn-height;
+  line-height: $btn-height;
+  border-radius: $btn-radius;
+  text-align: center;
+  border: 2rpx solid $primary;
+}
+
+/* 文字样式 */
+.text-title {
+  font-size: $font-title;
+  color: $text-main;
+  font-weight: bold;
+}
+
+.text-card-title {
+  font-size: $font-card-title;
+  color: $text-main;
+  font-weight: bold;
+}
+
+.text-body {
+  font-size: $font-body;
+  color: $text-main;
+  line-height: 1.6;
+}
+
+.text-sub {
+  font-size: $font-sub;
+  color: $text-sub;
+}
+
+.text-number {
+  font-size: $font-number;
+  color: $primary;
+  font-weight: bold;
+}
+
+/* 状态标签 */
+.tag {
+  display: inline-block;
+  padding: 4rpx 16rpx;
+  border-radius: 8rpx;
+  font-size: $font-sub;
+  
+  &.tag-primary {
+    background-color: $primary-light;
+    color: $primary;
+  }
+  
+  &.tag-success {
+    background-color: rgba(46, 125, 50, 0.1);
+    color: $success;
+  }
+  
+  &.tag-warning {
+    background-color: rgba(230, 81, 0, 0.1);
+    color: $warning;
+  }
+  
+  &.tag-danger {
+    background-color: rgba(198, 40, 40, 0.1);
+    color: $danger;
+  }
+  
+  &.tag-gold {
+    background-color: $gold-light;
+    color: $gold;
+  }
+}
+
+/* 分割线 */
+.divider {
+  height: 2rpx;
+  background-color: $border;
+  margin: $card-gap 0;
+}
+
+/* 顶部栏 */
+.nav-bar {
+  background: linear-gradient(135deg, $primary 0%, $primary-dark 100%);
+  color: $white;
+  padding: $card-padding;
+  
+  .nav-title {
+    font-size: $font-title;
+    font-weight: bold;
+  }
+  
+  .nav-sub {
+    font-size: $font-sub;
+    opacity: 0.9;
+  }
+}
+
+/* 紧急提示条 */
+.urgent-bar {
+  background-color: $danger;
+  color: $white;
+  padding: $card-padding;
+  font-size: $font-body;
+  text-align: center;
+  font-weight: bold;
+}
+
+/* 列表项 */
+.list-item {
+  background-color: $white;
+  padding: $card-padding;
+  border-bottom: 2rpx solid $border;
+  
+  &:last-child {
+    border-bottom: none;
+  }
+  
+  &:active {
+    background-color: $bg;
+  }
+}
+
+/* 空状态 */
+.empty-state {
+  text-align: center;
+  padding: 80rpx 0;
+  color: $text-weak;
+  font-size: $font-body;
+}
+
+/* 适老化：增大可点击区域 */
+.touch-area {
+  min-height: 88rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

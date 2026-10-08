@@ -1,0 +1,10 @@
+{
+  "triggers": [
+    {
+      "name": "monthlyUpperReport",
+      "type": "timer",
+      "config": "0 0 1 1 * * *",
+      "remark": "每月1号凌晨1点执行，自动生成上月对上汇报数据，汇总工单/公示/任务/项目/党建5大块数据"
+    }
+  ]
+}

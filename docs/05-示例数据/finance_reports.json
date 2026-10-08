@@ -1,0 +1,110 @@
+[
+  {
+    "_id": "finance_001",
+    "title": "2025年第四季度财务三资公示",
+    "period": "2025年第四季度",
+    "year": 2025,
+    "incomes": [
+      {
+        "category": "集体经营",
+        "item": "光伏发电售电收入",
+        "amount": 35000,
+        "remark": "10-12月"
+      },
+      {
+        "category": "集体经营",
+        "item": "厂房出租租金",
+        "amount": 20000,
+        "remark": "第四季度"
+      },
+      {
+        "category": "转移支付",
+        "item": "上级财政转移支付",
+        "amount": 38000,
+        "remark": ""
+      },
+      {
+        "category": "其他收入",
+        "item": "银行利息",
+        "amount": 320,
+        "remark": ""
+      }
+    ],
+    "expenses": [
+      {
+        "category": "公益",
+        "item": "困难群众慰问",
+        "amount": 5000,
+        "remark": "春节慰问"
+      },
+      {
+        "category": "基建",
+        "item": "路灯维护",
+        "amount": 2000,
+        "remark": ""
+      },
+      {
+        "category": "人员",
+        "item": "村干部工资",
+        "amount": 18000,
+        "remark": "10-12月"
+      },
+      {
+        "category": "办公",
+        "item": "办公用品",
+        "amount": 1500,
+        "remark": ""
+      },
+      {
+        "category": "其他",
+        "item": "水电费",
+        "amount": 800,
+        "remark": "村委会"
+      }
+    ],
+    "assets": [
+      {
+        "category": "固定资产",
+        "item": "村委会办公楼",
+        "amount": 500000
+      },
+      {
+        "category": "固定资产",
+        "item": "光伏发电设备",
+        "amount": 80000
+      },
+      {
+        "category": "流动资产",
+        "item": "银行存款",
+        "amount": 52520
+      }
+    ],
+    "resources": [
+      {
+        "category": "集体土地",
+        "item": "集体果园50亩",
+        "remark": "已承包"
+      },
+      {
+        "category": "集体水面",
+        "item": "村前水塘20亩",
+        "remark": "集体经营"
+      },
+      {
+        "category": "集体林地",
+        "item": "村后山林100亩",
+        "remark": "公益林"
+      }
+    ],
+    "summary": "本季度收支平衡，略有结余。集体经营收入稳定增长，光伏项目效益良好。详细账目见附件，欢迎村民监督。",
+    "totalIncome": 93320,
+    "totalExpense": 27300,
+    "balance": 66020,
+    "audited": true,
+    "auditor": "村务监督委员会",
+    "viewCount": 102,
+    "createTime": "2026-01-05T09:00:00.000Z",
+    "updateTime": "2026-01-05T09:00:00.000Z",
+    "_openid": "admin_openid_001"
+  }
+]

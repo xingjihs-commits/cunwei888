@@ -1,0 +1,9 @@
+{
+  "name": "submitFeedback",
+  "version": "2.0.0",
+  "description": "提交村民反映（改造版，含自动分配）",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

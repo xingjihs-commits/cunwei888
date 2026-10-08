@@ -1,0 +1,36 @@
+[
+  {
+    "_id": "vote_001",
+    "title": "关于修建村民文化广场的表决",
+    "description": "拟在村东头空地修建村民文化广场，占地约2亩，建设内容包括健身器材区、文化舞台、休闲座椅、绿化等。预算15万元（集体资金8万+上级补助7万），工期3个月（4-6月）。建成后由村集体统一管理，免费向村民开放。请村民代表表决。",
+    "options": [
+      {
+        "key": "opt_0",
+        "label": "同意建设",
+        "count": 35,
+        "voters": []
+      },
+      {
+        "key": "opt_1",
+        "label": "不同意",
+        "count": 3,
+        "voters": []
+      },
+      {
+        "key": "opt_2",
+        "label": "同意但需调整方案",
+        "count": 7,
+        "voters": []
+      }
+    ],
+    "deadline": "2026-02-28T23:59:59.000Z",
+    "meetingId": "meeting_001",
+    "voterScope": "representative",
+    "status": "open",
+    "totalVotes": 45,
+    "creator": "admin_openid_001",
+    "createTime": "2026-01-20T15:00:00.000Z",
+    "updateTime": "2026-01-25T10:00:00.000Z",
+    "_openid": "admin_openid_001"
+  }
+]

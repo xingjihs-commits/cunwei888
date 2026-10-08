@@ -1,0 +1,10 @@
+{
+  "triggers": [
+    {
+      "name": "monthlyPerformanceReport",
+      "type": "timer",
+      "config": "0 0 1 1 * * *",
+      "remark": "每月1号凌晨1点执行，自动生成上月考核统计，按承办人分组汇总工单数据"
+    }
+  ]
+}
