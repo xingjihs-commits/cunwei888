@@ -1,5 +1,6 @@
 {
   "miniprogramRoot": "./",
+  "cloudfunctionRoot": "../../cloudfunctions/",
   "projectname": "village-bridge",
   "description": "村务连心桥 - 村级掌上连心桥微信小程序",
   "_comment_appid": "上线前必须替换为微信公众平台真实 AppID",
