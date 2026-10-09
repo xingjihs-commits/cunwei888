@@ -19,6 +19,7 @@ export const useUserStore = defineStore('user', {
     idCard: '',
     isVerified: false,
     isAdmin: false,
+    committeeWeight: 0, // 4 档：0 村民 / 50 网格员 / 70 委员 / 90 主任 / 100 支书
     role: 'guest', // guest/villager/admin/leader
     registerTime: '',
     // 权限校验时间戳（避免短期内重复请求）
@@ -43,7 +44,13 @@ export const useUserStore = defineStore('user', {
     // 是否可更新任务进度
     canUpdateTask(state) {
       return state.isAdmin
-    }
+    },
+    // 4 档权限门槛（与 docs 约定一致；软权限，真正的安全在后端 checkAdminWeight）
+    canSeeAdmin(state) { return state.committeeWeight >= 50 },
+    canManageTickets(state) { return state.committeeWeight >= 70 },
+    canPublishContent(state) { return state.committeeWeight >= 50 },
+    canSeeDashboard(state) { return state.committeeWeight >= 90 },
+    canConfig(state) { return state.committeeWeight >= 90 }
   },
 
   actions: {
@@ -65,6 +72,7 @@ export const useUserStore = defineStore('user', {
         villageGroup: this.villageGroup,
         isVerified: this.isVerified,
         isAdmin: this.isAdmin,
+        committeeWeight: this.committeeWeight,
         role: this.role
       }
       uni.setStorageSync('userInfo', data)

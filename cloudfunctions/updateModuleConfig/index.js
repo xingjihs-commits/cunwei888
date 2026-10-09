@@ -15,12 +15,12 @@ const cloud = require('wx-server-sdk')
 const { fail } = require('../common/errorUtils')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
-const { checkAdmin } = require('../common/checkAdmin')
+const { checkAdminWeight } = require('../common/checkAdmin')
 const { writeLog } = require('../common/db')
 
 exports.main = async (event, context) => {
   const { OPENID } = cloud.getWXContext()
-  const isAdmin = await checkAdmin(OPENID)
+  const isAdmin = await checkAdminWeight(OPENID, 90)
   if (!isAdmin) return fail('FORBIDDEN')
 
   const {

@@ -9,7 +9,7 @@
 const cloud = require('wx-server-sdk')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
-const { checkAdmin } = require('../common/checkAdmin')
+const { checkAdmin, getAdminRole } = require('../common/checkAdmin')
 
 exports.main = async (event, context) => {
   const { OPENID } = cloud.getWXContext()
@@ -17,10 +17,11 @@ exports.main = async (event, context) => {
 
   try {
     const isAdmin = await checkAdmin(OPENID)
+    const roleInfo = await getAdminRole(OPENID)
 
-    // 管理员拉取用户列表（实名审核 auth-list 用）
+    // 管理员拉取用户列表（实名审核 auth-list 用，需主任及以上 weight>=90）
     if (listAll) {
-      if (!isAdmin) {
+      if (!isAdmin || roleInfo.weight < 90) {
         return { success: false, message: '无权查看用户列表', code: 'FORBIDDEN' }
       }
       const res = await db.collection('users')
@@ -44,6 +45,7 @@ exports.main = async (event, context) => {
     const userData = { ...res.data[0] }
     if (queryOpenid === OPENID) {
       userData.isAdmin = isAdmin
+      userData.committeeWeight = roleInfo.weight
     }
 
     return { success: true, data: userData }

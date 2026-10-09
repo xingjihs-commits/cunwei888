@@ -7,13 +7,13 @@ const { fail } = require('../common/errorUtils')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
-const { checkAdmin, checkContentSecurity, checkImageSecurity, checkImagesSecurity } = require('../common/checkAdmin')
+const { checkAdminWeight, checkContentSecurity, checkImageSecurity, checkImagesSecurity } = require('../common/checkAdmin')
 
 exports.main = async (event, context) => {
   const { OPENID } = cloud.getWXContext()
   const { title, content, category, coverImage, images = [], source = '村委办', isTop = false } = event
 
-  const isAdmin = await checkAdmin(OPENID)
+  const isAdmin = await checkAdminWeight(OPENID, 50)
   if (!isAdmin) {
     return fail('FORBIDDEN')
   }

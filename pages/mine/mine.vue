@@ -100,7 +100,7 @@
     <view v-if="userStore.isAdmin" class="section">
       <view class="section-title">管理入口</view>
       <view class="admin-grid">
-        <view v-for="e in adminEntries" :key="e.path" class="admin-item" @click="goPage(e.path)">
+        <view v-for="e in visibleAdminEntries" :key="e.path" class="admin-item" @click="goPage(e.path)">
           <text class="admin-icon">{{ e.icon }}</text>
           <text class="admin-name">{{ e.name }}</text>
         </view>
@@ -147,24 +147,26 @@ const FONT_STEPS = [
 const fontLabel = computed(() => (FONT_STEPS.find(s => s.scale === a11y.fontScale) || FONT_STEPS[0]).label)
 
 const adminEntries = [
-  { icon: '📥', name: '反映处理', path: '/pages/admin/feedback-list' },
-  { icon: '🔒', name: '亲阅件', path: '/pages/admin/secret-list' },
-  { icon: '✉️', name: '信箱管理', path: '/pages/admin/secretary-mails' },
-  { icon: '✓', name: '认证审核', path: '/pages/admin/auth-list' },
-  { icon: '🔍', name: '人工复审', path: '/pages/admin/audit-queue' },
-  { icon: '📤', name: '发布内容', path: '/pages/admin/publish' },
-  { icon: '🎬', name: '风采发布', path: '/pages/admin/leader-publish' },
-  { icon: '💰', name: '财务公示', path: '/pages/admin/finance-publish' },
-  { icon: '📢', name: '发布广播', path: '/pages/secretary/broadcast' },
-  { icon: '🗳️', name: '发起表决', path: '/pages/admin/vote-create' },
-  { icon: '👥', name: '创建会议', path: '/pages/admin/meeting-create' },
-  { icon: '📊', name: '数据统计', path: '/pages/admin/dashboard' },
-  { icon: '📈', name: '对上汇报', path: '/pages/admin/upper-reports' },
-  { icon: '📋', name: '我的派单', path: '/pages/admin/my-dispatched' },
-  { icon: '🗺️', name: '分配地图', path: '/pages/admin/dispatch-config' },
-  { icon: '🏷️', name: '村名设置', path: '/pages/admin/name-config' },
-  { icon: '⚙️', name: '功能开关', path: '/pages/admin/module-config' }
+  { icon: '📥', name: '反映处理', path: '/pages/admin/feedback-list', min: 70 },
+  { icon: '🔒', name: '亲阅件', path: '/pages/admin/secret-list', min: 100 },
+  { icon: '✉️', name: '信箱管理', path: '/pages/admin/secretary-mails', min: 70 },
+  { icon: '✓', name: '认证审核', path: '/pages/admin/auth-list', min: 90 },
+  { icon: '🔍', name: '人工复审', path: '/pages/admin/audit-queue', min: 70 },
+  { icon: '📤', name: '发布内容', path: '/pages/admin/publish', min: 50 },
+  { icon: '🎬', name: '风采发布', path: '/pages/admin/leader-publish', min: 70 },
+  { icon: '💰', name: '财务公示', path: '/pages/admin/finance-publish', min: 90 },
+  { icon: '📢', name: '发布广播', path: '/pages/secretary/broadcast', min: 70 },
+  { icon: '🗳️', name: '发起表决', path: '/pages/admin/vote-create', min: 90 },
+  { icon: '👥', name: '创建会议', path: '/pages/admin/meeting-create', min: 70 },
+  { icon: '📊', name: '数据统计', path: '/pages/admin/dashboard', min: 90 },
+  { icon: '📈', name: '对上汇报', path: '/pages/admin/upper-reports', min: 90 },
+  { icon: '📋', name: '我的派单', path: '/pages/admin/my-dispatched', min: 50 },
+  { icon: '🗺️', name: '分配地图', path: '/pages/admin/dispatch-config', min: 90 },
+  { icon: '🏷️', name: '村名设置', path: '/pages/admin/name-config', min: 90 },
+  { icon: '⚙️', name: '功能开关', path: '/pages/admin/module-config', min: 90 }
 ]
+
+const visibleAdminEntries = computed(() => adminEntries.filter(e => userStore.committeeWeight >= e.min))
 
 onMounted(() => {
   // #ifdef MP-WEIXIN

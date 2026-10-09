@@ -7,12 +7,12 @@ const { fail } = require('../common/errorUtils')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
-const { checkAdmin, checkContentSecurity } = require('../common/checkAdmin')
+const { checkAdminWeight, checkContentSecurity } = require('../common/checkAdmin')
 
 exports.main = async (event, context) => {
   const { OPENID } = cloud.getWXContext()
 
-  const isAdmin = await checkAdmin(OPENID)
+  const isAdmin = await checkAdminWeight(OPENID, 90)
   if (!isAdmin) {
     return fail('FORBIDDEN')
   }

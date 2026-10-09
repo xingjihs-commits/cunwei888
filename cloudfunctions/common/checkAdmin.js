@@ -55,6 +55,32 @@ async function getAdminInfo(openid) {
 }
 
 /**
+ * 获取管理员角色与权重（4 档：50 网格员 / 70 委员 / 90 主任 / 100 支书）
+ * 兼容：未设置 weight 的历史管理员视为 100（全权），避免升级误伤
+ * @param {string} openid
+ * @returns {Promise<{enabled:boolean, role:string, weight:number}>}
+ */
+async function getAdminRole(openid) {
+  const doc = await getAdminInfo(openid)
+  if (!doc) return { enabled: false, role: '', weight: 0 }
+  const weight = typeof doc.weight === 'number' ? doc.weight : 100
+  return { enabled: true, role: doc.role || '', weight }
+}
+
+/**
+ * 权限门槛校验（在 checkAdmin 基础上按 weight 收紧）
+ * 敏感操作在鉴权处使用：await checkAdminWeight(OPENID, 90)
+ * @param {string} openid
+ * @param {number} minWeight 最低权重
+ * @returns {Promise<boolean>}
+ */
+async function checkAdminWeight(openid, minWeight = 0) {
+  if (!openid) return false
+  const info = await getAdminRole(openid)
+  return info.enabled && info.weight >= minWeight
+}
+
+/**
  * 文本内容安全检测（fail-closed 失败时拒绝）
  * 注意：返回 false 时调用方应阻止入库；返回 'review' 时应入 audit_queue 让管理员复审
  * @param {string} content 待检测文本
@@ -182,6 +208,8 @@ const exported = async function checkAdminWrapper(openid) {
 // 同时挂载所有方法
 exported.checkAdmin = checkAdmin
 exported.getAdminInfo = getAdminInfo
+exported.getAdminRole = getAdminRole
+exported.checkAdminWeight = checkAdminWeight
 exported.checkContentSecurity = checkContentSecurity
 exported.checkImageSecurity = checkImageSecurity
 exported.checkImagesSecurity = checkImagesSecurity
@@ -190,6 +218,8 @@ module.exports = exported
 // 同时按对象方式导出，便于解构使用
 module.exports.checkAdmin = checkAdmin
 module.exports.getAdminInfo = getAdminInfo
+module.exports.getAdminRole = getAdminRole
+module.exports.checkAdminWeight = checkAdminWeight
 module.exports.checkContentSecurity = checkContentSecurity
 module.exports.checkImageSecurity = checkImageSecurity
 module.exports.checkImagesSecurity = checkImagesSecurity
