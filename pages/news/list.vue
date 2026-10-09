@@ -40,64 +40,31 @@ import NewsCard from '@/components/NewsCard.vue'
 import EmptyState from '@/components/EmptyState.vue'
 import Skeleton from '@/components/Skeleton.vue'
 import { useConfigStore } from '@/store/config.js'
+import { usePagination } from '@/composables/usePagination.js'
 
 const configStore = useConfigStore()
 function t(p, d = '') { return configStore.getDisplay(p, d) }
 
-const list = ref([])
-const loading = ref(false)
-const page = ref(1)
-const total = ref(0)
 const currentCategory = ref('全部')
 const categories = ['全部', '村务', '党建', '通知', '活动']
 
+const { list, loading, refresh, loadMore } = usePagination(
+  (params) => callFunction('getNewsList', {
+    ...params,
+    category: currentCategory.value === '全部' ? '' : currentCategory.value
+  }),
+  { pageSize: 10 }
+)
+
 onMounted(() => {
   uni.setNavigationBarTitle({ title: t('pageTitle.news', '村务新闻') })
-  loadData()
+  refresh()
 })
-onPullDownRefresh(() => {
-  page.value = 1
-  loadData()
-})
-
-async function loadData() {
-  if (loading.value) return
-  loading.value = true
-  
-  try {
-    const res = await callFunction('getNewsList', {
-      page: page.value,
-      pageSize: 10,
-      category: currentCategory.value === '全部' ? '' : currentCategory.value
-    })
-    
-    if (res.success) {
-      if (page.value === 1) {
-        list.value = res.data
-      } else {
-        list.value = list.value.concat(res.data)
-      }
-      total.value = res.total
-    }
-  } catch (err) {
-    console.error('加载失败:', err)
-  } finally {
-    loading.value = false
-    uni.stopPullDownRefresh()
-  }
-}
+onPullDownRefresh(() => refresh())
 
 function switchCategory(cat) {
   currentCategory.value = cat
-  page.value = 1
-  loadData()
-}
-
-function loadMore() {
-  if (list.value.length < total.value && !loading.value) {
-    page.value++
-    loadData()
-  }
+  refresh()
 }
 
 function goDetail(item) {

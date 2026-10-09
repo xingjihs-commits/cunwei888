@@ -54,80 +54,44 @@ import { formatDate } from '@/utils/format.js'
 import EmptyState from '@/components/EmptyState.vue'
 import Skeleton from '@/components/Skeleton.vue'
 import { useConfigStore } from '@/store/config.js'
+import { usePagination } from '@/composables/usePagination.js'
 
 const configStore = useConfigStore()
 function t(p, d = '') { return configStore.getDisplay(p, d) }
 
-const list = ref([])
-const loading = ref(false)
-const page = ref(1)
-const total = ref(0)
 const currentCategory = ref('全部')
 const categories = ['全部', '党务', '村务', '财务', '惠农', '应急']
 const years = ['全部', '2024', '2023']
 const yearIndex = ref(0)
 
+const { list, total, loading, refresh, loadMore } = usePagination(
+  (params) => callFunction('getNotices', {
+    ...params,
+    category: currentCategory.value === '全部' ? '' : currentCategory.value,
+    year: years[yearIndex.value] === '全部' ? '' : years[yearIndex.value]
+  }),
+  { pageSize: 20 }
+)
+
 onMounted(() => {
   uni.setNavigationBarTitle({ title: t('pageTitle.notice', '信息公示') })
-  loadData()
+  refresh()
 })
-onPullDownRefresh(() => {
-  page.value = 1
-  loadData()
-})
-
-async function loadData() {
-  if (loading.value) return
-  loading.value = true
-  
-  try {
-    const params = {
-      page: page.value,
-      pageSize: 20,
-      category: currentCategory.value === '全部' ? '' : currentCategory.value,
-      year: years[yearIndex.value] === '全部' ? '' : years[yearIndex.value]
-    }
-    
-    const res = await callFunction('getNotices', params)
-    
-    if (res.success) {
-      if (page.value === 1) {
-        list.value = res.data
-      } else {
-        list.value = list.value.concat(res.data)
-      }
-      total.value = res.total
-    }
-  } catch (err) {
-    console.error('加载失败:', err)
-  } finally {
-    loading.value = false
-    uni.stopPullDownRefresh()
-  }
-}
+onPullDownRefresh(() => refresh())
 
 function switchCategory(cat) {
   currentCategory.value = cat
-  page.value = 1
-  loadData()
+  refresh()
 }
 
 function onYearChange(e) {
   yearIndex.value = e.detail.value
-  page.value = 1
-  loadData()
+  refresh()
 }
 
 function getCategoryClass(cat) {
   const map = { '党务': 'party', '村务': 'village', '财务': 'finance', '惠农': 'agri', '应急': 'emergency' }
   return map[cat] || 'default'
-}
-
-function loadMore() {
-  if (list.value.length < total.value && !loading.value) {
-    page.value++
-    loadData()
-  }
 }
 
 function goDetail(item) {
