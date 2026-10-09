@@ -34,12 +34,13 @@ function t(p, d = '') { return configStore.getDisplay(p, d) }
 
 .phone-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 16rpx;
 
   .phone-item {
     display: flex;
     flex-direction: column;
+    min-height: 160rpx;
     padding: $card-padding;
     background: $white;
     border-radius: $card-radius;

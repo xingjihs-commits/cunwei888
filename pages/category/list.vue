@@ -46,10 +46,8 @@ const categoryMap = {
     subs: [
       { key: 'finance', path: '/pages/finance/list' },
       { key: 'project', path: '/pages/project/list' },
-      { key: 'policy', path: '/pages/task/list' },
       { key: 'meeting', path: '/pages/meeting/list' },
-      { key: 'news', path: '/pages/news/list' },
-      { key: 'team', path: '/pages/team/index' }
+      { key: 'policy', path: '/pages/task/list' }
     ]
   },
   complaint: {
@@ -58,6 +56,7 @@ const categoryMap = {
       { key: 'snapshot', path: '/pages/snapshot/snapshot' },
       { key: 'mailbox', path: '/pages/secretary/mailbox' },
       { key: 'myFeedback', path: '/pages/feedback/my-feedback' },
+      { key: 'vote', path: '/pages/vote/list' },
       { key: 'report', path: '/pages/report/index' }
     ]
   },
@@ -67,24 +66,22 @@ const categoryMap = {
       { key: 'partyStudy' },
       { key: 'agriStudy' },
       { key: 'lawStudy' },
-      { key: 'healthStudy' }
+      { key: 'healthStudy' },
+      { key: 'task', path: '/pages/task/list' }
     ]
   },
   service: {
     subs: [
       { key: 'guide', path: '/pages/service/guide' },
       { key: 'market', path: '/pages/market/list' },
-      { key: 'subsidy' },
-      { key: 'task', path: '/pages/task/list' },
-      { key: 'team', path: '/pages/team/index' }
+      { key: 'subsidy' }
     ]
   },
   life: {
     subs: [
       { key: 'calendar', path: '/pages/agri/calendar' },
       { key: 'checkin', path: '/pages/agri/checkin' },
-      { key: 'lostFound', path: '/pages/lost-found/list' },
-      { key: 'phone' }
+      { key: 'lostFound', path: '/pages/lost-found/list' }
     ]
   }
 }
