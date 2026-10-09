@@ -1,0 +1,9 @@
+{
+  "name": "getLeaderContentList",
+  "version": "1.0.0",
+  "description": "获取书记风采/领导关怀列表",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

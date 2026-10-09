@@ -12,8 +12,19 @@ const db = cloud.database()
 const _ = db.command
 const $ = db.command.aggregate
 const { writeLog } = require('../common/db')
+const { checkAdmin } = require('../common/checkAdmin')
 
 exports.main = async (event, context) => {
+  const { OPENID } = cloud.getWXContext()
+
+  // 定时触发时 OPENID 为空放行；前端调用必须有管理员权限
+  if (OPENID) {
+    const isAdmin = await checkAdmin(OPENID)
+    if (!isAdmin) {
+      return { success: false, message: '无权限', code: 'FORBIDDEN' }
+    }
+  }
+
   const now = new Date()
   const oneHourAgo = new Date(now.getTime() - 60 * 60 * 1000)
 

@@ -8,9 +8,15 @@ const db = cloud.database()
 const _ = db.command
 const { MAIL_STATUS } = require('../common/constants')
 const { checkContentSecurity } = require('../common/checkAdmin')
+const { isBlocked } = require('../common/blocked')
 
 exports.main = async (event, context) => {
   const { OPENID } = cloud.getWXContext()
+
+  // 封禁校验：被临时锁定的用户拒绝提交
+  if (await isBlocked(OPENID)) {
+    return { success: false, message: '账号已被临时限制，请稍后再试', code: 'BLOCKED' }
+  }
   const { content, subject = '', urgentLevel = '普通', isAnonymous = false } = event
 
   if (!content || content.trim().length < 5) {

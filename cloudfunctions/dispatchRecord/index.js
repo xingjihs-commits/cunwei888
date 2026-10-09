@@ -8,6 +8,7 @@ cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const { RECORD_STATUS, SUPERVISE_LEVEL } = require('../common/constants')
 const { checkAdmin } = require('../common/checkAdmin')
+const { INTERNAL_TOKEN } = require('../common/internal')
 
 exports.main = async (event, context) => {
   const { OPENID } = cloud.getWXContext()
@@ -56,7 +57,8 @@ exports.main = async (event, context) => {
           type: r.type,
           urgentLevel: r.urgentLevel || '普通',
           handleDeadline: r.handleDeadline,
-          note: note
+          note: note,
+          _internal: INTERNAL_TOKEN
         }
       })
     } catch (e) {

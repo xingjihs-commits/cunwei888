@@ -14,6 +14,8 @@ const db = cloud.database()
 const _ = db.command
 const { RECORD_STATUS, SUPERVISE_LEVEL, FEEDBACK_TYPES, SECRET_TYPES, DEADLINE_MAP } = require('../common/constants')
 const { checkContentSecurity, checkImageSecurity } = require('../common/checkAdmin')
+const { INTERNAL_TOKEN } = require('../common/internal')
+const { isBlocked } = require('../common/blocked')
 
 // 类型→责任人默认映射（数据库未配置时的兜底，与 store/config.js feedbackTypes 一致）
 const DEFAULT_DISPATCH = {
@@ -27,6 +29,11 @@ const DEFAULT_DISPATCH = {
 
 exports.main = async (event, context) => {
   const { OPENID } = cloud.getWXContext()
+
+  // 封禁校验：被临时锁定的用户拒绝提交
+  if (await isBlocked(OPENID)) {
+    return { success: false, message: '账号已被临时限制，请稍后再试', code: 'BLOCKED' }
+  }
   const { content, images = [], type, urgentLevel = '普通', villageGroup = '', location = null } = event
 
   // 参数校验
@@ -155,7 +162,8 @@ exports.main = async (event, context) => {
             type: type,
             urgentLevel: urgentLevel,
             handleDeadline: handleDeadline,
-            note: ''
+            note: '',
+            _internal: INTERNAL_TOKEN
           }
         })
       } catch (e) {

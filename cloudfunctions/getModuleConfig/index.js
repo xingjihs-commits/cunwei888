@@ -44,6 +44,12 @@ exports.main = async (event, context) => {
         if (c.icpNumber !== undefined) config.icpNumber = c.icpNumber
         if (c.policeIcpNumber !== undefined) config.policeIcpNumber = c.policeIcpNumber
         if (Array.isArray(c.phones)) config.phones = c.phones
+        if (Array.isArray(c.emergencyPhones)) config.emergencyPhones = c.emergencyPhones
+      }
+
+      // 订阅消息模板（moduleKey = subscribe_templates）
+      if (item.moduleKey === 'subscribe_templates' && item.templates) {
+        config.subscribeTemplates = item.templates
       }
     }
 

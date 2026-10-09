@@ -1,0 +1,9 @@
+{
+  "name": "publishLeaderContent",
+  "version": "1.0.0",
+  "description": "发布书记风采/领导关怀",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

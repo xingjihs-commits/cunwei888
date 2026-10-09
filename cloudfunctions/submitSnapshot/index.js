@@ -11,6 +11,8 @@ const db = cloud.database()
 const _ = db.command
 const { RECORD_STATUS, SUPERVISE_LEVEL } = require('../common/constants')
 const { checkContentSecurity, checkImageSecurity } = require('../common/checkAdmin')
+const { INTERNAL_TOKEN } = require('../common/internal')
+const { isBlocked } = require('../common/blocked')
 
 // 随手拍类型默认派单映射
 const SNAPSHOT_DISPATCH = {
@@ -24,6 +26,11 @@ const SNAPSHOT_DISPATCH = {
 
 exports.main = async (event, context) => {
   const { OPENID } = cloud.getWXContext()
+
+  // 封禁校验：被临时锁定的用户拒绝提交
+  if (await isBlocked(OPENID)) {
+    return { success: false, message: '账号已被临时限制，请稍后再试', code: 'BLOCKED' }
+  }
   const { content = '', images = [], type, location = null, urgentLevel = '普通' } = event
 
   if (!images || images.length === 0) {
@@ -126,7 +133,8 @@ exports.main = async (event, context) => {
             type: type,
             urgentLevel: urgentLevel,
             handleDeadline: deadline,
-            note: ''
+            note: '',
+            _internal: INTERNAL_TOKEN
           }
         })
       } catch (e) {

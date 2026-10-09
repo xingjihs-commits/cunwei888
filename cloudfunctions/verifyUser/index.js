@@ -11,6 +11,8 @@ cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
 
+const { checkContentSecurity } = require('../common/checkAdmin')
+
 exports.main = async (event, context) => {
   const { OPENID } = cloud.getWXContext()
   let { realName, phone, villageGroup, address = '', phoneCode = '' } = event
@@ -30,6 +32,17 @@ exports.main = async (event, context) => {
   }
   if (!/^1[3-9]\d{9}$/.test(phone)) {
     return { success: false, message: '手机号格式不正确' }
+  }
+
+  // 实名信息内容安全检测（fail-closed：API 异常时入复审队列，不直接放行）
+  let textCheck = true
+  try {
+    textCheck = await checkContentSecurity(`${realName}\n${villageGroup}\n${address}`, OPENID, { collection: 'users' })
+  } catch (e) {
+    textCheck = 'review'
+  }
+  if (textCheck === false) {
+    return { success: false, message: '提交的内容包含违规信息，请修改', code: 'CONTENT_RISKY' }
   }
 
   try {
@@ -62,6 +75,7 @@ exports.main = async (event, context) => {
       isVerified: true,          // 宽进：提交即通过
       verifyStatus: '正常',
       verifyTime: now,
+      auditStatus: textCheck === 'review' ? '待复审' : '',
       updateTime: now
     }
 

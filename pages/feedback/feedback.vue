@@ -102,6 +102,7 @@ import VoiceInput from '@/components/VoiceInput.vue'
 import BigButton from '@/components/BigButton.vue'
 import Disclaimer from '@/components/Disclaimer.vue'
 import { ensureAuth, AUTH_VERIFIED } from '@/utils/auth.js'
+import { requestSubscribe } from '@/utils/subscribe.js'
 
 const configStore = useConfigStore()
 function t(p, d = '') { return configStore.getDisplay(p, d) }
@@ -242,6 +243,8 @@ async function onSubmit() {
     
     if (res.success) {
       clearDraft()
+      // 引导订阅工单状态通知（未配置模板时自动跳过）
+      requestSubscribe([configStore.subscribeTemplates && configStore.subscribeTemplates.status_update])
       uni.showToast({ title: '提交成功', icon: 'success' })
       setTimeout(() => {
         uni.redirectTo({ url: '/pages/feedback/my-feedback' })

@@ -1,0 +1,9 @@
+{
+  "name": "formatText",
+  "version": "1.0.0",
+  "description": "文本自动排版（与 utils/formatText.js 同步）",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

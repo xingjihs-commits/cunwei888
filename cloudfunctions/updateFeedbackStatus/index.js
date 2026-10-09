@@ -11,6 +11,7 @@ const db = cloud.database()
 const _ = db.command
 const { RECORD_STATUS, normalizeStatus } = require('../common/constants')
 const { checkAdmin, checkContentSecurity } = require('../common/checkAdmin')
+const { INTERNAL_TOKEN } = require('../common/internal')
 
 // 允许的状态白名单（中文 + 英文兼容映射）
 const ALLOWED_STATUSES = [
@@ -94,7 +95,8 @@ exports.main = async (event, context) => {
         data: {
           type: 'status_update',
           recordId: recordId,
-          status: normalizedStatus
+          status: normalizedStatus,
+          _internal: INTERNAL_TOKEN
         }
       })
     } catch (e) {

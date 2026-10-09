@@ -1,6 +1,9 @@
 /**
  * cloudfunctions/getFeedbackList/index.js - 管理端工单列表
- * 改造点：FEEDBACK_TYPES 使用中文常量，无需 _.in() 过滤（直接查中文 type）
+ * 改造点：
+ *   1. 亲阅件（isSecret）仅书记可见，其余管理员不可见
+ *   2. pageSize 上限封顶，防全表导出
+ *   3. 条件用 _.and 组合，避免链式 where
  */
 const cloud = require('wx-server-sdk')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
@@ -18,28 +21,39 @@ exports.main = async (event, context) => {
   }
 
   const { page = 1, pageSize = 20, status = '', type = '', urgentLevel = '' } = event
+  const safePage = Math.max(1, parseInt(page) || 1)
+  const safeSize = Math.min(parseInt(pageSize) || 20, 100)
 
   try {
-    let query = db.collection('records').where({ type: _.in(FEEDBACK_TYPES) })
+    // 是否书记：admins.role === '书记'；非书记看不到亲阅件（fail-closed）
+    const adminDoc = await db.collection('admins')
+      .where({ _openid: OPENID, enabled: true })
+      .limit(1)
+      .get()
+    const isSecretary = !!(adminDoc.data[0] && adminDoc.data[0].role === '书记')
 
-    if (status) query = query.where({ status: status })
-    if (type) query = query.where({ type: type })
-    if (urgentLevel) query = query.where({ urgentLevel: urgentLevel })
+    const conditions = [{ type: _.in(FEEDBACK_TYPES) }]
+    if (!isSecretary) conditions.push({ isSecret: _.neq(true) })
+    if (status) conditions.push({ status: status })
+    if (type && FEEDBACK_TYPES.includes(type)) conditions.push({ type: type })
+    if (urgentLevel) conditions.push({ urgentLevel: urgentLevel })
+    const where = _.and(conditions)
 
+    const query = db.collection('records').where(where)
     const total = await query.count()
 
     const list = await query
       .orderBy('createTime', 'desc')
-      .skip((page - 1) * pageSize)
-      .limit(pageSize)
+      .skip((safePage - 1) * safeSize)
+      .limit(safeSize)
       .get()
 
     return {
       success: true,
       data: list.data,
       total: total.total,
-      page: page,
-      pageSize: pageSize
+      page: safePage,
+      pageSize: safeSize
     }
   } catch (err) {
     console.error('[getFeedbackList] 失败:', err)

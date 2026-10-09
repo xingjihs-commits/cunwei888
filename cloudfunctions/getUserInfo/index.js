@@ -1,38 +1,54 @@
 /**
  * cloudfunctions/getUserInfo/index.js - 获取用户信息
- * 用途：查询当前用户信息
+ * 用途：查询用户信息
+ * 安全：
+ *   1. 默认仅返回调用者自身信息，忽略前端传入的 openid（防越权读取任意用户 PII）
+ *   2. 查询他人 / listAll 需管理员权限
+ *   3. 不返回 err.message，避免泄露内部细节
  */
 const cloud = require('wx-server-sdk')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
-const _ = db.command
-
+const { checkAdmin } = require('../common/checkAdmin')
 
 exports.main = async (event, context) => {
   const { OPENID } = cloud.getWXContext()
-  const { openid } = event
-  
-  const targetOpenid = openid || OPENID
-  
+  const { listAll = false, openid: targetOpenid } = event
+
   try {
-    const res = await db.collection('users').where({ _openid: targetOpenid }).get()
+    const isAdmin = await checkAdmin(OPENID)
+
+    // 管理员拉取用户列表（实名审核 auth-list 用）
+    if (listAll) {
+      if (!isAdmin) {
+        return { success: false, message: '无权查看用户列表', code: 'FORBIDDEN' }
+      }
+      const res = await db.collection('users')
+        .orderBy('createTime', 'desc')
+        .limit(100)
+        .get()
+      return { success: true, data: { list: res.data } }
+    }
+
+    // 仅允许查询自己；查他人需管理员
+    const queryOpenid = targetOpenid && targetOpenid !== OPENID ? targetOpenid : OPENID
+    if (queryOpenid !== OPENID && !isAdmin) {
+      return { success: false, message: '无权查看他人信息', code: 'FORBIDDEN' }
+    }
+
+    const res = await db.collection('users').where({ _openid: queryOpenid }).get()
     if (res.data.length === 0) {
       return { success: true, data: null }
     }
-    
-    // 检查管理员
-    const checkAdmin = require('../common/checkAdmin')
-    const isAdmin = await checkAdmin(targetOpenid)
-    
-    return {
-      success: true,
-      data: {
-        ...res.data[0],
-        isAdmin: isAdmin
-      }
+
+    const userData = { ...res.data[0] }
+    if (queryOpenid === OPENID) {
+      userData.isAdmin = isAdmin
     }
+
+    return { success: true, data: userData }
   } catch (err) {
-    console.error('查询失败:', err)
-    return { success: false, data: null }
+    console.error('[getUserInfo] 查询失败:', err)
+    return { success: false, data: null, message: '查询失败', code: 'INTERNAL' }
   }
 }

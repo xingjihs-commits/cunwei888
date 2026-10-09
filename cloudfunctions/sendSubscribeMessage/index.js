@@ -7,6 +7,7 @@
 const cloud = require('wx-server-sdk')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
+const { isInternalCall } = require('../common/internal')
 
 // 默认模板 ID 映射（如未在 module_config 配置则用这里的占位）
 // 上线前需在 module_config 表 subscribe_templates 字段配置真实模板 ID
@@ -49,6 +50,11 @@ async function loadTemplates() {
 }
 
 exports.main = async (event, context) => {
+  // 仅允许云函数内部互调，拒绝前端直接调用（防订阅消息轰炸）
+  if (!isInternalCall(event)) {
+    return { success: false, message: '无权调用', code: 'FORBIDDEN' }
+  }
+
   const { type, recordId, targetOpenid, targetRole, ...data } = event
 
   const TEMPLATES = await loadTemplates()

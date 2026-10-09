@@ -8,6 +8,7 @@ const db = cloud.database()
 const _ = db.command
 const { TASK_STATUS } = require('../common/constants')
 const { checkAdmin, checkContentSecurity } = require('../common/checkAdmin')
+const { INTERNAL_TOKEN } = require('../common/internal')
 
 exports.main = async (event, context) => {
   const { OPENID } = cloud.getWXContext()
@@ -59,7 +60,7 @@ exports.main = async (event, context) => {
     try {
       await cloud.callFunction({
         name: 'sendSubscribeMessage',
-        data: { type: 'new_task', taskId: res._id, assigneeOpenid: assigneeOpenid, title, content: content.substring(0, 50) }
+        data: { type: 'new_task', taskId: res._id, assigneeOpenid: assigneeOpenid, title, content: content.substring(0, 50), _internal: INTERNAL_TOKEN }
       })
     } catch (e) {
       console.warn('[publishTask] 通知跳过:', e && e.errMsg)

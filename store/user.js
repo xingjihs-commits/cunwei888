@@ -103,7 +103,7 @@ export const useUserStore = defineStore('user', {
       }
       this._lastRefreshTime = now
       try {
-        const res = await callFunction('getUserInfo', { openid: this.openid })
+        const res = await callFunction('getUserInfo', {})
         if (res.success && res.data) {
           this.$patch(res.data)
           this.saveToStorage()

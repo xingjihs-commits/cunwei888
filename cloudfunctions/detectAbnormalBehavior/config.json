@@ -1,0 +1,10 @@
+{
+  "triggers": [
+    {
+      "name": "hourlyAbnormalCheck",
+      "type": "timer",
+      "config": "0 0 * * * * *",
+      "remark": "每小时整点检测刷单/恶意举报，写入 blocked_users"
+    }
+  ]
+}

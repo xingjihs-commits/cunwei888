@@ -7,6 +7,7 @@ cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
 const { RECORD_DONE_STATUSES, normalizeStatus } = require('../common/constants')
+const { checkAdmin } = require('../common/checkAdmin')
 
 const STATUS_MAP = {
   'pending': '待处理', 'assigned': '已派单', 'processing': '处理中',
@@ -14,6 +15,16 @@ const STATUS_MAP = {
 }
 
 exports.main = async (event, context) => {
+  const { OPENID } = cloud.getWXContext()
+
+  // 定时触发器调用时 OPENID 为空，放行；前端调用必须有管理员权限
+  if (OPENID) {
+    const isAdmin = await checkAdmin(OPENID)
+    if (!isAdmin) {
+      return { success: false, message: '无权限执行此操作', code: 'FORBIDDEN' }
+    }
+  }
+
   const { period } = event
 
   const now = new Date()

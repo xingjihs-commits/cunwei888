@@ -319,6 +319,9 @@ export const useConfigStore = defineStore('config', {
     // 常用电话（称呼读 displayNames.phone[key]，姓名/号码云端配置）
     phones: JSON.parse(JSON.stringify(DEFAULT_PHONES)),
 
+    // 订阅消息模板 ID（云端 module_config.subscribe_templates 下发，未配置为 {}）
+    subscribeTemplates: {},
+
     // 紧急程度（中文）
     urgentLevels: [
       { key: '普通', name: '普通', color: '#52c41a' },
@@ -347,6 +350,11 @@ export const useConfigStore = defineStore('config', {
     },
     getSnapshotType(state) {
       return (key) => state.snapshotTypes.find(t => t.key === key || t.name === key) || { key, name: key, icon: '📌' }
+    },
+    // 订阅模板 ID 列表（过滤空值，用于 requestSubscribeMessage）
+    subscribeTmplIds(state) {
+      const t = state.subscribeTemplates || {}
+      return Object.values(t).filter(Boolean)
     }
   },
 
@@ -372,6 +380,10 @@ export const useConfigStore = defineStore('config', {
           // 常用电话
           if (Array.isArray(res.data.phones) && res.data.phones.length > 0) {
             this.phones = res.data.phones
+          }
+          // 订阅消息模板（提交后引导授权用）
+          if (res.data.subscribeTemplates) {
+            this.subscribeTemplates = res.data.subscribeTemplates
           }
         }
       } catch (err) {

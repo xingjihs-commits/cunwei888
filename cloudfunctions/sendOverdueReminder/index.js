@@ -7,6 +7,7 @@ cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
 const { RECORD_OPEN_STATUSES, expandStatuses, RECTIFICATION_STATUS } = require('../common/constants')
+const { INTERNAL_TOKEN } = require('../common/internal')
 
 exports.main = async (event, context) => {
   try {
@@ -44,7 +45,8 @@ exports.main = async (event, context) => {
               recordId: recordId,
               targetOpenid: record.assigneeOpenid,
               title: (record.title || '工单').substring(0, 20),
-              overdueDays: overdueDays
+              overdueDays: overdueDays,
+              _internal: INTERNAL_TOKEN
             }
           })
         } catch (e) {
@@ -74,7 +76,8 @@ exports.main = async (event, context) => {
               targetRole: 'secretary',
               title: `超时${overdueDays}天：${(record.title || '').substring(0, 20)}`,
               content: `${record.assigneeName || ''}（${record.assigneeDuty || ''}）`,
-              overdueDays: overdueDays
+              overdueDays: overdueDays,
+              _internal: INTERNAL_TOKEN
             }
           })
         } catch (e) {

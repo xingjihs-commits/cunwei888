@@ -62,7 +62,7 @@
 
     <view class="card tips-card">
       <text class="tips-title">💡 适老化提示</text>
-      <text class="tips-text">字号设置后立即生效，全局应用。</text>
+      <text class="tips-text">字号设置保存后生效，按钮及部分组件会同步调整。</text>
       <text class="tips-text">如老人视力较差，建议选"特大字号"。</text>
       <text class="tips-text">高对比度模式适合强光环境下使用。</text>
     </view>

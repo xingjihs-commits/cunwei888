@@ -44,6 +44,7 @@ exports.main = async (event, context) => {
     }
 
     const now = new Date()
+    const needVideoReview = !!videoFileID
     const res = await db.collection('leader_content').add({
       data: {
         type: type,
@@ -51,7 +52,8 @@ exports.main = async (event, context) => {
         content: content,
         coverImage: coverImage,
         videoFileID: videoFileID,
-        auditStatus: textCheck === 'review' ? '待复审' : '',
+        published: !needVideoReview,
+        auditStatus: needVideoReview || textCheck === 'review' ? '待复审' : '',
         publisher: OPENID,
         publishTime: now,
         createTime: now,
@@ -60,7 +62,28 @@ exports.main = async (event, context) => {
       }
     })
 
-    return { success: true, id: res._id, message: '发布成功' }
+    // 视频无官方内容安全 API，强制入复审队列，人工审核通过后才发布
+    if (needVideoReview) {
+      await db.collection('audit_queue').add({
+        data: {
+          type: 'video',
+          fileID: videoFileID,
+          collection: 'leader_content',
+          recordId: res._id,
+          title: title,
+          reason: 'video_manual_review',
+          openid: OPENID,
+          status: '待复审',
+          createTime: now
+        }
+      }).catch((e) => console.warn('[publishLeaderContent] 复审入队失败:', e && e.errMsg))
+    }
+
+    return {
+      success: true,
+      id: res._id,
+      message: needVideoReview ? '已提交，视频审核通过后才发布' : '发布成功'
+    }
   } catch (err) {
     console.error('[publishLeaderContent] 失败:', err)
     return { success: false, message: '发布失败' }

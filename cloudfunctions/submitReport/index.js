@@ -8,11 +8,17 @@ cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
 const { checkContentSecurity } = require('../common/checkAdmin')
+const { isBlocked } = require('../common/blocked')
 
 const VALID_TARGET_TYPES = ['news', 'notice', 'record', 'snapshot', 'broadcast', 'vote', 'meeting', 'lost_found']
 
 exports.main = async (event, context) => {
   const { OPENID } = cloud.getWXContext()
+
+  // 封禁校验：被临时锁定的用户拒绝提交
+  if (await isBlocked(OPENID)) {
+    return { success: false, message: '账号已被临时限制，请稍后再试', code: 'BLOCKED' }
+  }
   const { targetType, targetId, reason, content = '', isAnonymous = false } = event
 
   if (!targetType || !targetId || !reason) {

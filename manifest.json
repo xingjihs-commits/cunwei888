@@ -35,7 +35,7 @@
     "appid": "wxVILLAGE00000001",
     "setting": {
       "_comment_urlCheck": "上线前改为 true，并在微信公众平台配置 request 合法域名（如百度 ASR 域名 vop.baidu.com）",
-      "urlCheck": false,
+      "urlCheck": true,
       "es6": true,
       "enablePostcss": true,
       "minified": true,
@@ -54,8 +54,7 @@
       }
     },
     "requiredPrivateInfos": [
-      "getLocation",
-      "chooseLocation"
+      "getLocation"
     ],
     "cloudfunctionRoot": "cloudfunctions/",
     "extEnable": true,

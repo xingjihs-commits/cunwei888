@@ -6,8 +6,14 @@
 const cloud = require('wx-server-sdk')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
+const { isInternalCall, INTERNAL_TOKEN } = require('../common/internal')
 
 exports.main = async (event, context) => {
+  // 仅允许云函数内部互调，拒绝前端直接调用（防伪造派单通知）
+  if (!isInternalCall(event)) {
+    return { success: false, message: '无权调用', code: 'FORBIDDEN' }
+  }
+
   const { recordId, assigneeOpenid, type, urgentLevel, handleDeadline, note = '' } = event
   
   if (!recordId || !assigneeOpenid) {
@@ -52,7 +58,8 @@ exports.main = async (event, context) => {
           title: `${type}·${urgentText}`,
           content: (r.content || '').substring(0, 30),
           deadline: deadlineText,
-          note: note
+          note: note,
+          _internal: INTERNAL_TOKEN
         }
       })
     } catch (e) { console.log('订阅消息发送跳过') }

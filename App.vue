@@ -56,25 +56,15 @@ onLaunch(() => {
     setTimeout(() => {
       uni.showModal({
         title: '服务协议与隐私政策',
-        content: '欢迎使用村务连心桥。在使用前，请阅读并同意《服务协议》与《隐私政策》。我们仅在你授权后采集必要信息（openid、手机号、位置等）用于村务服务。',
+        content: '欢迎使用村务连心桥。使用前请阅读并同意《服务协议》与《隐私政策》。点击「查看协议」可阅读全文；点击「同意并继续」即表示你已阅读并同意。',
         confirmText: '同意并继续',
-        cancelText: '不同意',
+        cancelText: '查看协议',
         success(res) {
           if (res.confirm) {
             uni.setStorageSync('agreementAgreed', true)
           } else {
-            // 不同意则退出小程序
-            uni.showModal({
-              title: '提示',
-              content: '不同意将无法使用小程序功能。',
-              showCancel: false,
-              confirmText: '我知道了',
-              success() {
-                if (uni.exitMiniProgram) {
-                  uni.exitMiniProgram({ success: () => {} })
-                }
-              }
-            })
+            // 不同意/查看协议：跳转协议全文页
+            uni.navigateTo({ url: '/pages/agreement/index' })
           }
         }
       })

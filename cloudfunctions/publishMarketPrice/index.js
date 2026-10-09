@@ -8,6 +8,7 @@ const db = cloud.database()
 const _ = db.command
 const { PRICE_TREND } = require('../common/constants')
 const { checkAdmin, checkContentSecurity } = require('../common/checkAdmin')
+const { INTERNAL_TOKEN } = require('../common/internal')
 
 exports.main = async (event, context) => {
   const { OPENID } = cloud.getWXContext()
@@ -57,7 +58,7 @@ exports.main = async (event, context) => {
     try {
       await cloud.callFunction({
         name: 'sendSubscribeMessage',
-        data: { type: 'price_update', productName: productName, price: price }
+        data: { type: 'price_update', productName: productName, price: price, _internal: INTERNAL_TOKEN }
       })
     } catch (e) {
       console.warn('[publishMarketPrice] 通知跳过:', e && e.errMsg)

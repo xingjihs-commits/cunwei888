@@ -46,6 +46,7 @@ exports.main = async (event, context) => {
     }
 
     const now = new Date()
+    const needAudioReview = !!audioFileID
     const res = await db.collection('broadcasts').add({
       data: {
         title: title,
@@ -53,7 +54,7 @@ exports.main = async (event, context) => {
         audioFileID: audioFileID,
         images: images,
         urgent: urgent,
-        published: true,
+        published: !needAudioReview,
         publisher: OPENID,
         viewCount: 0,
         createTime: now,
@@ -61,6 +62,24 @@ exports.main = async (event, context) => {
         _openid: OPENID
       }
     })
+
+    // 音频无官方内容安全 API，含音频时先入复审队列且不群发，人工审核通过后才发布
+    if (needAudioReview) {
+      await db.collection('audit_queue').add({
+        data: {
+          type: 'audio',
+          fileID: audioFileID,
+          collection: 'broadcasts',
+          recordId: res._id,
+          title: title,
+          reason: 'audio_manual_review',
+          openid: OPENID,
+          status: '待复审',
+          createTime: now
+        }
+      }).catch((e) => console.warn('[publishBroadcast] 复审入队失败:', e && e.errMsg))
+      return { success: true, id: res._id, reviewed: true, message: '广播含音频，已提交人工复审' }
+    }
 
     // 给所有认证村民生成消息通知（分批写入，不截断）
     // 云开发单次批量 add 最多 20 条，循环分批

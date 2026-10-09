@@ -12,7 +12,7 @@ const EMPTY = { data: [] }
 exports.main = async (event, context) => {
   try {
     // 用 allSettled 思路：每个都 catch 兜底
-    const [newsRes, noticeRes, priceRes, teamRes, broadcastRes] = await Promise.all([
+    const [newsRes, noticeRes, priceRes, teamRes, broadcastRes, unreadRes] = await Promise.all([
       db.collection('news')
         .orderBy('isTop', 'desc')
         .orderBy('createTime', 'desc')
@@ -41,7 +41,10 @@ exports.main = async (event, context) => {
         .orderBy('createTime', 'desc')
         .limit(1)
         .get()
-        .catch(() => EMPTY)
+        .catch(() => EMPTY),
+      OPENID
+        ? db.collection('messages').where({ targetOpenid: OPENID, isRead: false }).count().catch(() => ({ total: 0 }))
+        : Promise.resolve({ total: 0 })
     ])
 
     let villageInfo = { villageName: '示范村', villagePhone: '', icpNumber: '' }
@@ -64,7 +67,9 @@ exports.main = async (event, context) => {
         notices: noticeRes.data,
         prices: priceRes.data,
         team: teamRes.data,
-        latestBroadcast: (broadcastRes.data && broadcastRes.data[0]) || null
+        latestBroadcast: (broadcastRes.data && broadcastRes.data[0]) || null,
+        unreadCount: (unreadRes && unreadRes.total) || 0,
+        phones: Array.isArray(villageInfo.emergencyPhones) ? villageInfo.emergencyPhones : []
       }
     }
   } catch (err) {

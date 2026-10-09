@@ -19,11 +19,13 @@ exports.main = async (event, context) => {
         .where({ targetOpenid: OPENID, isRead: false })
         .update({ data: { isRead: true, readTime: new Date() } })
     } else {
-      for (const id of messageIds) {
-        await db.collection('messages').doc(id).update({
-          data: { isRead: true, readTime: new Date() }
-        })
+      if (!messageIds.length) {
+        return { success: false, message: '缺少消息 ID', code: 'INVALID_PARAMS' }
       }
+      // 仅标记属于当前用户的消息（防越权标记他人消息）
+      await db.collection('messages')
+        .where({ _id: _.in(messageIds), targetOpenid: OPENID })
+        .update({ data: { isRead: true, readTime: new Date() } })
     }
     
     return { success: true, message: '已标记' }
