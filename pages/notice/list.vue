@@ -57,6 +57,7 @@ import EmptyState from '@/components/EmptyState.vue'
 import Skeleton from '@/components/Skeleton.vue'
 import { useConfigStore } from '@/store/config.js'
 import { usePagination } from '@/composables/usePagination.js'
+import { setCache, getCacheStale } from '@/utils/cache.js'
 const rootFontSize = useRootFontSize()
 
 const configStore = useConfigStore()
@@ -67,14 +68,25 @@ const categories = ['全部', '党务', '村务', '财务', '惠农', '应急']
 const years = ['全部', '2024', '2023']
 const yearIndex = ref(0)
 
-const { list, total, loading, refresh, loadMore } = usePagination(
-  (params) => callFunction('getNotices', {
-    ...params,
-    category: currentCategory.value === '全部' ? '' : currentCategory.value,
-    year: years[yearIndex.value] === '全部' ? '' : years[yearIndex.value]
-  }),
-  { pageSize: 20 }
-)
+async function fetchNotices(params) {
+  try {
+    const res = await callFunction('getNotices', {
+      ...params,
+      category: currentCategory.value === '全部' ? '' : currentCategory.value,
+      year: years[yearIndex.value] === '全部' ? '' : years[yearIndex.value]
+    })
+    if (params.page === 1 && res && res.success) setCache('vb_notice_list', res.data)
+    return res
+  } catch (err) {
+    if (params.page === 1) {
+      const c = getCacheStale('vb_notice_list')
+      if (c) return { success: true, data: c, total: c.length }
+    }
+    throw err
+  }
+}
+
+const { list, total, loading, refresh, loadMore } = usePagination(fetchNotices, { pageSize: 20 })
 
 onMounted(() => {
   uni.setNavigationBarTitle({ title: t('pageTitle.notice', '村务公开') })

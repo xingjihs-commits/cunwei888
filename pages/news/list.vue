@@ -43,6 +43,7 @@ import Skeleton from '@/components/Skeleton.vue'
 import { useConfigStore } from '@/store/config.js'
 import { usePagination } from '@/composables/usePagination.js'
 import { useRootFontSize } from '@/composables/useA11y.js'
+import { setCache, getCacheStale } from '@/utils/cache.js'
 
 const configStore = useConfigStore()
 function t(p, d = '') { return configStore.getDisplay(p, d) }
@@ -51,13 +52,24 @@ const rootFontSize = useRootFontSize()
 const currentCategory = ref('全部')
 const categories = ['全部', '村务', '党建', '通知', '活动']
 
-const { list, loading, refresh, loadMore } = usePagination(
-  (params) => callFunction('getNewsList', {
-    ...params,
-    category: currentCategory.value === '全部' ? '' : currentCategory.value
-  }),
-  { pageSize: 10 }
-)
+async function fetchNews(params) {
+  try {
+    const res = await callFunction('getNewsList', {
+      ...params,
+      category: currentCategory.value === '全部' ? '' : currentCategory.value
+    })
+    if (params.page === 1 && res && res.success) setCache('vb_news_list', res.data)
+    return res
+  } catch (err) {
+    if (params.page === 1) {
+      const c = getCacheStale('vb_news_list')
+      if (c) return { success: true, data: c, total: c.length }
+    }
+    throw err
+  }
+}
+
+const { list, loading, refresh, loadMore } = usePagination(fetchNews, { pageSize: 10 })
 
 onMounted(() => {
   uni.setNavigationBarTitle({ title: t('pageTitle.news', '村里事') })

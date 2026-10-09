@@ -30,6 +30,11 @@
     <!-- 今日天气农事 -->
     <WeatherBar v-if="show('homeBlock.weather')" :weather="weather" :farming="farming" />
 
+    <!-- 离线提示 -->
+    <view v-if="offline" class="offline-banner">
+      <text>📴 当前展示离线缓存，下拉刷新</text>
+    </view>
+
     <!-- 错误 banner -->
     <view v-if="loadError" class="error-banner">
       <text class="error-icon">⚠️</text>
@@ -92,6 +97,7 @@ import { useConfigStore } from '@/store/config.js'
 import { callFunction } from '@/utils/request.js'
 import { formatDate } from '@/utils/format.js'
 import { goPage } from '@/utils/nav.js'
+import { setCache, getCacheStale } from '@/utils/cache.js'
 import NewsCard from '@/components/NewsCard.vue'
 import Skeleton from '@/components/Skeleton.vue'
 import SecretaryCards from '@/components/home/SecretaryCards.vue'
@@ -121,6 +127,7 @@ const leaderItem = ref(null)
 const weather = ref(null)
 const farming = ref('')
 const homeEmergency = ref(null)
+const offline = ref(false)
 let lastLoadTime = 0
 let newsPage = 1
 let newsHasMore = true
@@ -161,30 +168,46 @@ async function loadData() {
   try {
     const res = await callFunction('getHomeData', {})
     if (res.success && res.data) {
-      newsList.value = res.data.news || []
-      noticeList.value = res.data.notices || []
-      unreadCount.value = res.data.unreadCount || 0
-      homeEmergency.value = res.data.emergency || null
-      if (res.data.villageInfo) {
-        const v = res.data.villageInfo
-        if (v.villageName) configStore.villageName = v.villageName
-        if (v.villagePhone) configStore.villagePhone = v.villagePhone
-        if (v.icpNumber) configStore.icpNumber = v.icpNumber
-        if (v.policeIcpNumber) configStore.policeIcpNumber = v.policeIcpNumber
-      }
-      newsPage = 1
-      newsHasMore = (res.data.news || []).length >= 5
-      loadShowcase()
-      loadWeather()
+      applyHomeData(res.data)
+      offline.value = false
+      setCache('vb_home', res.data)
     } else {
-      loadError.value = true
+      useCacheFallback()
     }
   } catch (err) {
     console.error('[首页加载失败]:', err)
-    loadError.value = true
+    useCacheFallback()
   } finally {
     isLoading.value = false
     lastLoadTime = Date.now()
+  }
+}
+
+function applyHomeData(data) {
+  newsList.value = data.news || []
+  noticeList.value = data.notices || []
+  unreadCount.value = data.unreadCount || 0
+  homeEmergency.value = data.emergency || null
+  if (data.villageInfo) {
+    const v = data.villageInfo
+    if (v.villageName) configStore.villageName = v.villageName
+    if (v.villagePhone) configStore.villagePhone = v.villagePhone
+    if (v.icpNumber) configStore.icpNumber = v.icpNumber
+    if (v.policeIcpNumber) configStore.policeIcpNumber = v.policeIcpNumber
+  }
+  newsPage = 1
+  newsHasMore = (data.news || []).length >= 5
+  loadShowcase()
+  loadWeather()
+}
+
+function useCacheFallback() {
+  const cached = getCacheStale('vb_home')
+  if (cached) {
+    applyHomeData(cached)
+    offline.value = true
+  } else {
+    loadError.value = true
   }
 }
 
@@ -361,6 +384,16 @@ async function loadMore() {
     }
     .notice-time { font-size: $font-sub; color: $text-weak; }
     &:active { background: $bg; }
+  }
+
+  .offline-banner {
+    margin: $card-gap $page-padding 0;
+    padding: $space-sm $card-padding;
+    background: rgba(196,30,36,0.06);
+    color: $text-sub;
+    border-radius: $radius-md;
+    font-size: $font-sub;
+    text-align: center;
   }
 
   .error-banner {
