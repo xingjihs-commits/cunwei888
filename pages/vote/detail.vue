@@ -72,6 +72,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import { callFunction, acquireLock, releaseLock } from '@/utils/request.js'
+import { requestSubscribe } from '@/utils/subscribe.js'
 import { formatDate } from '@/utils/format.js'
 import BigButton from '@/components/BigButton.vue'
 import { useConfigStore } from '@/store/config.js'
@@ -120,6 +121,7 @@ function goReport() {
 }
 
 async function submitVote() {
+  requestSubscribe([configStore.subscribeTemplates && configStore.subscribeTemplates.status_update])
   if (!selectedKey.value) return
   if (!acquireLock('submitVote', 10000)) {
     uni.showToast({ title: '请勿重复', icon: 'none' })

@@ -90,6 +90,7 @@
 import { ref, reactive, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useConfigStore } from '@/store/config.js'
 import { callFunction, uploadImages, acquireLock, releaseLock, cleanupFileIDs } from '@/utils/request.js'
+import { requestSubscribe } from '@/utils/subscribe.js'
 import VoiceInput from '@/components/VoiceInput.vue'
 import BigButton from '@/components/BigButton.vue'
 import Disclaimer from '@/components/Disclaimer.vue'
@@ -194,6 +195,7 @@ function getLocation() {
 }
 
 async function onSubmit() {
+  requestSubscribe([configStore.subscribeTemplates && configStore.subscribeTemplates.status_update])
   if (!canSubmit.value) return
   
   // 防重复提交

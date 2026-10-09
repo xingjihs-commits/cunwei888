@@ -344,6 +344,8 @@ export const useConfigStore = defineStore('config', {
     phones: JSON.parse(JSON.stringify(DEFAULT_PHONES)),
 
     // 订阅消息模板 ID（云端 module_config.subscribe_templates 下发，未配置为 {}）
+    // 约定键位：status_update（工单/反映/随手拍/失物/信箱/任务/认证/投票/评价）、
+    //          checkin_reminder（留守签到）；在微信公众平台申请后于 module_config 配置。
     subscribeTemplates: {},
 
     // 紧急程度（中文）

@@ -44,6 +44,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { callFunction } from '@/utils/request.js'
+import { requestSubscribe } from '@/utils/subscribe.js'
 import BigButton from '@/components/BigButton.vue'
 import { useConfigStore } from '@/store/config.js'
 import { ensureAuth, AUTH_VERIFIED } from '@/utils/auth.js'
@@ -80,6 +81,7 @@ async function loadData() {
 }
 
 async function doCheckin() {
+  requestSubscribe([configStore.subscribeTemplates && configStore.subscribeTemplates.checkin_reminder])
   if (!selectedStatus.value) return
   
   uni.showLoading({ title: '签到中...', mask: true })

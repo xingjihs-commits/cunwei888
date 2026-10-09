@@ -54,6 +54,7 @@
 <script setup>
 import { reactive, computed, onMounted, watch } from 'vue'
 import { callFunction, uploadImages, acquireLock, releaseLock, cleanupFileIDs } from '@/utils/request.js'
+import { requestSubscribe } from '@/utils/subscribe.js'
 import BigButton from '@/components/BigButton.vue'
 import VoiceInput from '@/components/VoiceInput.vue'
 import { useConfigStore } from '@/store/config.js'
@@ -94,6 +95,7 @@ async function chooseImage() {
 function removeImage(i) { form.images.splice(i, 1) }
 
 async function onSubmit() {
+  requestSubscribe([configStore.subscribeTemplates && configStore.subscribeTemplates.status_update])
   if (!canSubmit.value) return
   if (!acquireLock('publishLostFound', 10000)) { uni.showToast({ title: '请勿重复', icon: 'none' }); return }
   

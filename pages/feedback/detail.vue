@@ -131,6 +131,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import { callFunction, acquireLock, releaseLock } from '@/utils/request.js'
+import { requestSubscribe } from '@/utils/subscribe.js'
 import { formatDate, statusText, urgentText, urgentColor, formatDuration } from '@/utils/format.js'
 import { useConfigStore } from '@/store/config.js'
 import StatusTag from '@/components/StatusTag.vue'
@@ -248,6 +249,7 @@ function goReport() {
 }
 
 async function submitEval() {
+  requestSubscribe([configStore.subscribeTemplates && configStore.subscribeTemplates.status_update])
   if (evaluation.value === 0) {
     uni.showToast({ title: '请选择星级', icon: 'none' })
     return

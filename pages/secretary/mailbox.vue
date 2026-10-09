@@ -58,6 +58,7 @@
 <script setup>
 import { reactive, computed, onMounted, onUnmounted, watch } from 'vue'
 import { callFunction, acquireLock, releaseLock } from '@/utils/request.js'
+import { requestSubscribe } from '@/utils/subscribe.js'
 import BigButton from '@/components/BigButton.vue'
 import Disclaimer from '@/components/Disclaimer.vue'
 import VoiceInput from '@/components/VoiceInput.vue'
@@ -108,6 +109,7 @@ function clearDraft() { uni.removeStorageSync(DRAFT_KEY) }
 function onVoiceResult(text) { form.content += text }
 
 async function onSubmit() {
+  requestSubscribe([configStore.subscribeTemplates && configStore.subscribeTemplates.status_update])
   if (!canSubmit.value) return
   
   if (!acquireLock('submitSecretaryMail', 10000)) {

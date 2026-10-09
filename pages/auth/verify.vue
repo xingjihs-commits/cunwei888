@@ -58,6 +58,7 @@
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useUserStore } from '@/store/user.js'
 import { callFunction, acquireLock, releaseLock } from '@/utils/request.js'
+import { requestSubscribe } from '@/utils/subscribe.js'
 import BigButton from '@/components/BigButton.vue'
 import { ensureAuth, AUTH_LOGIN } from '@/utils/auth.js'
 import { useConfigStore } from '@/store/config.js'
@@ -98,6 +99,7 @@ function resetPhone() {
 }
 
 async function onSubmit() {
+  requestSubscribe([configStore.subscribeTemplates && configStore.subscribeTemplates.status_update])
   if (!canSubmit.value || submitting.value) return
   if (!acquireLock('submit_verify', 10000)) {
     uni.showToast({ title: '请勿重复提交', icon: 'none' })

@@ -71,6 +71,7 @@ import { ref, computed } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import { useUserStore } from '@/store/user.js'
 import { callFunction, acquireLock, releaseLock } from '@/utils/request.js'
+import { requestSubscribe } from '@/utils/subscribe.js'
 import BigButton from '@/components/BigButton.vue'
 import { useConfigStore } from '@/store/config.js'
 import { ensureAuth, AUTH_VERIFIED } from '@/utils/auth.js'
@@ -122,6 +123,7 @@ onLoad((options) => {
 })
 
 async function handleSubmit() {
+  requestSubscribe([configStore.subscribeTemplates && configStore.subscribeTemplates.status_update])
   if (!form.value.reason) {
     uni.showToast({ title: '请选择举报理由', icon: 'none' })
     return

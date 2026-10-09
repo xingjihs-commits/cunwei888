@@ -108,6 +108,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import { callFunction, uploadImages, acquireLock, releaseLock, cleanupFileIDs } from '@/utils/request.js'
+import { requestSubscribe } from '@/utils/subscribe.js'
 import { formatDate, statusText, urgentText, urgentColor } from '@/utils/format.js'
 import { useUserStore } from '@/store/user.js'
 import StatusTag from '@/components/StatusTag.vue'
@@ -199,6 +200,7 @@ function previewImage(urls, i) {
 }
 
 async function submitProgress() {
+  requestSubscribe([configStore.subscribeTemplates && configStore.subscribeTemplates.status_update])
   if (!newContent.value) {
     uni.showToast({ title: '请填写办理情况', icon: 'none' })
     return

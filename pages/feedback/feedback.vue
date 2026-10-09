@@ -197,6 +197,7 @@ function previewImage(i) {
 }
 
 async function onSubmit() {
+  requestSubscribe([configStore.subscribeTemplates && configStore.subscribeTemplates.status_update])
   if (!canSubmit.value) return
   
   // 防重复提交
@@ -243,8 +244,6 @@ async function onSubmit() {
     
     if (res.success) {
       clearDraft()
-      // 引导订阅工单状态通知（未配置模板时自动跳过）
-      requestSubscribe([configStore.subscribeTemplates && configStore.subscribeTemplates.status_update])
       uni.showToast({ title: '提交成功', icon: 'success' })
       setTimeout(() => {
         uni.redirectTo({ url: '/pages/feedback/my-feedback' })
