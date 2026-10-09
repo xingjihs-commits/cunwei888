@@ -46,7 +46,7 @@ function listFiles(dir, ext) {
 
 function listDirs(dir) {
   if (!fs.existsSync(dir)) return []
-  return fs.readdirSync(dir, { withFileTypes: true }).filter(d => d.isDirectory()).map(d => d.name)
+  return fs.readdirSync(dir, { withFileTypes: true }).filter(d => d.isDirectory() && !d.name.startsWith('.')).map(d => d.name)
 }
 
 function rel(p) {
