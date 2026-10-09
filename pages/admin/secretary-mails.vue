@@ -31,7 +31,7 @@
     <view v-if="loadError" class="error-state">
       <text class="error-icon">⚠️</text>
       <text class="error-text">加载失败</text>
-      <view class="retry-btn" @click="loadData">{{ t('button.retry', '重新加载') }}</view>
+      <view class="retry-btn" @click="refresh">{{ t('button.retry', '重新加载') }}</view>
     </view>
   </view>
 </template>
@@ -44,16 +44,13 @@ import { relativeTime, urgentText, normalizeStatus } from '@/utils/format.js'
 import Skeleton from '@/components/Skeleton.vue'
 import { useAdminGuard } from '@/composables/useAdminGuard.js'
 import { useConfigStore } from '@/store/config.js'
+import { usePagination } from '@/composables/usePagination.js'
 
 const configStore = useConfigStore()
 function t(p, d = '') { return configStore.getDisplay(p, d) }
 
-const list = ref([])
-const loading = ref(false)
 const loadError = ref(false)
 const currentStatus = ref('')
-const page = ref(1)
-const total = ref(0)
 
 const statusFilters = [
   { value: '', label: '全部' },
@@ -63,19 +60,34 @@ const statusFilters = [
   { value: '已关闭', label: '已关闭' }
 ]
 
+const { list, loading, refresh, loadMore } = usePagination(
+  async (params) => {
+    loadError.value = false
+    try {
+      const res = await callFunction('getSecretaryMails', { ...params, status: currentStatus.value })
+      if (!res || !res.success) loadError.value = true
+      return res
+    } catch (err) {
+      console.error('[secretary-mails 加载失败]:', err)
+      loadError.value = true
+      throw err
+    }
+  },
+  { pageSize: 20 }
+)
+
 onMounted(async () => {
   const { ensureAdmin } = useAdminGuard()
   if (!(await ensureAdmin())) return
-  loadData()
+  refresh()
 })
 
-onPullDownRefresh(() => { page.value = 1; loadData() })
+onPullDownRefresh(() => refresh())
 onReachBottom(() => loadMore())
 
 function onTabChange(status) {
   currentStatus.value = status
-  page.value = 1
-  loadData()
+  refresh()
 }
 
 function mailStatusText(s) { return normalizeStatus(s) || s }
@@ -85,37 +97,6 @@ function mailStatusClass(s) {
   if (cn === '已查阅') return 'read'
   if (cn === '已回复') return 'replied'
   return 'closed'
-}
-
-async function loadData() {
-  loading.value = true
-  loadError.value = false
-  try {
-    const res = await callFunction('getSecretaryMails', {
-      page: page.value,
-      pageSize: 20,
-      status: currentStatus.value
-    })
-    if (res.success) {
-      if (page.value === 1) list.value = res.data || []
-      else list.value = [...list.value, ...(res.data || [])]
-      total.value = res.total || 0
-    } else {
-      loadError.value = true
-    }
-  } catch (err) {
-    console.error('[secretary-mails 加载失败]:', err)
-    loadError.value = true
-  } finally {
-    loading.value = false
-    uni.stopPullDownRefresh && uni.stopPullDownRefresh()
-  }
-}
-
-async function loadMore() {
-  if (list.value.length >= total.value || loading.value) return
-  page.value++
-  await loadData()
 }
 
 function goDetail(id) {

@@ -36,7 +36,7 @@
     <view v-if="loadError" class="error-state">
       <text class="error-icon">⚠️</text>
       <text class="error-text">加载失败</text>
-      <view class="retry-btn" @click="loadData">{{ t('button.retry', '重新加载') }}</view>
+      <view class="retry-btn" @click="refresh">{{ t('button.retry', '重新加载') }}</view>
     </view>
   </view>
 </template>
@@ -49,16 +49,13 @@ import { formatDate, relativeTime, statusText, urgentText, normalizeStatus } fro
 import Skeleton from '@/components/Skeleton.vue'
 import { useUserStore } from '@/store/user.js'
 import { useConfigStore } from '@/store/config.js'
+import { usePagination } from '@/composables/usePagination.js'
 
 const userStore = useUserStore()
 const configStore = useConfigStore()
 function t(p, d = '') { return configStore.getDisplay(p, d) }
-const list = ref([])
-const loading = ref(false)
 const loadError = ref(false)
 const currentStatus = ref('')
-const page = ref(1)
-const total = ref(0)
 
 const statusFilters = [
   { value: '', label: '全部' },
@@ -68,6 +65,26 @@ const statusFilters = [
   { value: '已完成', label: '已完成' }
 ]
 
+const { list, loading, refresh, loadMore } = usePagination(
+  async (params) => {
+    if (!userStore.openid) {
+      uni.showToast({ title: '请先登录', icon: 'none' })
+      return { data: [], total: 0 }
+    }
+    loadError.value = false
+    try {
+      const res = await callFunction('getMyDispatched', { ...params, status: currentStatus.value })
+      if (!res || !res.success) loadError.value = true
+      return res
+    } catch (err) {
+      console.error('[my-dispatched 加载失败]:', err)
+      loadError.value = true
+      throw err
+    }
+  },
+  { pageSize: 20 }
+)
+
 onMounted(() => {
   // my-dispatched 是责任人侧入口，要求已登录（不要求管理员）
   if (!userStore.openid) {
@@ -75,16 +92,15 @@ onMounted(() => {
     setTimeout(() => uni.redirectTo({ url: '/pages/mine/mine' }), 1500)
     return
   }
-  loadData()
+  refresh()
 })
-onShow(() => { page.value = 1; loadData() })
-onPullDownRefresh(() => { page.value = 1; loadData() })
+onShow(() => refresh())
+onPullDownRefresh(() => refresh())
 onReachBottom(() => loadMore())
 
 function onTabChange(status) {
   currentStatus.value = status
-  page.value = 1
-  loadData()
+  refresh()
 }
 
 function recordStatusClass(s) {
@@ -94,41 +110,6 @@ function recordStatusClass(s) {
   if (cn === '已完成' || cn === '已评价') return 'completed'
   if (cn === '已驳回') return 'rejected'
   return 'pending'
-}
-
-async function loadData() {
-  if (!userStore.openid) {
-    uni.showToast({ title: '请先登录', icon: 'none' })
-    return
-  }
-  loading.value = true
-  loadError.value = false
-  try {
-    const res = await callFunction('getMyDispatched', {
-      page: page.value,
-      pageSize: 20,
-      status: currentStatus.value
-    })
-    if (res.success) {
-      if (page.value === 1) list.value = res.data || []
-      else list.value = [...list.value, ...(res.data || [])]
-      total.value = res.total || 0
-    } else {
-      loadError.value = true
-    }
-  } catch (err) {
-    console.error('[my-dispatched 加载失败]:', err)
-    loadError.value = true
-  } finally {
-    loading.value = false
-    uni.stopPullDownRefresh && uni.stopPullDownRefresh()
-  }
-}
-
-async function loadMore() {
-  if (list.value.length >= total.value || loading.value) return
-  page.value++
-  await loadData()
 }
 
 function goDetail(id) {
