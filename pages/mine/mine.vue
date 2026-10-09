@@ -1,27 +1,29 @@
 <!--
-  pages/mine/mine.vue - 个人中心
-  改造点：
-    1. 替换已废弃的 wx.getUserProfile → button open-type=chooseAvatar + input type=nickname
-    2. ICP 备案号从 module_config 动态加载
-    3. 新增"隐私政策"菜单项
-    4. 默认头像用 base64 PNG 替代 SVG（兼容性更好）
+  pages/mine/mine.vue - 我的（tabBar「我的」）
+  对齐《示范村 App 完整布局方案》Tab4：
+    ① 用户信息 + 导航栏「字号 A+」
+    ② 我的记录（反映/随手拍/信件/消息/办理）
+    ③ 设置（字号/通知/隐私/关于）
+    ④ 管理入口（仅村委，九宫格）
 -->
 <template>
   <page-meta :root-font-size="rootFontSize" />
   <view class="page-mine">
     <view class="header" :style="{ paddingTop: statusBarHeight + 'px' }">
+      <view class="header-top">
+        <text class="header-title">{{ t('pageTitle.mine', '我的') }}</text>
+        <view class="font-btn" @click="cycleFont">{{ fontLabel }} A+</view>
+      </view>
       <view class="user-card">
-        <!-- 头像：用 button open-type=chooseAvatar -->
         <button class="avatar-btn" open-type="chooseAvatar" @chooseavatar="onChooseAvatar">
           <image class="avatar" :src="userStore.avatarUrl || defaultAvatar" mode="aspectFill" />
         </button>
         <view class="user-info">
-          <!-- 昵称：未认证时用 input type=nickname -->
           <input
             v-if="!userStore.realName"
             class="user-name-input"
             type="nickname"
-             :placeholder="t('placeholder.nickname', '点击设置昵称')"
+            :placeholder="t('placeholder.nickname', '点击设置昵称')"
             @blur="onNicknameConfirm"
           />
           <text v-else class="user-name">{{ userStore.displayName }}</text>
@@ -31,197 +33,77 @@
           </view>
           <text v-if="userStore.villageGroup" class="user-group">{{ userStore.villageGroup }}</text>
         </view>
-        <view v-if="userStore.isAdmin" class="admin-badge">管理员</view>
       </view>
     </view>
 
-    <view class="menu-section">
-      <view class="menu-item" @click="goPage('/pages/feedback/my-feedback')">
-        <view class="menu-icon">💬</view>
-        <text class="menu-text">{{ t('subCategory.myFeedback', '我的反映') }}</text>
-        <view class="menu-arrow">></view>
-      </view>
-      <view class="menu-item" @click="goPage('/pages/snapshot/my-snapshots')">
-        <view class="menu-icon">📷</view>
-        <text class="menu-text">我的随手拍</text>
-        <view class="menu-arrow">></view>
-      </view>
-      <view class="menu-item" @click="goPage('/pages/secretary/my-mails')">
-        <view class="menu-icon">✉️</view>
-        <text class="menu-text">我的来信</text>
-        <view class="menu-arrow">></view>
-      </view>
-      <view class="menu-item" @click="goPage('/pages/task/my-progress')">
-        <view class="menu-icon">📋</view>
-        <text class="menu-text">我的办理</text>
-        <view class="menu-arrow">></view>
-      </view>
-      <view class="menu-item" @click="goPage('/pages/admin/my-dispatched')">
-        <view class="menu-icon">📥</view>
-        <text class="menu-text">我的派单</text>
-        <view class="menu-arrow">></view>
-      </view>
-    </view>
-
-    <view class="menu-section">
-      <view class="menu-item" @click="goPage('/pages/service/guide')">
-        <view class="menu-icon">📋</view>
-        <text class="menu-text">{{ t('entry.guide', '办事指南') }}</text>
-        <view class="menu-arrow">></view>
-      </view>
-      <view class="menu-item" @click="goPage('/pages/finance/list')">
-        <view class="menu-icon">💰</view>
-        <text class="menu-text">{{ t('pageTitle.finance', '财务三资') }}</text>
-        <view class="menu-arrow">></view>
-      </view>
-      <view class="menu-item" @click="goPage('/pages/meeting/list')">
-        <view class="menu-icon">👥</view>
-        <text class="menu-text">{{ t('entry.meeting', '村务会议') }}</text>
-        <view class="menu-arrow">></view>
-      </view>
-      <view class="menu-item" @click="goPage('/pages/lost-found/list')">
-        <view class="menu-icon">📦</view>
-        <text class="menu-text">{{ t('entry.lostFound', '失物招领') }}</text>
-        <view class="menu-arrow">></view>
-      </view>
-      <view class="menu-item" @click="goPage('/pages/agri/calendar')">
-        <view class="menu-icon">🌾</view>
-        <text class="menu-text">{{ t('entry.calendar', '农事日历') }}</text>
-        <view class="menu-arrow">></view>
-      </view>
-      <view class="menu-item" @click="goPage('/pages/agri/checkin')">
-        <view class="menu-icon">☀️</view>
-        <text class="menu-text">{{ t('entry.checkin', '每日签到') }}</text>
-        <view class="menu-arrow">></view>
+    <!-- ② 我的记录 -->
+    <view class="section">
+      <view class="section-title">我的记录</view>
+      <view class="menu-card">
+        <view class="menu-item" @click="goPage('/pages/feedback/my-feedback')">
+          <text class="menu-icon">💬</text>
+          <text class="menu-text">{{ t('subCategory.myFeedback', '我的反映') }}</text>
+          <text class="menu-arrow">›</text>
+        </view>
+        <view class="menu-item" @click="goPage('/pages/snapshot/my-snapshots')">
+          <text class="menu-icon">📷</text>
+          <text class="menu-text">我的随手拍</text>
+          <text class="menu-arrow">›</text>
+        </view>
+        <view class="menu-item" @click="goPage('/pages/secretary/my-mails')">
+          <text class="menu-icon">✉️</text>
+          <text class="menu-text">我的信件</text>
+          <text class="menu-arrow">›</text>
+        </view>
+        <view class="menu-item" @click="goPage('/pages/message/center')">
+          <text class="menu-icon">🔔</text>
+          <text class="menu-text">我的消息</text>
+          <view v-if="unreadCount > 0" class="msg-badge">{{ unreadCount > 99 ? '99+' : unreadCount }}</view>
+          <text class="menu-arrow">›</text>
+        </view>
+        <view class="menu-item" @click="goPage('/pages/task/my-progress')">
+          <text class="menu-icon">📋</text>
+          <text class="menu-text">我办的事</text>
+          <text class="menu-arrow">›</text>
+        </view>
       </view>
     </view>
 
-    <view class="menu-section">
-      <view class="menu-item" @click="goPage('/pages/mine/profile')">
-        <view class="menu-icon">👤</view>
-        <text class="menu-text">个人信息</text>
-        <view class="menu-arrow">></view>
-      </view>
-      <view class="menu-item" @click="goPage('/pages/settings/accessibility')">
-        <view class="menu-icon">♿</view>
-        <text class="menu-text">适老化设置</text>
-        <view class="menu-arrow">></view>
-      </view>
-      <view class="menu-item" @click="goPage('/pages/agreement/index')">
-        <view class="menu-icon">📜</view>
-        <text class="menu-text">服务协议</text>
-        <view class="menu-arrow">></view>
-      </view>
-      <view class="menu-item" @click="goPrivacy">
-        <view class="menu-icon">🔐</view>
-        <text class="menu-text">隐私政策</text>
-        <view class="menu-arrow">></view>
-      </view>
-      <view class="menu-item" @click="showAbout">
-        <view class="menu-icon">ℹ️</view>
-        <text class="menu-text">关于我们</text>
-        <view class="menu-arrow">></view>
-      </view>
-    </view>
-
-    <view v-if="userStore.isAdmin" class="menu-section admin-section">
-      <view class="section-title">工单与信件</view>
-      <view class="menu-item" @click="goPage('/pages/admin/feedback-list')">
-        <view class="menu-icon">📥</view>
-        <text class="menu-text">工单管理</text>
-        <view class="menu-arrow">></view>
-      </view>
-      <view class="menu-item" @click="goPage('/pages/admin/my-dispatched')">
-        <view class="menu-icon">📋</view>
-        <text class="menu-text">我的派单</text>
-        <view class="menu-arrow">></view>
-      </view>
-      <view class="menu-item" @click="goPage('/pages/admin/secret-list')">
-        <view class="menu-icon">🔒</view>
-        <text class="menu-text">亲阅件</text>
-        <view class="menu-arrow">></view>
-      </view>
-      <view class="menu-item" @click="goPage('/pages/admin/secretary-mails')">
-        <view class="menu-icon">✉️</view>
-        <text class="menu-text">信箱管理</text>
-        <view class="menu-arrow">></view>
+    <!-- ③ 设置 -->
+    <view class="section">
+      <view class="section-title">设置</view>
+      <view class="menu-card">
+        <view class="menu-item" @click="goPage('/pages/settings/accessibility')">
+          <text class="menu-icon">♿</text>
+          <text class="menu-text">字号设置</text>
+          <text class="menu-arrow">›</text>
+        </view>
+        <view class="menu-item" @click="onNotification">
+          <text class="menu-icon">🔕</text>
+          <text class="menu-text">消息通知</text>
+          <text class="menu-arrow">›</text>
+        </view>
+        <view class="menu-item" @click="goPage('/pages/privacy/index')">
+          <text class="menu-icon">🔐</text>
+          <text class="menu-text">隐私政策</text>
+          <text class="menu-arrow">›</text>
+        </view>
+        <view class="menu-item" @click="showAbout">
+          <text class="menu-icon">ℹ️</text>
+          <text class="menu-text">关于我们</text>
+          <text class="menu-arrow">›</text>
+        </view>
       </view>
     </view>
 
-    <view v-if="userStore.isAdmin" class="menu-section admin-section">
-      <view class="section-title">内容发布</view>
-      <view class="menu-item" @click="goPage('/pages/admin/publish')">
-        <view class="menu-icon">📤</view>
-        <text class="menu-text">新闻/公示/任务</text>
-        <view class="menu-arrow">></view>
-      </view>
-      <view class="menu-item" @click="goPage('/pages/admin/finance-publish')">
-        <view class="menu-icon">💰</view>
-        <text class="menu-text">财务公示</text>
-        <view class="menu-arrow">></view>
-      </view>
-      <view class="menu-item" @click="goPage('/pages/secretary/broadcast')">
-        <view class="menu-icon">📢</view>
-        <text class="menu-text">发布广播</text>
-        <view class="menu-arrow">></view>
-      </view>
-      <view class="menu-item" @click="goPage('/pages/admin/vote-create')">
-        <view class="menu-icon">🗳️</view>
-        <text class="menu-text">发起表决</text>
-        <view class="menu-arrow">></view>
-      </view>
-      <view class="menu-item" @click="goPage('/pages/admin/meeting-create')">
-        <view class="menu-icon">👥</view>
-        <text class="menu-text">创建会议</text>
-        <view class="menu-arrow">></view>
-      </view>
-    </view>
-
-    <view v-if="userStore.isAdmin" class="menu-section admin-section">
-      <view class="section-title">审核与考核</view>
-      <view class="menu-item" @click="goPage('/pages/admin/auth-list')">
-        <view class="menu-icon">✓</view>
-        <text class="menu-text">认证审核</text>
-        <view class="menu-arrow">></view>
-      </view>
-      <view class="menu-item" @click="goPage('/pages/admin/audit-queue')">
-        <view class="menu-icon">🔍</view>
-        <text class="menu-text">人工复审</text>
-        <view class="menu-arrow">></view>
-      </view>
-      <view class="menu-item" @click="goPage('/pages/admin/dashboard')">
-        <view class="menu-icon">📊</view>
-        <text class="menu-text">考核看板</text>
-        <view class="menu-arrow">></view>
-      </view>
-      <view class="menu-item" @click="goPage('/pages/admin/upper-reports')">
-        <view class="menu-icon">📈</view>
-        <text class="menu-text">对上汇报</text>
-        <view class="menu-arrow">></view>
-      </view>
-    </view>
-
-    <view v-if="userStore.isAdmin" class="menu-section admin-section">
-      <view class="section-title">系统配置</view>
-      <view class="menu-item" @click="goPage('/pages/admin/dispatch-config')">
-        <view class="menu-icon">🗺️</view>
-        <text class="menu-text">分配地图</text>
-        <view class="menu-arrow">></view>
-      </view>
-      <view class="menu-item" @click="goPage('/pages/admin/module-config')">
-        <view class="menu-icon">⚙️</view>
-        <text class="menu-text">模块配置</text>
-        <view class="menu-arrow">></view>
-      </view>
-      <view class="menu-item" @click="goPage('/pages/admin/name-config')">
-        <view class="menu-icon">🏷️</view>
-        <text class="menu-text">名称配置</text>
-        <view class="menu-arrow">></view>
-      </view>
-      <view class="menu-item" @click="goPage('/pages/admin/leader-publish')">
-        <view class="menu-icon">🎬</view>
-        <text class="menu-text">书记风采发布</text>
-        <view class="menu-arrow">></view>
+    <!-- ④ 管理入口（仅村委） -->
+    <view v-if="userStore.isAdmin" class="section">
+      <view class="section-title">管理入口</view>
+      <view class="admin-grid">
+        <view v-for="e in adminEntries" :key="e.path" class="admin-item" @click="goPage(e.path)">
+          <text class="admin-icon">{{ e.icon }}</text>
+          <text class="admin-name">{{ e.name }}</text>
+        </view>
       </view>
     </view>
 
@@ -238,6 +120,9 @@ import { ref, computed, onMounted } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 import { useUserStore } from '@/store/user.js'
 import { useConfigStore } from '@/store/config.js'
+import { callFunction } from '@/utils/request.js'
+import { goPage } from '@/utils/nav.js'
+import { a11y, saveA11y } from '@/utils/accessibility.js'
 import { useRootFontSize } from '@/composables/useA11y.js'
 
 const userStore = useUserStore()
@@ -245,11 +130,8 @@ const configStore = useConfigStore()
 function t(p, d = '') { return configStore.getDisplay(p, d) }
 const rootFontSize = useRootFontSize()
 const statusBarHeight = ref(20)
+const unreadCount = ref(0)
 
-// 默认头像：用一个简单的圆形红底白字"民"
-// 由于小程序对 base64 SVG 支持不一致，改用静态资源路径
-// static/ 已有 .gitkeep，需要上线前把默认头像 PNG 文件放到 static/images/default-avatar.png
-// 兜底用空字符串，让 image 标签显示原占位
 const defaultAvatar = '/static/images/default-avatar.png'
 
 const verifyText = computed(() => userStore.verifyText)
@@ -257,19 +139,62 @@ const verifyClass = computed(() => userStore.isAdmin ? 'admin' : (userStore.isVe
 const icpNumber = computed(() => configStore.icpNumber || '')
 const policeIcpNumber = computed(() => configStore.policeIcpNumber || '')
 
+const FONT_STEPS = [
+  { scale: 1, label: '标准' },
+  { scale: 1.2, label: '大' },
+  { scale: 1.4, label: '超大' }
+]
+const fontLabel = computed(() => (FONT_STEPS.find(s => s.scale === a11y.fontScale) || FONT_STEPS[0]).label)
+
+const adminEntries = [
+  { icon: '📥', name: '反映处理', path: '/pages/admin/feedback-list' },
+  { icon: '🔒', name: '亲阅件', path: '/pages/admin/secret-list' },
+  { icon: '✉️', name: '信箱管理', path: '/pages/admin/secretary-mails' },
+  { icon: '✓', name: '认证审核', path: '/pages/admin/auth-list' },
+  { icon: '🔍', name: '人工复审', path: '/pages/admin/audit-queue' },
+  { icon: '📤', name: '发布内容', path: '/pages/admin/publish' },
+  { icon: '🎬', name: '风采发布', path: '/pages/admin/leader-publish' },
+  { icon: '💰', name: '财务公示', path: '/pages/admin/finance-publish' },
+  { icon: '📢', name: '发布广播', path: '/pages/secretary/broadcast' },
+  { icon: '🗳️', name: '发起表决', path: '/pages/admin/vote-create' },
+  { icon: '👥', name: '创建会议', path: '/pages/admin/meeting-create' },
+  { icon: '📊', name: '数据统计', path: '/pages/admin/dashboard' },
+  { icon: '📈', name: '对上汇报', path: '/pages/admin/upper-reports' },
+  { icon: '📋', name: '我的派单', path: '/pages/admin/my-dispatched' },
+  { icon: '🗺️', name: '分配地图', path: '/pages/admin/dispatch-config' },
+  { icon: '🏷️', name: '村名设置', path: '/pages/admin/name-config' },
+  { icon: '⚙️', name: '功能开关', path: '/pages/admin/module-config' }
+]
+
 onMounted(() => {
-  uni.setNavigationBarTitle({ title: t('pageTitle.mine', '我的') })
   // #ifdef MP-WEIXIN
   const sysInfo = wx.getWindowInfo()
   statusBarHeight.value = sysInfo.statusBarHeight || 20
   // #endif
+  configStore.loadConfig()
 })
 
 onShow(() => {
   userStore.refreshUserInfo()
+  loadUnread()
 })
 
-// 微信最新头像填写能力：button open-type="chooseAvatar" 触发
+async function loadUnread() {
+  try {
+    const res = await callFunction('getMyMessages', { page: 1, pageSize: 1 })
+    if (res && res.success && typeof res.unreadCount === 'number') unreadCount.value = res.unreadCount
+  } catch (e) {
+    // 未登录/游客模式忽略
+  }
+}
+
+function cycleFont() {
+  const idx = FONT_STEPS.findIndex(s => s.scale === a11y.fontScale)
+  const next = FONT_STEPS[(idx + 1) % FONT_STEPS.length]
+  saveA11y({ fontScale: next.scale })
+  uni.showToast({ title: '字号：' + next.label, icon: 'none' })
+}
+
 function onChooseAvatar(e) {
   // #ifdef MP-WEIXIN
   if (e && e.detail && e.detail.avatarUrl) {
@@ -279,7 +204,6 @@ function onChooseAvatar(e) {
   // #endif
 }
 
-// 昵称填写：input type="nickname"
 function onNicknameConfirm(e) {
   // #ifdef MP-WEIXIN
   const nickname = e && e.detail && e.detail.value
@@ -294,12 +218,8 @@ function goVerify() {
   uni.navigateTo({ url: '/pages/auth/verify' })
 }
 
-function goPage(path) {
-  uni.navigateTo({ url: path })
-}
-
-function goPrivacy() {
-  uni.navigateTo({ url: '/pages/privacy/index' })
+function onNotification() {
+  uni.showToast({ title: '消息通知设置即将上线', icon: 'none' })
 }
 
 function showAbout() {
@@ -323,17 +243,32 @@ function showAbout() {
     color: $white;
     padding: $card-padding $page-padding 48rpx;
 
+    .header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: $card-padding;
+
+      .header-title { font-size: $font-title; font-weight: bold; }
+      .font-btn {
+        padding: $space-sm $space-lg;
+        background: rgba(255,255,255,0.2);
+        border-radius: $radius-full;
+        font-size: $font-sub;
+        font-weight: bold;
+      }
+    }
+
     .user-card {
       display: flex;
       align-items: center;
 
       .avatar-btn {
-        margin: 0;
+        margin: 0 24rpx 0 0;
         padding: 0;
         background: transparent;
         border: none;
         line-height: 1;
-        margin-right: 24rpx;
 
         &::after { border: none; }
 
@@ -349,13 +284,7 @@ function showAbout() {
       .user-info {
         flex: 1;
 
-        .user-name {
-          font-size: $font-title;
-          font-weight: bold;
-          display: block;
-          margin-bottom: 8rpx;
-        }
-
+        .user-name { font-size: $font-title; font-weight: bold; display: block; margin-bottom: 8rpx; }
         .user-name-input {
           font-size: $font-title;
           font-weight: bold;
@@ -377,12 +306,10 @@ function showAbout() {
             padding: $space-xs $space-md;
             border-radius: $radius-sm;
             font-size: $font-micro;
-
             &.verified { background: rgba(255,255,255,0.3); }
             &.unverified { background: rgba(0,0,0,0.3); }
             &.admin { background: $gold; }
           }
-
           .verify-btn {
             padding: $space-xs $space-md;
             background: $white;
@@ -393,67 +320,75 @@ function showAbout() {
           }
         }
 
-        .user-group {
-          font-size: $font-sub;
-          opacity: 0.9;
-        }
-      }
-
-      .admin-badge {
-        padding: $space-sm $space-md;
-        background: $gold;
-        color: $white;
-        border-radius: $radius-sm;
-        font-size: $font-micro;
-        font-weight: bold;
+        .user-group { font-size: $font-sub; opacity: 0.9; }
       }
     }
   }
 
-  .menu-section {
+  .section {
+    padding: 0 $page-padding;
+    margin-top: $card-gap;
+
+    .section-title {
+      font-size: $font-card-title;
+      font-weight: bold;
+      color: $text-main;
+      padding: $space-md 0;
+    }
+  }
+
+  .menu-card {
     background: $white;
-    margin: $card-gap $page-padding;
     border-radius: $card-radius;
     box-shadow: $card-shadow;
     overflow: hidden;
-
-    &.admin-section {
-      .section-title {
-        padding: $card-padding;
-        font-size: $font-card-title;
-        font-weight: bold;
-        color: $primary;
-        border-bottom: 2rpx solid $border;
-      }
-    }
 
     .menu-item {
       display: flex;
       align-items: center;
       padding: $card-padding;
       border-bottom: 2rpx solid $border;
-
       &:last-child { border-bottom: none; }
-
-      .menu-icon {
-        font-size: $font-btn;
-        margin-right: 24rpx;
-        width: 60rpx;
-        text-align: center;
-      }
-
-      .menu-text {
-        flex: 1;
-        font-size: $font-body;
-        color: $text-main;
-      }
-
-      .menu-arrow {
-        font-size: $font-sub;
-        color: $text-weak;
-      }
-
       &:active { background: $bg; }
+
+      .menu-icon { font-size: $font-btn; margin-right: 24rpx; width: 60rpx; text-align: center; }
+      .menu-text { flex: 1; font-size: $font-body; color: $text-main; }
+      .menu-arrow { font-size: $font-sub; color: $text-weak; }
+      .msg-badge {
+        min-width: 32rpx;
+        height: 32rpx;
+        padding: 0 8rpx;
+        margin-right: 12rpx;
+        background: $danger;
+        color: $white;
+        font-size: $font-micro;
+        line-height: 32rpx;
+        text-align: center;
+        border-radius: $radius-full;
+      }
+    }
+  }
+
+  .admin-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16rpx;
+    background: $white;
+    border-radius: $card-radius;
+    box-shadow: $card-shadow;
+    padding: $card-padding;
+
+    .admin-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 160rpx;
+      border-radius: $radius-md;
+      &:active { background: $bg; }
+
+      .admin-icon { font-size: 48rpx; margin-bottom: 12rpx; }
+      .admin-name { font-size: $font-sub; color: $text-main; text-align: center; }
     }
   }
 
@@ -461,19 +396,8 @@ function showAbout() {
     text-align: center;
     padding: $space-2xl 0;
 
-    .footer-text {
-      display: block;
-      font-size: $font-sub;
-      color: $text-weak;
-      margin-bottom: 8rpx;
-    }
-
-    .footer-icp {
-      display: block;
-      font-size: $font-micro;
-      color: $text-weak;
-      margin-top: 4rpx;
-    }
+    .footer-text { display: block; font-size: $font-sub; color: $text-weak; margin-bottom: 8rpx; }
+    .footer-icp { display: block; font-size: $font-micro; color: $text-weak; margin-top: 4rpx; }
   }
 }
 </style>
