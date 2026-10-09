@@ -13,7 +13,9 @@
     "lint": "eslint . --ext .js,.vue",
     "format": "prettier --write \"{pages,components,utils,store,composables}/**/*.{js,vue}\"",
     "gen:doc": "node scripts/gen-structure.js",
-    "check:doc": "node scripts/check-structure.js"
+    "check:doc": "node scripts/check-structure.js",
+    "map:check": "node scripts/check-project-map.js",
+    "style:check": "node scripts/check-style.js"
   },
   "dependencies": {
     "@dcloudio/uni-app": "^3.0.0-alpha-3081220230817001",

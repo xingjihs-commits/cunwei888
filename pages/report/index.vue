@@ -43,7 +43,7 @@
       <view class="form-label">您的身份（可选）</view>
       <view class="anonymous-toggle">
         <text class="toggle-label">匿名举报</text>
-        <switch :checked="form.anonymous" @change="form.anonymous = $event.detail.value" color="#C41E24" />
+        <switch :checked="form.anonymous" @change="form.anonymous = $event.detail.value" :color="PRIMARY" />
       </view>
       <view v-if="!form.anonymous && userStore.isLoggedIn" class="reporter-info">
         <text>举报人：{{ userStore.displayName }}</text>
@@ -69,6 +69,7 @@
 
 <script setup>
 import { useRootFontSize } from '@/composables/useA11y.js'
+import { PRIMARY } from '@/utils/theme.js'
 import { ref, computed } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import { useUserStore } from '@/store/user.js'

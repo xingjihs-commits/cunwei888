@@ -60,7 +60,7 @@
         <view class="group-label">{{ g.label }}</view>
         <view v-for="item in g.items" :key="item.key" class="module-item">
           <text class="module-name">{{ item.name }}</text>
-          <uv-switch v-model="config.modules[g.key][item.key]" :activeValue="true" :inactiveValue="false" activeColor="#C41E24" />
+          <uv-switch v-model="config.modules[g.key][item.key]" :activeValue="true" :inactiveValue="false" :activeColor="PRIMARY" />
         </view>
       </view>
     </view>
@@ -73,6 +73,7 @@
 
 <script setup>
 import { useRootFontSize } from '@/composables/useA11y.js'
+import { PRIMARY } from '@/utils/theme.js'
 import { ref, reactive, onMounted } from 'vue'
 import { useConfigStore } from '@/store/config.js'
 import { callFunction } from '@/utils/request.js'

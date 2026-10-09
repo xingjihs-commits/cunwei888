@@ -25,6 +25,12 @@ jobs:
       - name: 单元测试
         run: npm test
 
+      - name: 项目地图校验
+        run: npm run map:check
+
+      - name: 样式规范检查
+        run: npm run style:check
+
       - name: 云函数语法检查
         run: |
           fail=0

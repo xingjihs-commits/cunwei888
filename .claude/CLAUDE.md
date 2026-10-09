@@ -5,7 +5,7 @@
 ## 项目概况
 - 技术栈：uni-app 3 + Vue 3（`<script setup>`）+ Pinia，目标 **微信小程序** + 微信云开发
 - 仓库：https://github.com/xingjihs-commits/cunwei888 （分支 `main`）
-- 规模：页面 70（路由 68，`vote` 2 页下线）/ 云函数 91 业务 + `common/` / 组件 17 / utils 9
+- 规模：页面 71（路由 69，`vote` 2 页下线）/ 云函数 93 业务 + `common/` / 组件 18 / utils 14
 
 ## 目录布局（重要）
 - **根目录布局**（HBuilderX 风格）：`manifest.json`、`pages.json`、`App.vue` 在**项目根**，**不是** `src/`。
@@ -17,6 +17,20 @@
 - Lint：`npm run lint`（eslint，目标 0 error / 0 warning）；格式化 `npm run format`
 - 文档漂移：`npm run gen:doc` 生成 `docs/00-代码结构清单.md`；`npm run check:doc` 校验一致
 - 三态体检：`node scripts/check-states.js`（列表页骨架/空态/错误态）
+- 项目地图：`npm run map:check` 校验 `PROJECT_MAP.md` 覆盖全（规则见 `.claude/rules/project-map.md`）
+
+## 全局把握（开局先做，防跑偏）
+- 开工先读根 `PROJECT_MAP.md`（分层职责 + 改什么看哪个文件）+ `PROJECT_INDEX.md`（文件 → 函数/导出 + 行号），建立全局观再动手。
+- 定位符号：先查索引拿「文件 + 行号」再精读，勿盲读整文件。
+- 维护：新增/删除/重命名文件或改路由后更新 `PROJECT_MAP.md` 并跑 `npm run map:check`（已接入 CI）；改代码后重跑 `node C:\Users\FF\.claude\skills\codebase-index\gen-index.js .` 刷新索引。
+- 详细规则：`.claude/rules/project-map.md`。
+
+## 分层与规范（企业标准，改前必读）
+- **分层**：视图(`pages/`) → 应用(`store/` `composables/`) → 接口(`utils/request.js`) → 云函数(`cloudfunctions/`) → 数据(云开发)。禁止跨层直连：视图**不得**直连数据库或 `wx.cloud.callFunction`（必须走 `request.js`）；store 不碰数据库。详见 `docs/28-架构分层说明.md`。
+- **UI**：间距/圆角/阴影/颜色/字号**只能用 `uni.scss` 变量**；卡片复用 `.card`、按钮 `.btn-primary`/`.btn-default`、页面容器 `.page-container`；正文 ≥32rpx、按钮 ≥88rpx、行高 ≥1.4。详见 `docs/31-UI布局规范.md`。
+- **命名**：页面 kebab-case、组件 PascalCase、云函数 camelCase、常量 UPPER_SNAKE、集合 snake_case、字段 camelCase。
+- **大小上限**：页面 ≤500 行、云函数 ≤150 行、组件 ≤200 行；超限即拆。
+- **返回格式/鉴权/错误处理**：见 `docs/28` §28.4/28.5/28.7。
 
 ## 项目红线
 - 不改业务逻辑（云函数核心不动）；不改颜色体系（中国红 `#C41E24`）；不改字号体系
@@ -41,6 +55,5 @@
 - **真机未验证**；`manifest.json` / `project.config.json` 的 AppID、云环境 ID 仍是占位符
 - `docs/` 部分文档是旧版本快照（12 写 v2.0、35 写 v1.4、11 说 29 文件）
 
-## 派工注意（踩过的坑）
-- `deepseek_delegate_to_deepseek` 可能 **MCP 超时但子代理仍在后台写入**。派工后要**观察文件时间戳直到稳定**再校验，避免与你的改动并发冲突。
+## 大改动注意（踩过的坑）
 - 大规模批量改（display_names/骨架屏）后，必须抽查 + `npm run build:mp-weixin` + `npm test` 验证。

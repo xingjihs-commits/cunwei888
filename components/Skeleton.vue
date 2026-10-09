@@ -93,7 +93,7 @@ defineProps({
 
 .sk-line {
   height: 32rpx;
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background: linear-gradient(90deg, $skeleton-bg 25%, $skeleton-shine 50%, $skeleton-bg 75%);
   background-size: 200% 100%;
   border-radius: $radius-sm;
   margin-bottom: 16rpx;
@@ -117,7 +117,7 @@ defineProps({
 .sk-image {
   width: 100%;
   height: 400rpx;
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background: linear-gradient(90deg, $skeleton-bg 25%, $skeleton-shine 50%, $skeleton-bg 75%);
   background-size: 200% 100%;
   border-radius: $radius-md;
   margin-top: 16rpx;
@@ -127,7 +127,7 @@ defineProps({
 .sk-banner {
   width: 100%;
   height: 360rpx;
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background: linear-gradient(90deg, $skeleton-bg 25%, $skeleton-shine 50%, $skeleton-bg 75%);
   background-size: 200% 100%;
   border-radius: $card-radius;
   margin-bottom: $card-gap;
@@ -155,7 +155,7 @@ defineProps({
   width: 80rpx;
   height: 80rpx;
   border-radius: $radius-full;
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background: linear-gradient(90deg, $skeleton-bg 25%, $skeleton-shine 50%, $skeleton-bg 75%);
   background-size: 200% 100%;
   margin-bottom: 12rpx;
   animation: shimmer 1.5s infinite;
@@ -176,7 +176,7 @@ defineProps({
 .no-anim {
   .sk-line, .sk-image, .sk-banner, .sk-grid-icon {
     animation: none;
-    background: #f0f0f0;
+    background: $skeleton-bg;
   }
 }
 </style>

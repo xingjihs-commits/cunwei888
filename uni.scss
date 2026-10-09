@@ -21,6 +21,10 @@ $text-sub: #757575;        // 辅助说明
 $text-weak: #9E9E9E;       // 占位、禁用（修复WCAG AA对比度）
 $border: #EEEEEE;          // 分割线
 
+/* 骨架屏（Skeleton 组件） */
+$skeleton-bg: #F0F0F0;     // 骨架屏底色
+$skeleton-shine: #E0E0E0;  // 骨架屏高光
+
 /* ===================== 功能色 ===================== */
 $success: #2E7D32;         // 已完成、通过
 $warning: #E65100;         // 超时、待处理

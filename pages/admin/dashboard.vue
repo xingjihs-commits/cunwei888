@@ -366,9 +366,9 @@ async function exportReport() {
       font-weight: bold;
       margin-right: 16rpx;
       
-      .rank-1 & { background: linear-gradient(135deg, #FFD700, #FFA500); }
-      .rank-2 & { background: linear-gradient(135deg, #C0C0C0, #A0A0A0); }
-      .rank-3 & { background: linear-gradient(135deg, #CD7F32, #8B4513); }
+      .rank-1 & { background: $medal-gold-bg; }
+      .rank-2 & { background: $medal-silver-bg; }
+      .rank-3 & { background: $medal-bronze-bg; }
     }
     
     .rank-info {

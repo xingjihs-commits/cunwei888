@@ -32,21 +32,21 @@
           <text class="setting-label">高对比度</text>
           <text class="setting-desc">加深文字颜色，背景更纯净</text>
         </view>
-        <switch :checked="highContrast" @change="onHighContrast" color="#C41E24" />
+        <switch :checked="highContrast" @change="onHighContrast" :color="PRIMARY" />
       </view>
       <view class="setting-row">
         <view class="setting-info">
           <text class="setting-label">减少动画</text>
           <text class="setting-desc">关闭页面切换/列表动画，提升性能</text>
         </view>
-        <switch :checked="reduceMotion" @change="onReduceMotion" color="#C41E24" />
+        <switch :checked="reduceMotion" @change="onReduceMotion" :color="PRIMARY" />
       </view>
       <view class="setting-row">
         <view class="setting-info">
           <text class="setting-label">大按钮模式</text>
           <text class="setting-desc">按钮高度增加 20%，更易点击</text>
         </view>
-        <switch :checked="largeButton" @change="onLargeButton" color="#C41E24" />
+        <switch :checked="largeButton" @change="onLargeButton" :color="PRIMARY" />
       </view>
     </view>
 
@@ -57,7 +57,7 @@
           <text class="setting-label">长按说话功能</text>
           <text class="setting-desc">在反映、信箱、发布等页面可用语音输入</text>
         </view>
-        <switch :checked="voiceEnabled" @change="onVoiceEnabled" color="#C41E24" />
+        <switch :checked="voiceEnabled" @change="onVoiceEnabled" :color="PRIMARY" />
       </view>
     </view>
 
@@ -76,6 +76,7 @@
 
 <script setup>
 import { useRootFontSize } from '@/composables/useA11y.js'
+import { PRIMARY } from '@/utils/theme.js'
 import { ref, computed, onMounted } from 'vue'
 import BigButton from '@/components/BigButton.vue'
 import { useConfigStore } from '@/store/config.js'

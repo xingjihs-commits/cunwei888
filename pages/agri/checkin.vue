@@ -106,7 +106,7 @@ async function doCheckin() {
 <style lang="scss" scoped>
 @import '@/uni.scss';
 .page-checkin { min-height: 100vh; background: $bg; padding-bottom: 200rpx;
-  .hero { background: linear-gradient(135deg, $gold, darken(#D4A843, 10%)); color: $white; text-align: center; padding: 60rpx $page-padding;
+  .hero { background: linear-gradient(135deg, $gold, darken($gold, 10%)); color: $white; text-align: center; padding: 60rpx $page-padding;
     .hero-icon { font-size: 100rpx; margin-bottom: 16rpx; }
     .hero-title { font-size: $font-title; font-weight: bold; display: block; }
     .hero-sub { font-size: $font-sub; opacity: 0.9; } }

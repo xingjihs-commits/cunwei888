@@ -76,7 +76,7 @@
       <view class="card-title">更新进度</view>
       <view class="form-group">
         <text class="form-label">进度百分比</text>
-        <slider :value="newProgress" :min="0" :max="100" :step="10" @change="onProgressChange" show-value activeColor="#C41E24" />
+        <slider :value="newProgress" :min="0" :max="100" :step="10" @change="onProgressChange" show-value :activeColor="PRIMARY" />
       </view>
       <view class="form-group">
         <text class="form-label">办理情况</text>
@@ -107,6 +107,7 @@
 
 <script setup>
 import { useRootFontSize } from '@/composables/useA11y.js'
+import { PRIMARY } from '@/utils/theme.js'
 import { ref, computed, onMounted } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import { callFunction, uploadImages, acquireLock, releaseLock, cleanupFileIDs } from '@/utils/request.js'
