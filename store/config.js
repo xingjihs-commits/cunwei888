@@ -295,6 +295,10 @@ function readConfigCache() {
         if (c.villagePhone) out.villagePhone = c.villagePhone
         if (c.icpNumber) out.icpNumber = c.icpNumber
         if (c.policeIcpNumber) out.policeIcpNumber = c.policeIcpNumber
+        if (c.office_hours) out.office_hours = c.office_hours
+        if (c.office_address) out.office_address = c.office_address
+        if (c.duty_phone) out.duty_phone = c.duty_phone
+        if (c.county_code) out.county_code = c.county_code
         if (c.displayNames) out.displayNames = c.displayNames
         if (c.modules) out.modules = c.modules
         if (c.feedbackTypes) out.feedbackTypes = c.feedbackTypes
@@ -314,6 +318,10 @@ export const useConfigStore = defineStore('config', {
     villagePhone: '',
     icpNumber: '',
     policeIcpNumber: '',
+    office_hours: '',
+    office_address: '',
+    duty_phone: '',
+    county_code: '',
 
     weather: { temp: 20, text: '晴' },
 
@@ -397,6 +405,10 @@ export const useConfigStore = defineStore('config', {
           if (res.data.villagePhone) this.villagePhone = res.data.villagePhone
           if (res.data.icpNumber) this.icpNumber = res.data.icpNumber
           if (res.data.policeIcpNumber) this.policeIcpNumber = res.data.policeIcpNumber
+          if (res.data.office_hours !== undefined) this.office_hours = res.data.office_hours
+          if (res.data.office_address !== undefined) this.office_address = res.data.office_address
+          if (res.data.duty_phone !== undefined) this.duty_phone = res.data.duty_phone
+          if (res.data.county_code !== undefined) this.county_code = res.data.county_code
           if (res.data.feedbackTypes) this.feedbackTypes = res.data.feedbackTypes
           if (res.data.snapshotTypes) this.snapshotTypes = res.data.snapshotTypes
           // 展示名称（深合并，未配置项保留默认）
@@ -442,6 +454,10 @@ export const useConfigStore = defineStore('config', {
             villagePhone: this.villagePhone,
             icpNumber: this.icpNumber,
             policeIcpNumber: this.policeIcpNumber,
+            office_hours: this.office_hours,
+            office_address: this.office_address,
+            duty_phone: this.duty_phone,
+            county_code: this.county_code,
             displayNames: this.displayNames,
             modules: this.modules,
             feedbackTypes: this.feedbackTypes,

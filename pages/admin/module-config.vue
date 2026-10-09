@@ -16,6 +16,22 @@
         <text class="form-label">值班电话</text>
         <input v-model="config.villagePhone" class="input" placeholder="0571-XXXXXXX" />
       </view>
+      <view class="form-group">
+        <text class="form-label">办公时间</text>
+        <input v-model="config.office_hours" class="input" placeholder="如：周一至周五 8:30-17:30" />
+      </view>
+      <view class="form-group">
+        <text class="form-label">办公地址</text>
+        <input v-model="config.office_address" class="input" placeholder="如：村委会一楼" />
+      </view>
+      <view class="form-group">
+        <text class="form-label">今日值班电话</text>
+        <input v-model="config.duty_phone" class="input" placeholder="值班人员电话" />
+      </view>
+      <view class="form-group">
+        <text class="form-label">县城气象代码</text>
+        <input v-model="config.county_code" class="input" placeholder="如：101010100（天气定位兜底）" />
+      </view>
     </view>
 
     <view class="card dispatch-entry" @click="goDispatchConfig">
@@ -70,6 +86,10 @@ const saving = ref(false)
 const config = reactive({
   villageName: '示范村',
   villagePhone: '',
+  office_hours: '',
+  office_address: '',
+  duty_phone: '',
+  county_code: '',
   phones: [],
   modules: {
     tab: { home: true, service: true, message: true, mine: true },
@@ -131,6 +151,10 @@ function buildModuleGroups() {
 function loadConfig() {
   config.villageName = configStore.villageName || '示范村'
   config.villagePhone = configStore.villagePhone || ''
+  config.office_hours = configStore.office_hours || ''
+  config.office_address = configStore.office_address || ''
+  config.duty_phone = configStore.duty_phone || ''
+  config.county_code = configStore.county_code || ''
   config.phones = JSON.parse(JSON.stringify(configStore.phones || []))
   if (configStore.modules) {
     config.modules = JSON.parse(JSON.stringify(configStore.modules))
@@ -147,12 +171,22 @@ async function onSave() {
     const res = await callFunction('updateModuleConfig', {
       villageName: config.villageName,
       villagePhone: config.villagePhone,
+      villageInfo: {
+        office_hours: config.office_hours,
+        office_address: config.office_address,
+        duty_phone: config.duty_phone,
+        county_code: config.county_code
+      },
       phones: config.phones,
       uiModules: config.modules
     })
     if (res.success) {
       configStore.villageName = config.villageName
       configStore.villagePhone = config.villagePhone
+      configStore.office_hours = config.office_hours
+      configStore.office_address = config.office_address
+      configStore.duty_phone = config.duty_phone
+      configStore.county_code = config.county_code
       configStore.phones = JSON.parse(JSON.stringify(config.phones))
       configStore.modules = JSON.parse(JSON.stringify(config.modules))
       uni.showToast({ title: '配置已保存', icon: 'success' })

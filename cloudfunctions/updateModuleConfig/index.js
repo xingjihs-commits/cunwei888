@@ -47,6 +47,10 @@ exports.main = async (event, context) => {
   if (villageInfo.icpNumber !== undefined) villageData.icpNumber = villageInfo.icpNumber
   if (villageInfo.policeIcpNumber !== undefined) villageData.policeIcpNumber = villageInfo.policeIcpNumber
   if (emergencyPhones.length > 0) villageData.emergencyPhones = emergencyPhones
+  if (villageInfo.office_hours !== undefined) villageData.office_hours = villageInfo.office_hours
+  if (villageInfo.office_address !== undefined) villageData.office_address = villageInfo.office_address
+  if (villageInfo.duty_phone !== undefined) villageData.duty_phone = villageInfo.duty_phone
+  if (villageInfo.county_code !== undefined) villageData.county_code = villageInfo.county_code
   if (Object.keys(villageData).length > 0) {
     try {
       const res = await cloud.callFunction({ name: 'updateVillageInfo', data: villageData })

@@ -16,8 +16,13 @@ exports.main = async (event, context) => {
   const isAdmin = await checkAdmin(OPENID)
   if (!isAdmin) return fail('FORBIDDEN')
 
-  const { villageName, villagePhone, icpNumber, policeIcpNumber, emergencyPhones } = event
-  if (!villageName && !villagePhone && !icpNumber && !policeIcpNumber && !emergencyPhones) {
+  const {
+    villageName, villagePhone, icpNumber, policeIcpNumber, emergencyPhones,
+    office_hours, office_address, duty_phone, county_code
+  } = event
+  if (!villageName && !villagePhone && !icpNumber && !policeIcpNumber && !emergencyPhones &&
+    office_hours === undefined && office_address === undefined &&
+    duty_phone === undefined && county_code === undefined) {
     return { success: false, message: '无更新字段' }
   }
 
@@ -34,6 +39,10 @@ exports.main = async (event, context) => {
   if (icpNumber !== undefined) configData.icpNumber = icpNumber
   if (policeIcpNumber !== undefined) configData.policeIcpNumber = policeIcpNumber
   if (emergencyPhones) configData.emergencyPhones = emergencyPhones
+  if (office_hours !== undefined) configData.office_hours = office_hours
+  if (office_address !== undefined) configData.office_address = office_address
+  if (duty_phone !== undefined) configData.duty_phone = duty_phone
+  if (county_code !== undefined) configData.county_code = county_code
 
   try {
     const existing = await db.collection('module_config').where({ moduleKey: 'village_info' }).get()

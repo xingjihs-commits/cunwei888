@@ -14,6 +14,10 @@ const INIT_DATA = {
         villagePhone: '0571-12345678',  // 上线前替换为村委真实值班电话
         icpNumber: '',                  // 上线前填写ICP备案号
         policeIcpNumber: '',           // 上线前填写公安备案号
+        office_hours: '周一至周五 8:30-17:30',  // 办公时间（村委"怎么联系"）
+        office_address: '村委会',                // 办公地址
+        duty_phone: '',                          // 今日值班电话
+        county_code: '',                         // 县城气象代码（天气定位兜底）
         emergencyPhones: [
           { name: '报警', number: '110', icon: '🚓' },
           { name: '急救', number: '120', icon: '🚑' },

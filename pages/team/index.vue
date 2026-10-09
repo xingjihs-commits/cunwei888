@@ -113,8 +113,8 @@ const defaultAvatar = '/static/images/default-avatar.png'
 const villageName = computed(() => configStore.villageName)
 const villagePhone = computed(() => configStore.villagePhone)
 
-const officeHours = '周一至周五 8:30-17:30'
-const officeAddress = '村委会'
+const officeHours = computed(() => configStore.office_hours || '周一至周五 8:30-17:30')
+const officeAddress = computed(() => configStore.office_address || '村委会')
 
 const promises = [
   '村民反映 24 小时内响应',
