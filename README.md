@@ -25,7 +25,7 @@
 | 组件 | 17 | `components/` 下 `.vue`（含 `home/`、`admin/` 子目录） |
 | 组合式函数 | 1 | `composables/useAdminGuard.js` |
 | Store | 2 | `store/user.js`、`store/config.js` |
-| Utils | 11 | `utils/request.js`、`format.js`、`validate.js`、`audio.js`、`display.js`、`module.js`、`formatText.js`、`auth.js`、`accessibility.js`、`errorUtils.js`、`lockKeys.js` |
+| Utils | 12 | `utils/request.js`、`format.js`、`validate.js`、`audio.js`、`display.js`、`module.js`、`formatText.js`、`auth.js`、`accessibility.js`、`errorUtils.js`、`lockKeys.js`、`nav.js` |
 | 文档 | 41 | `docs/` 下 `.md`（含 `01-合规文本/` 子目录 3 篇）；顶层 38 篇 |
 
 ## 项目结构
