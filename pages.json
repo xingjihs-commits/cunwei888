@@ -110,7 +110,7 @@
     {
       "path": "pages/team/index",
       "style": {
-        "navigationBarTitleText": "村委班子",
+        "navigationBarTitleText": "村委",
         "enablePullDownRefresh": true
       }
     },
