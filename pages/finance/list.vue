@@ -47,42 +47,29 @@ import { formatMoney } from '@/utils/format.js'
 import EmptyState from '@/components/EmptyState.vue'
 import Skeleton from '@/components/Skeleton.vue'
 import { useConfigStore } from '@/store/config.js'
+import { usePagination } from '@/composables/usePagination.js'
 
 const configStore = useConfigStore()
 function t(p, d = '') { return configStore.getDisplay(p, d) }
 
-const list = ref([])
-const loading = ref(false)
-const page = ref(1)
-const total = ref(0)
 const years = ['全部', '2024', '2023']
 const yearIndex = ref(0)
 
+const { list, total, loading, refresh, loadMore } = usePagination(
+  (params) => callFunction('getFinanceReports', {
+    ...params,
+    year: years[yearIndex.value] === '全部' ? '' : years[yearIndex.value]
+  }),
+  { pageSize: 20 }
+)
+
 onMounted(() => {
   uni.setNavigationBarTitle({ title: t('pageTitle.finance', '财务三资') })
-  loadData()
+  refresh()
 })
-onPullDownRefresh(() => { page.value = 1; loadData() })
+onPullDownRefresh(() => refresh())
 
-async function loadData() {
-  if (loading.value) return
-  loading.value = true
-  try {
-    const res = await callFunction('getFinanceReports', {
-      page: page.value, pageSize: 20,
-      year: years[yearIndex.value] === '全部' ? '' : years[yearIndex.value]
-    })
-    if (res.success) {
-      if (page.value === 1) list.value = res.data
-      else list.value = list.value.concat(res.data)
-      total.value = res.total
-    }
-  } catch (err) { console.error(err) }
-  finally { loading.value = false; uni.stopPullDownRefresh() }
-}
-
-function onYearChange(e) { yearIndex.value = e.detail.value; page.value = 1; loadData() }
-function loadMore() { if (list.value.length < total.value && !loading.value) { page.value++; loadData() } }
+function onYearChange(e) { yearIndex.value = e.detail.value; refresh() }
 function goDetail(item) { uni.navigateTo({ url: `/pages/finance/detail?financeId=${item._id}` }) }
 </script>
 

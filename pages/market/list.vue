@@ -49,44 +49,31 @@ import { relativeTime } from '@/utils/format.js'
 import EmptyState from '@/components/EmptyState.vue'
 import Skeleton from '@/components/Skeleton.vue'
 import { useConfigStore } from '@/store/config.js'
+import { usePagination } from '@/composables/usePagination.js'
 
 const configStore = useConfigStore()
 function t(p, d = '') { return configStore.getDisplay(p, d) }
 
-const list = ref([])
-const loading = ref(false)
 const keyword = ref('')
 const subscribedProducts = ref([])
 
+const { list, loading, refresh, loadMore } = usePagination(
+  (params) => callFunction('getMarketPrices', {
+    ...params,
+    productName: keyword.value
+  }),
+  { pageSize: 100 }
+)
+
 onMounted(() => {
   uni.setNavigationBarTitle({ title: t('pageTitle.market', '惠农信息') })
-  loadData()
+  refresh()
   loadSubscriptions()
 })
 onPullDownRefresh(() => {
-  loadData()
+  refresh()
   loadSubscriptions()
 })
-
-async function loadData() {
-  if (loading.value) return
-  loading.value = true
-  
-  try {
-    const res = await callFunction('getMarketPrices', {
-      productName: keyword.value
-    })
-    
-    if (res.success) {
-      list.value = res.data
-    }
-  } catch (err) {
-    console.error('加载失败:', err)
-  } finally {
-    loading.value = false
-    uni.stopPullDownRefresh()
-  }
-}
 
 async function loadSubscriptions() {
   // 从本地存储获取订阅状态
@@ -121,11 +108,7 @@ function trendText(trend) {
 }
 
 function onSearch() {
-  loadData()
-}
-
-function loadMore() {
-  // 价格列表一次性加载，不实现分页
+  refresh()
 }
 
 function goDetail(item) {

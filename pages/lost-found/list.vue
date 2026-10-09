@@ -19,7 +19,7 @@
         <text class="lf-title">{{ item.title }}</text>
         <text class="lf-content">{{ item.content }}</text>
         <view v-if="item.images && item.images.length" class="image-row">
-          <image v-for="(img, i) in item.images.slice(0, 3)" :key="i" class="lf-img" :src="img" mode="aspectFill" lazy-load />
+          <image v-for="img in item.images.slice(0, 3)" :key="img" class="lf-img" :src="img" mode="aspectFill" lazy-load />
         </view>
         <view v-if="item.location" class="lf-location">📍 {{ item.location }}</view>
       </view>
@@ -39,38 +39,25 @@ import { relativeTime } from '@/utils/format.js'
 import EmptyState from '@/components/EmptyState.vue'
 import Skeleton from '@/components/Skeleton.vue'
 import { useConfigStore } from '@/store/config.js'
+import { usePagination } from '@/composables/usePagination.js'
 
 const configStore = useConfigStore()
 function t(p, d = '') { return configStore.getDisplay(p, d) }
 
-const list = ref([])
-const loading = ref(false)
-const page = ref(1)
-const total = ref(0)
 const currentType = ref('')
+
+const { list, loading, refresh, loadMore } = usePagination(
+  (params) => callFunction('getLostFoundList', { ...params, subType: currentType.value }),
+  { pageSize: 20 }
+)
 
 onMounted(() => {
   uni.setNavigationBarTitle({ title: t('pageTitle.lostFound', '失物招领') })
-  loadData()
+  refresh()
 })
-onPullDownRefresh(() => { page.value = 1; loadData() })
+onPullDownRefresh(() => refresh())
 
-async function loadData() {
-  if (loading.value) return
-  loading.value = true
-  try {
-    const res = await callFunction('getLostFoundList', { page: page.value, pageSize: 20, subType: currentType.value })
-    if (res.success) {
-      if (page.value === 1) list.value = res.data
-      else list.value = list.value.concat(res.data)
-      total.value = res.total
-    }
-  } catch (err) { console.error(err) }
-  finally { loading.value = false; uni.stopPullDownRefresh() }
-}
-
-function switchType(type) { currentType.value = type; page.value = 1; loadData() }
-function loadMore() { if (list.value.length < total.value && !loading.value) { page.value++; loadData() } }
+function switchType(type) { currentType.value = type; refresh() }
 function goDetail(item) { uni.navigateTo({ url: `/pages/lost-found/detail?recordId=${item._id}` }) }
 function goPublish() { uni.navigateTo({ url: '/pages/lost-found/publish' }) }
 </script>
