@@ -48,14 +48,11 @@ import EmptyState from '@/components/EmptyState.vue'
 import Skeleton from '@/components/Skeleton.vue'
 import { ensureAuth, AUTH_LOGIN } from '@/utils/auth.js'
 import { useConfigStore } from '@/store/config.js'
+import { usePagination } from '@/composables/usePagination.js'
 
 const configStore = useConfigStore()
 function t(p, d = '') { return configStore.getDisplay(p, d) }
 
-const list = ref([])
-const loading = ref(false)
-const page = ref(1)
-const total = ref(0)
 const unreadCount = ref(0)
 const currentType = ref('')
 
@@ -69,33 +66,23 @@ const typeFilters = [
   { value: 'elderly_alert', label: '紧急' }
 ]
 
+const { list, loading, refresh, loadMore } = usePagination(
+  async (params) => {
+    const res = await callFunction('getMyMessages', { ...params, type: currentType.value })
+    if (res && res.success && typeof res.unreadCount === 'number') unreadCount.value = res.unreadCount
+    return res
+  },
+  { pageSize: 20 }
+)
+
 onMounted(() => {
   uni.setNavigationBarTitle({ title: t('pageTitle.message', '消息中心') })
-  if (ensureAuth(AUTH_LOGIN)) loadData()
+  if (ensureAuth(AUTH_LOGIN)) refresh()
 })
-onShow(() => { if (!ensureAuth(AUTH_LOGIN)) return; page.value = 1; loadData() })
-onPullDownRefresh(() => { page.value = 1; loadData() })
+onShow(() => { if (ensureAuth(AUTH_LOGIN)) refresh() })
+onPullDownRefresh(() => refresh())
 
-async function loadData() {
-  if (loading.value) return
-  loading.value = true
-  try {
-    const res = await callFunction('getMyMessages', {
-      page: page.value, pageSize: 20,
-      type: currentType.value
-    })
-    if (res.success) {
-      if (page.value === 1) list.value = res.data
-      else list.value = list.value.concat(res.data)
-      total.value = res.total
-      unreadCount.value = res.unreadCount
-    }
-  } catch (err) { console.error(err) }
-  finally { loading.value = false; uni.stopPullDownRefresh() }
-}
-
-function switchType(type) { currentType.value = type; page.value = 1; loadData() }
-function loadMore() { if (list.value.length < total.value && !loading.value) { page.value++; loadData() } }
+function switchType(type) { currentType.value = type; refresh() }
 
 function typeIcon(type) {
   const map = {
