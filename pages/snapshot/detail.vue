@@ -147,17 +147,23 @@ function goReport() {
 }
 
 async function toggleLike() {
+  // 乐观更新：先改 UI，失败回滚
+  const prevLiked = hasLiked.value
+  const prevCount = record.value.likeCount || 0
+  hasLiked.value = !prevLiked
+  record.value.likeCount = prevLiked ? Math.max(0, prevCount - 1) : prevCount + 1
   try {
     const res = await callFunction('likeSnapshot', { recordId: recordId.value })
     if (res.success) {
       hasLiked.value = res.liked
-      if (res.liked) {
-        record.value.likeCount = (record.value.likeCount || 0) + 1
-      } else {
-        record.value.likeCount = Math.max(0, (record.value.likeCount || 0) - 1)
-      }
+    } else {
+      throw new Error(res.message || '点赞失败')
     }
   } catch (err) {
+    // 回滚到操作前状态
+    hasLiked.value = prevLiked
+    record.value.likeCount = prevCount
+    uni.showToast({ title: '操作失败，请重试', icon: 'none' })
     console.error('[点赞失败]:', err)
   }
 }

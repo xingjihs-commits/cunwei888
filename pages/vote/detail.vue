@@ -126,24 +126,39 @@ async function submitVote() {
     return
   }
   
+  // 乐观更新：先改 UI，失败回滚
+  const prevKey = vote.value.myVote
+  const prevTotal = vote.value.totalVotes || 0
+  const opt = vote.value.options.find(o => o.key === selectedKey.value)
+  const prevCount = opt ? (opt.count || 0) : 0
+  const prevVoters = opt && opt.voters ? opt.voters.slice() : null
+  if (opt) {
+    opt.count = prevCount + 1
+    if (!opt.voters) opt.voters = []
+    opt.voters.push('self')
+  }
+  vote.value.totalVotes = prevTotal + 1
+  vote.value.myVote = selectedKey.value
+
   uni.showLoading({ title: '投票中...', mask: true })
   try {
     const res = await callFunction('submitVote', { voteId: voteId.value, optionKey: selectedKey.value })
     if (res.success) {
-      // 乐观更新：立即调整本地数据，避免 1.5s 等待
-      const opt = vote.value.options.find(o => o.key === selectedKey.value)
-      if (opt) {
-        opt.count = (opt.count || 0) + 1
-        if (!opt.voters) opt.voters = []
-        opt.voters.push('self')
-      }
-      vote.value.totalVotes = (vote.value.totalVotes || 0) + 1
-      vote.value.myVote = selectedKey.value
       uni.showToast({ title: '投票成功', icon: 'success' })
       // 0.5s 后台刷新拿最新数据
       setTimeout(() => loadData(), 500)
+    } else {
+      throw new Error(res.message || '投票失败')
     }
   } catch (err) {
+    // 回滚到操作前状态
+    if (opt) {
+      opt.count = prevCount
+      opt.voters = prevVoters || []
+    }
+    vote.value.totalVotes = prevTotal
+    vote.value.myVote = prevKey
+    uni.showToast({ title: '投票失败，请重试', icon: 'none' })
     console.error(err)
   } finally {
     releaseLock('submitVote')

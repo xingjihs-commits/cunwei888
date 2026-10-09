@@ -283,6 +283,30 @@ function mergeDeep(base, patch) {
   return out
 }
 
+// 读取本地配置缓存（冷启动秒开，避免默认值闪烁）
+function readConfigCache() {
+  try {
+    if (typeof uni !== 'undefined' && uni.getStorageSync) {
+      const c = uni.getStorageSync('vb_config_cache')
+      if (c && typeof c === 'object') {
+        const out = {}
+        if (c.villageName) out.villageName = c.villageName
+        if (c.villagePhone) out.villagePhone = c.villagePhone
+        if (c.icpNumber) out.icpNumber = c.icpNumber
+        if (c.policeIcpNumber) out.policeIcpNumber = c.policeIcpNumber
+        if (c.displayNames) out.displayNames = c.displayNames
+        if (c.modules) out.modules = c.modules
+        if (c.feedbackTypes) out.feedbackTypes = c.feedbackTypes
+        if (c.snapshotTypes) out.snapshotTypes = c.snapshotTypes
+        if (c.phones) out.phones = c.phones
+        if (c.subscribeTemplates) out.subscribeTemplates = c.subscribeTemplates
+        return out
+      }
+    }
+  } catch (e) {}
+  return {}
+}
+
 export const useConfigStore = defineStore('config', {
   state: () => ({
     villageName: '示范村',
@@ -338,7 +362,10 @@ export const useConfigStore = defineStore('config', {
       { key: 'task', name: '政策落实', icon: '📜', path: '/pages/task/list' },
       { key: 'team', name: '村委班子', icon: '👥', path: '/pages/team/index' },
       { key: 'mine', name: '办事大厅', icon: '🏛️', path: '/pages/mine/mine' }
-    ]
+    ],
+
+    // 本地缓存覆盖（含完整 displayNames/modules），避免冷启动闪烁
+    ...readConfigCache()
   }),
 
   getters: {
@@ -385,6 +412,8 @@ export const useConfigStore = defineStore('config', {
           if (res.data.subscribeTemplates) {
             this.subscribeTemplates = res.data.subscribeTemplates
           }
+          // 回写本地缓存，供下次冷启动秒开
+          this._saveConfigCache()
         }
       } catch (err) {
         console.error('[loadConfig] 加载失败，使用默认配置:', err)
@@ -399,6 +428,26 @@ export const useConfigStore = defineStore('config', {
         } catch (e) {}
         // #endif
       }
+    },
+
+    // 写入本地缓存（loadConfig 成功后调用）
+    _saveConfigCache() {
+      try {
+        if (typeof uni !== 'undefined' && uni.setStorageSync) {
+          uni.setStorageSync('vb_config_cache', {
+            villageName: this.villageName,
+            villagePhone: this.villagePhone,
+            icpNumber: this.icpNumber,
+            policeIcpNumber: this.policeIcpNumber,
+            displayNames: this.displayNames,
+            modules: this.modules,
+            feedbackTypes: this.feedbackTypes,
+            snapshotTypes: this.snapshotTypes,
+            phones: this.phones,
+            subscribeTemplates: this.subscribeTemplates
+          })
+        }
+      } catch (e) {}
     },
 
     // 名称读取（路径，如 'tab.home'）

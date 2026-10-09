@@ -116,18 +116,23 @@ function goReport() {
 }
 
 async function toggleLike() {
+  // 乐观更新：先改 UI，失败回滚
+  const prevLiked = hasLiked.value
+  const prevCount = news.value.likeCount || 0
+  hasLiked.value = !prevLiked
+  news.value.likeCount = prevLiked ? Math.max(0, prevCount - 1) : prevCount + 1
   try {
     const res = await callFunction('likeNews', { newsId: newsId.value })
     if (res.success) {
       hasLiked.value = res.liked
-      // 更新本地数据
-      if (res.liked) {
-        news.value.likeCount = (news.value.likeCount || 0) + 1
-      } else {
-        news.value.likeCount = Math.max(0, (news.value.likeCount || 0) - 1)
-      }
+    } else {
+      throw new Error(res.message || '点赞失败')
     }
   } catch (err) {
+    // 回滚到操作前状态
+    hasLiked.value = prevLiked
+    news.value.likeCount = prevCount
+    uni.showToast({ title: '操作失败，请重试', icon: 'none' })
     console.error('点赞失败:', err)
   }
 }

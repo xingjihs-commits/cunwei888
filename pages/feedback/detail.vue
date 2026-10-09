@@ -258,23 +258,34 @@ async function submitEval() {
     return
   }
   
+  // 乐观更新：先改 UI，失败回滚
+  const prevEvaluation = record.value.evaluation
+  const prevEvaluationText = record.value.evaluationText
+  const prevStatus = record.value.status
+  record.value.evaluation = evaluation.value
+  record.value.evaluationText = evaluationText.value
+  record.value.status = '已评价'
+
   try {
     const res = await callFunction('evaluateFeedback', {
       recordId: recordId.value,
       evaluation: evaluation.value,
       evaluationText: evaluationText.value
     })
-    
+
     if (res.success) {
       uni.showToast({ title: '评价成功', icon: 'success' })
-      // 乐观更新本地数据
-      record.value.evaluation = evaluation.value
-      record.value.evaluationText = evaluationText.value
-      record.value.status = '已评价'
       // 1s 后刷新拿最新数据
       setTimeout(() => loadData(), 1000)
+    } else {
+      throw new Error(res.message || '评价失败')
     }
   } catch (err) {
+    // 回滚到操作前状态
+    record.value.evaluation = prevEvaluation
+    record.value.evaluationText = prevEvaluationText
+    record.value.status = prevStatus
+    uni.showToast({ title: '评价失败，请重试', icon: 'none' })
     console.error('[评价失败]:', err)
   } finally {
     releaseLock('submit_eval')
