@@ -75,7 +75,7 @@ exports.main = async (event, context) => {
         note: note,
         createTime: now
       }
-    })
+    }).catch((e) => console.warn('[dispatchRecord] 日志写入失败:', e && e.errMsg))
 
     return { success: true, message: `已分配给${assigneeName}（${assigneeDuty || ''}）` }
   } catch (err) {

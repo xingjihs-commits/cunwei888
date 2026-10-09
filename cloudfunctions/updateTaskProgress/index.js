@@ -94,7 +94,7 @@ exports.main = async (event, context) => {
         operator: OPENID,
         createTime: now
       }
-    })
+    }).catch((e) => console.warn('[updateTaskProgress] 日志写入失败:', e && e.errMsg))
 
     return { success: true, message: '进度更新成功' }
   } catch (err) {

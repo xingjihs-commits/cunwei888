@@ -86,7 +86,7 @@ exports.main = async (event, context) => {
         operator: OPENID,
         createTime: now
       }
-    })
+    }).catch((e) => console.warn('[updateFeedbackStatus] 日志写入失败:', e && e.errMsg))
 
     // 通知提交者
     try {

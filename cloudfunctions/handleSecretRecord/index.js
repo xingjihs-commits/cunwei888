@@ -48,7 +48,7 @@ exports.main = async (event, context) => {
           operator: OPENID,
           createTime: now
         }
-      })
+      }).catch((e) => console.warn('[handleSecretRecord] 日志写入失败:', e && e.errMsg))
 
       return { success: true, message: '已标记为亲阅件' }
 
@@ -70,7 +70,7 @@ exports.main = async (event, context) => {
           operator: OPENID,
           createTime: now
         }
-      })
+      }).catch((e) => console.warn('[handleSecretRecord] 日志写入失败:', e && e.errMsg))
 
       return { success: true, message: '亲阅件已处理完成' }
 

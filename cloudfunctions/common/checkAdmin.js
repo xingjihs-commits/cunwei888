@@ -133,6 +133,21 @@ async function checkImageSecurity(fileID, ctx = {}) {
 }
 
 /**
+ * 图片批量内容安全检测（并行，避免多图串行导致云函数超时）
+ * @param {string[]} fileIDs 云存储 fileID 数组
+ * @param {object} ctx 附加上下文
+ * @returns {Promise<{ok: boolean, risky: string[]}>} ok=false 表示存在明确违规图片
+ */
+async function checkImagesSecurity(fileIDs, ctx = {}) {
+  if (!fileIDs || !fileIDs.length) return { ok: true, risky: [] }
+  const results = await Promise.all(
+    fileIDs.map((f) => checkImageSecurity(f, ctx).catch(() => 'review'))
+  )
+  const risky = fileIDs.filter((_, i) => results[i] === false)
+  return { ok: risky.length === 0, risky: risky }
+}
+
+/**
  * 内部方法：写入复审队列
  */
 async function _writeAuditQueue(content, openid, ctx, reason, fileID = '') {
@@ -168,6 +183,7 @@ exported.checkAdmin = checkAdmin
 exported.getAdminInfo = getAdminInfo
 exported.checkContentSecurity = checkContentSecurity
 exported.checkImageSecurity = checkImageSecurity
+exported.checkImagesSecurity = checkImagesSecurity
 
 module.exports = exported
 // 同时按对象方式导出，便于解构使用
@@ -175,3 +191,4 @@ module.exports.checkAdmin = checkAdmin
 module.exports.getAdminInfo = getAdminInfo
 module.exports.checkContentSecurity = checkContentSecurity
 module.exports.checkImageSecurity = checkImageSecurity
+module.exports.checkImagesSecurity = checkImagesSecurity

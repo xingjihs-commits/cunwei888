@@ -33,7 +33,7 @@ exports.main = async (event, context) => {
         reason: reason,
         reviewTime: now
       }
-    })
+    }).catch((e) => console.warn('[reviewContent] 复审记录写入失败:', e && e.errMsg))
 
     if (passed) {
       await db.collection('records').doc(recordId).update({
@@ -53,7 +53,7 @@ exports.main = async (event, context) => {
         operator: OPENID,
         createTime: now
       }
-    })
+    }).catch((e) => console.warn('[reviewContent] 日志写入失败:', e && e.errMsg))
 
     return { success: true, message: passed ? '复审通过' : '复审驳回' }
   } catch (err) {

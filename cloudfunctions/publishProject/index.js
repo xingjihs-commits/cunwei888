@@ -6,7 +6,7 @@ const cloud = require('wx-server-sdk')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
-const { checkAdmin, checkContentSecurity, checkImageSecurity } = require('../common/checkAdmin')
+const { checkAdmin, checkContentSecurity, checkImagesSecurity } = require('../common/checkAdmin')
 
 exports.main = async (event, context) => {
   const { OPENID } = cloud.getWXContext()
@@ -29,9 +29,9 @@ exports.main = async (event, context) => {
     if (textCheck === false) {
       return { success: false, message: '内容包含违规信息' }
     }
-    for (const fileID of images) {
-      const imgCheck = await checkImageSecurity(fileID, { collection: 'projects' })
-      if (imgCheck === false) {
+    if (images && images.length) {
+      const imgRes = await checkImagesSecurity(images, { collection: 'projects' })
+      if (!imgRes.ok) {
         return { success: false, message: '图片包含违规内容' }
       }
     }

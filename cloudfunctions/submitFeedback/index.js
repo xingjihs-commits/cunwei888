@@ -13,7 +13,7 @@ cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
 const { RECORD_STATUS, SUPERVISE_LEVEL, FEEDBACK_TYPES, SECRET_TYPES, DEADLINE_MAP } = require('../common/constants')
-const { checkContentSecurity, checkImageSecurity } = require('../common/checkAdmin')
+const { checkContentSecurity, checkImagesSecurity } = require('../common/checkAdmin')
 const { INTERNAL_TOKEN } = require('../common/internal')
 const { isBlocked } = require('../common/blocked')
 
@@ -60,13 +60,11 @@ exports.main = async (event, context) => {
     if (textCheck === false) {
       return { success: false, message: '内容包含违规信息，请修改后重试' }
     }
-    // 2. 图片内容安全检测
+    // 2. 图片内容安全检测（并行）
     if (images && images.length > 0) {
-      for (const fileID of images) {
-        const imgCheck = await checkImageSecurity(fileID, { collection: 'records' })
-        if (imgCheck === false) {
-          return { success: false, message: '图片包含违规内容，请删除后重试' }
-        }
+      const imgRes = await checkImagesSecurity(images, { collection: 'records' })
+      if (!imgRes.ok) {
+        return { success: false, message: '图片包含违规内容，请删除后重试' }
       }
     }
 

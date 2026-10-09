@@ -66,7 +66,7 @@ exports.main = async (event, context) => {
         operator: OPENID,
         createTime: now
       }
-    })
+    }).catch((e) => console.warn('[approveUser] 日志写入失败:', e && e.errMsg))
 
     return { success: true, message: approved ? '已通过认证' : '已驳回' }
   } catch (err) {

@@ -10,7 +10,7 @@ cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
 const { RECORD_STATUS, SUPERVISE_LEVEL } = require('../common/constants')
-const { checkContentSecurity, checkImageSecurity } = require('../common/checkAdmin')
+const { checkContentSecurity, checkImagesSecurity } = require('../common/checkAdmin')
 const { INTERNAL_TOKEN } = require('../common/internal')
 const { isBlocked } = require('../common/blocked')
 
@@ -56,10 +56,10 @@ exports.main = async (event, context) => {
       }
       if (textCheck === 'review') auditStatus = '待复审'
     }
-    // 2. 图片内容安全
-    for (const fileID of images) {
-      const imgCheck = await checkImageSecurity(fileID, { collection: 'records' })
-      if (imgCheck === false) {
+    // 2. 图片内容安全（并行检测）
+    if (images && images.length) {
+      const imgRes = await checkImagesSecurity(images, { collection: 'records' })
+      if (!imgRes.ok) {
         return { success: false, message: '图片包含违规内容' }
       }
     }
