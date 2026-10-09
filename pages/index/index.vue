@@ -120,12 +120,13 @@ const secretaryItem = ref(null)
 const leaderItem = ref(null)
 const weather = ref(null)
 const farming = ref('')
+const homeEmergency = ref(null)
 let lastLoadTime = 0
 let newsPage = 1
 let newsHasMore = true
 
 const villageName = computed(() => configStore.villageName)
-const emergency = computed(() => noticeList.value.find(n => n.category === '应急') || null)
+const emergency = computed(() => homeEmergency.value || noticeList.value.find(n => n.category === '应急') || null)
 const currentShowcase = computed(() => (careTab.value === 'secretary' ? secretaryItem.value : leaderItem.value))
 
 function t(path, def = '') {
@@ -163,6 +164,7 @@ async function loadData() {
       newsList.value = res.data.news || []
       noticeList.value = res.data.notices || []
       unreadCount.value = res.data.unreadCount || 0
+      homeEmergency.value = res.data.emergency || null
       if (res.data.villageInfo) {
         const v = res.data.villageInfo
         if (v.villageName) configStore.villageName = v.villageName

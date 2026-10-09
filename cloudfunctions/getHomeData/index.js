@@ -13,7 +13,7 @@ const EMPTY = { data: [] }
 exports.main = async (event, context) => {
   try {
     // 用 allSettled 思路：每个都 catch 兜底
-    const [newsRes, noticeRes, priceRes, teamRes, broadcastRes, unreadRes] = await Promise.all([
+    const [newsRes, noticeRes, priceRes, teamRes, broadcastRes, unreadRes, emergencyRes] = await Promise.all([
       db.collection('news')
         .orderBy('isTop', 'desc')
         .orderBy('createTime', 'desc')
@@ -45,7 +45,13 @@ exports.main = async (event, context) => {
         .catch(() => EMPTY),
       OPENID
         ? db.collection('messages').where({ targetOpenid: OPENID, isRead: false }).count().catch(() => ({ total: 0 }))
-        : Promise.resolve({ total: 0 })
+        : Promise.resolve({ total: 0 }),
+      db.collection('notices')
+        .where({ isEmergency: true })
+        .orderBy('createTime', 'desc')
+        .limit(1)
+        .get()
+        .catch(() => EMPTY)
     ])
 
     let villageInfo = { villageName: '示范村', villagePhone: '', icpNumber: '' }
@@ -69,6 +75,7 @@ exports.main = async (event, context) => {
         prices: priceRes.data,
         team: teamRes.data,
         latestBroadcast: (broadcastRes.data && broadcastRes.data[0]) || null,
+        emergency: (emergencyRes.data && emergencyRes.data[0]) || null,
         unreadCount: (unreadRes && unreadRes.total) || 0,
         phones: Array.isArray(villageInfo.emergencyPhones) ? villageInfo.emergencyPhones : []
       }

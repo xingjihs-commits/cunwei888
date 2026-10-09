@@ -18,6 +18,22 @@
           <text>经村务监督委员会审核</text>
         </view>
       </view>
+      <view class="form-group">
+        <view class="check-row" @click="form.isEmergency = !form.isEmergency">
+          <view class="check-box" :class="{ checked: form.isEmergency }">
+            <text v-if="form.isEmergency" class="check-icon">✓</text>
+          </view>
+          <text>设为应急通知（首页顶部横幅）</text>
+        </view>
+      </view>
+      <view class="form-group">
+        <view class="check-row" @click="form.isTop = !form.isTop">
+          <view class="check-box" :class="{ checked: form.isTop }">
+            <text v-if="form.isTop" class="check-icon">✓</text>
+          </view>
+          <text>置顶（列表优先显示）</text>
+        </view>
+      </view>
     </template>
 
     <template v-if="type === 'project'">

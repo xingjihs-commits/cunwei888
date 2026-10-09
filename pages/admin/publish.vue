@@ -106,6 +106,8 @@ function createForm() {
     // notice
     responsible: '',
     audited: false,
+    isEmergency: false,
+    isTop: false,
     // project
     totalAmount: '',
     beneficiaries: '',
@@ -225,6 +227,8 @@ async function onPublish() {
       data.category = noticeCategories[noticeCatIndex.value]
       data.responsible = form.responsible
       data.audited = form.audited
+      data.isEmergency = form.isEmergency
+      data.isTop = form.isTop
     } else if (currentType.value === 'project') {
       funcName = 'publishProject'
       data.totalAmount = parseFloat(form.totalAmount) || 0

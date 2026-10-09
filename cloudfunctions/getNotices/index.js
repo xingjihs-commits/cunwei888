@@ -22,6 +22,7 @@ exports.main = async (event, context) => {
     const query = db.collection('notices').where(where)
     const total = await query.count()
     const list = await query
+      .orderBy('isTop', 'desc')
       .orderBy('createTime', 'desc')
       .skip((page - 1) * pageSize)
       .limit(pageSize)

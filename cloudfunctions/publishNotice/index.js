@@ -11,7 +11,7 @@ const { checkAdmin, checkContentSecurity, checkImagesSecurity } = require('../co
 
 exports.main = async (event, context) => {
   const { OPENID } = cloud.getWXContext()
-  const { title, content, category, images = [], attachments = [], responsible = '', audited = false } = event
+  const { title, content, category, images = [], attachments = [], responsible = '', audited = false, isEmergency = false, isTop = false } = event
 
   const isAdmin = await checkAdmin(OPENID)
   if (!isAdmin) {
@@ -49,6 +49,8 @@ exports.main = async (event, context) => {
         attachments: attachments,
         responsible: responsible,
         audited: audited,
+        isEmergency: !!isEmergency,
+        isTop: !!isTop,
         year: year,
         viewCount: 0,
         auditStatus: textCheck === 'review' ? '待复审' : '',
