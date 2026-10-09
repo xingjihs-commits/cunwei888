@@ -82,7 +82,6 @@ function goMailbox() {
 </script>
 
 <style lang="scss" scoped>
-@import '@/uni.scss';
 .page-my-mails {
   min-height: 100vh; background: $bg;
   .list { height: 100vh; padding: $page-padding; box-sizing: border-box; }

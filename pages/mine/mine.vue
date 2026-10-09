@@ -234,7 +234,6 @@ function showAbout() {
 </script>
 
 <style lang="scss" scoped>
-@import '@/uni.scss';
 
 .page-mine {
   min-height: 100vh;

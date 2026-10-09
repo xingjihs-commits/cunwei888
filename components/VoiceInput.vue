@@ -97,7 +97,6 @@ onUnmounted(() => {
 </script>
 
 <style lang="scss" scoped>
-@import '@/uni.scss';
 
 .voice-input {
   .voice-btn {

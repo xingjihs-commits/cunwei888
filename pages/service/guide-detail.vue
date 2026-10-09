@@ -92,7 +92,6 @@ function callPhone() {
 </script>
 
 <style lang="scss" scoped>
-@import '@/uni.scss';
 .page-guide-detail {
   min-height: 100vh; background: $bg; padding: $page-padding;
   .header-card {

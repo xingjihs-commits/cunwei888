@@ -66,7 +66,6 @@ function goPublish() { uni.navigateTo({ url: '/pages/lost-found/publish' }) }
 </script>
 
 <style lang="scss" scoped>
-@import '@/uni.scss';
 .page-lf { min-height: 100vh; background: $bg;
   .filter-bar { display: flex; background: $white; padding: $space-md $page-padding; box-shadow: $card-shadow;
     .filter-item { flex: 1; text-align: center; padding: $space-md 0; font-size: $font-sub; color: $text-sub; border-radius: $radius-sm;

@@ -58,7 +58,6 @@ onLoad(async (q) => {
 </script>
 
 <style lang="scss" scoped>
-@import '@/uni.scss';
 
 .page-leader-detail {
   min-height: 100vh;

@@ -87,7 +87,6 @@ function onYearChange(e) {
 </script>
 
 <style lang="scss" scoped>
-@import '@/uni.scss';
 
 .page-project {
   min-height: 100vh;

@@ -93,7 +93,6 @@ function formatTime(t) {
 </script>
 
 <style lang="scss" scoped>
-@import '@/uni.scss';
 
 .timeline {
   padding: $card-padding 0;

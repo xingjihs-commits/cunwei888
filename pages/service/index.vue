@@ -147,7 +147,6 @@ function callPhone(number) {
 </script>
 
 <style lang="scss" scoped>
-@import '@/uni.scss';
 
 .page-service {
   min-height: 100vh;

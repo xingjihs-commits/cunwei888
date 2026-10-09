@@ -267,7 +267,6 @@ async function onSubmit() {
 </script>
 
 <style lang="scss" scoped>
-@import '@/uni.scss';
 
 .page-feedback {
   min-height: 100vh;

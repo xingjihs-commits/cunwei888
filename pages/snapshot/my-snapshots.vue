@@ -54,7 +54,6 @@ function goSnapshot() {
 </script>
 
 <style lang="scss" scoped>
-@import '@/uni.scss';
 
 .page-my-snapshots {
   min-height: 100vh;

@@ -121,7 +121,6 @@ function showAddDialog() {
 </script>
 
 <style lang="scss" scoped>
-@import '@/uni.scss';
 .page-responsible {
   min-height: 100vh;
   background: $bg;

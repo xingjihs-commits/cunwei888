@@ -118,9 +118,8 @@ async function loadData() {
 </script>
 
 <style lang="scss" scoped>
-@import '@/uni.scss';
 .page-finance-detail { min-height: 100vh; background: $bg; padding: $page-padding;
-  .header-card { background: linear-gradient(135deg, $gold, darken($gold, 10%)); color: $white; border-radius: $card-radius; padding: $card-padding; margin-bottom: $card-gap;
+  .header-card { background: linear-gradient(135deg, $gold, $gold-dark); color: $white; border-radius: $card-radius; padding: $card-padding; margin-bottom: $card-gap;
     .finance-title { font-size: $font-title; font-weight: bold; display: block; margin-bottom: 12rpx; line-height: 1.4; }
     .meta-row { display: flex; align-items: center; gap: 16rpx;
       .meta-period { padding: $space-xs $space-md; background: rgba(255,255,255,0.2); border-radius: $radius-sm; font-size: $font-micro; }

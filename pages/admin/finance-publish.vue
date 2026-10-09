@@ -136,7 +136,6 @@ async function onSubmit() {
 </script>
 
 <style lang="scss" scoped>
-@import '@/uni.scss';
 .page-finance { min-height: 100vh; background: $bg; padding: $page-padding; padding-bottom: 200rpx;
   .card { background: $white; border-radius: $card-radius; padding: $card-padding; box-shadow: $card-shadow; margin-bottom: $card-gap;
     .card-title { font-size: $font-card-title; font-weight: bold; color: $text-main; border-left: 8rpx solid $primary; padding-left: 16rpx; margin-bottom: 24rpx; }

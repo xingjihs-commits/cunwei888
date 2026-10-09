@@ -173,7 +173,6 @@ async function submitVote() {
 </script>
 
 <style lang="scss" scoped>
-@import '@/uni.scss';
 .page-vote-detail { min-height: 100vh; background: $bg; padding: $page-padding; padding-bottom: 200rpx;
   .status-banner { padding: $card-padding; border-radius: $card-radius; text-align: center; margin-bottom: $card-gap;
     &.s-open { background: rgba(46,125,50,0.1); }

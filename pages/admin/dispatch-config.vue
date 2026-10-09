@@ -154,7 +154,6 @@ async function onSave() {
 </script>
 
 <style lang="scss" scoped>
-@import '@/uni.scss';
 
 .page-dispatch-config {
   min-height: 100vh;

@@ -21,7 +21,6 @@ defineProps({
 </script>
 
 <style lang="scss" scoped>
-@import '@/uni.scss';
 
 .status-tag {
   display: inline-flex;

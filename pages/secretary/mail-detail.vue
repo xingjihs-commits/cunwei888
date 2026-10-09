@@ -69,7 +69,6 @@ function statusText(status) {
 </script>
 
 <style lang="scss" scoped>
-@import '@/uni.scss';
 .page-mail-detail {
   min-height: 100vh; background: $bg; padding: $page-padding;
   .card {

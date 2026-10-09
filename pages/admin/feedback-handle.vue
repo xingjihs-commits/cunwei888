@@ -263,7 +263,6 @@ async function onSubmit() {
 </script>
 
 <style lang="scss" scoped>
-@import '@/uni.scss';
 .page-handle {
   min-height: 100vh;
   background: $bg;

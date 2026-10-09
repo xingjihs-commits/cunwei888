@@ -98,7 +98,6 @@ function goCreate() {
 </script>
 
 <style lang="scss" scoped>
-@import '@/uni.scss';
 .page-meeting {
   min-height: 100vh; background: $bg;
   .filter-bar {

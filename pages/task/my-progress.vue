@@ -114,7 +114,6 @@ function goDetail(item) {
 </script>
 
 <style lang="scss" scoped>
-@import '@/uni.scss';
 
 .page-my-progress {
   min-height: 100vh;

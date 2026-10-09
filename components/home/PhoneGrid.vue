@@ -30,7 +30,6 @@ function t(p, d = '') { return configStore.getDisplay(p, d) }
 </script>
 
 <style lang="scss" scoped>
-@import '@/uni.scss';
 
 .phone-grid {
   display: grid;

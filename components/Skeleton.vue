@@ -77,7 +77,6 @@ defineProps({
 </script>
 
 <style lang="scss" scoped>
-@import '@/uni.scss';
 
 .skeleton-wrap {
   padding: $page-padding;

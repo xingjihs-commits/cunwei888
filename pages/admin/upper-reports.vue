@@ -120,7 +120,6 @@ async function onGenerate() {
 </script>
 
 <style lang="scss" scoped>
-@import '@/uni.scss';
 .page-reports { min-height: 100vh; background: $bg; padding: $page-padding;
   .header-card { background: linear-gradient(135deg, $primary, $primary-dark); color: $white; padding: $card-padding; border-radius: $card-radius; margin-bottom: $card-gap;
     .header-title { font-size: $font-title; font-weight: bold; display: block; margin-bottom: 8rpx; }

@@ -176,7 +176,6 @@ async function onBlock(item) {
 </script>
 
 <style lang="scss" scoped>
-@import '@/uni.scss';
 
 .page-auth-list {
   min-height: 100vh;

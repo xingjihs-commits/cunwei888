@@ -263,7 +263,6 @@ async function submitProgress() {
 </script>
 
 <style lang="scss" scoped>
-@import '@/uni.scss';
 
 .page-task-detail {
   min-height: 100vh;

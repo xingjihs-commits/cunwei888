@@ -63,7 +63,6 @@ function handleClick() {
 </script>
 
 <style lang="scss" scoped>
-@import '@/uni.scss';
 
 .big-btn {
   display: flex;

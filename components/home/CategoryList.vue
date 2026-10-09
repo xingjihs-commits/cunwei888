@@ -33,7 +33,6 @@ function t(p, d = '') { return configStore.getDisplay(p, d) }
 </script>
 
 <style lang="scss" scoped>
-@import '@/uni.scss';
 
 .cat-list {
   background: $white;

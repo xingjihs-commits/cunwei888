@@ -115,7 +115,6 @@ function goDetail(item) {
 </script>
 
 <style lang="scss" scoped>
-@import '@/uni.scss';
 
 .page-notice {
   min-height: 100vh;

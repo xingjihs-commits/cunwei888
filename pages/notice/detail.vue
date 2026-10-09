@@ -109,7 +109,6 @@ function goReport() {
 </script>
 
 <style lang="scss" scoped>
-@import '@/uni.scss';
 
 .page-notice-detail {
   min-height: 100vh;

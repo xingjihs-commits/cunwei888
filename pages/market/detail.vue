@@ -78,7 +78,6 @@ async function loadData() {
 </script>
 
 <style lang="scss" scoped>
-@import '@/uni.scss';
 
 .page-market-detail {
   min-height: 100vh;

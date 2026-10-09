@@ -107,7 +107,6 @@ defineProps({
 </script>
 
 <style lang="scss" scoped>
-@import '@/uni.scss';
 
 .extra-fields {
   .form-group {

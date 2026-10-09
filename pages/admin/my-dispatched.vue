@@ -121,7 +121,6 @@ function goDetail(id) {
 </script>
 
 <style lang="scss" scoped>
-@import '@/uni.scss';
 .page-dispatched { min-height: 100vh; background: $bg;
   .status-tabs { display: flex; background: $white; padding: $space-xs; box-shadow: $card-shadow; overflow-x: auto; white-space: nowrap;
     .tab { padding: $space-md $space-lg; font-size: $font-sub; color: $text-sub; flex-shrink: 0;

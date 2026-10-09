@@ -75,7 +75,6 @@ function callPhone() {
 </script>
 
 <style lang="scss" scoped>
-@import '@/uni.scss';
 
 .page-member-detail {
   min-height: 100vh;

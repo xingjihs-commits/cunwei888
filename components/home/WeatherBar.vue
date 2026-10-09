@@ -50,7 +50,6 @@ const farmingText = computed(() => (props.farming ? `今日宜${props.farming}` 
 </script>
 
 <style lang="scss" scoped>
-@import '@/uni.scss';
 
 .weather-bar {
   display: flex;

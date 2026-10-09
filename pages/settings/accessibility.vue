@@ -130,7 +130,6 @@ function onSave() {
 </script>
 
 <style lang="scss" scoped>
-@import '@/uni.scss';
 
 .page-settings {
   min-height: 100vh;

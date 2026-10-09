@@ -139,7 +139,6 @@ function goPrivacy() { uni.navigateTo({ url: '/pages/privacy/index' }) }
 </script>
 
 <style lang="scss" scoped>
-@import '@/uni.scss';
 
 .page-verify {
   min-height: 100vh;

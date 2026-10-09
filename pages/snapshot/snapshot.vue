@@ -283,7 +283,6 @@ async function onSubmit() {
 </script>
 
 <style lang="scss" scoped>
-@import '@/uni.scss';
 
 .page-snapshot {
   min-height: 100vh;

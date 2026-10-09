@@ -70,7 +70,6 @@ function goSnapshot() {
 </script>
 
 <style lang="scss" scoped>
-@import '@/uni.scss';
 
 .page-wall {
   min-height: 100vh;

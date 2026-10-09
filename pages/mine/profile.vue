@@ -106,7 +106,6 @@ function clearCache() {
 </script>
 
 <style lang="scss" scoped>
-@import '@/uni.scss';
 
 .page-profile {
   min-height: 100vh;

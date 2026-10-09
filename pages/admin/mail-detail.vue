@@ -118,7 +118,6 @@ async function onReply() {
 </script>
 
 <style lang="scss" scoped>
-@import '@/uni.scss';
 .page-mail-detail { min-height: 100vh; background: $bg; padding: $page-padding; padding-bottom: 200rpx;
   .card { background: $white; border-radius: $card-radius; padding: $card-padding; box-shadow: $card-shadow; margin-bottom: $card-gap;
     .subject { font-size: $font-title; font-weight: bold; color: $text-main; display: block; margin-bottom: 16rpx; line-height: 1.4; }

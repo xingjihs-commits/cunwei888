@@ -136,7 +136,6 @@ async function onHandle(item, passed) {
 </script>
 
 <style lang="scss" scoped>
-@import '@/uni.scss';
 .page-audit { min-height: 100vh; background: $bg; padding: $page-padding;
   .notice { display: flex; align-items: flex-start; background: rgba(230,81,0,0.08); border-left: 6rpx solid $warning; padding: $card-padding; border-radius: $radius-sm; margin-bottom: $card-gap;
     .notice-icon { font-size: $font-body; margin-right: 12rpx; }

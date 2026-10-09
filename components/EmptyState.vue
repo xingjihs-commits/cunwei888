@@ -26,7 +26,6 @@ defineEmits(['action'])
 </script>
 
 <style lang="scss" scoped>
-@import '@/uni.scss';
 
 .empty-state {
   display: flex;

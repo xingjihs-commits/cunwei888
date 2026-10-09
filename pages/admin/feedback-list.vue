@@ -226,7 +226,6 @@ async function markSecret(item) {
 </script>
 
 <style lang="scss" scoped>
-@import '@/uni.scss';
 
 .page-admin-feedback {
   min-height: 100vh;

@@ -81,7 +81,6 @@ function goFeedback() {
 </script>
 
 <style lang="scss" scoped>
-@import '@/uni.scss';
 
 .page-my-feedback {
   min-height: 100vh;

@@ -146,7 +146,6 @@ function previewImage(i) {
 </script>
 
 <style lang="scss" scoped>
-@import '@/uni.scss';
 
 .page-news-detail {
   min-height: 100vh;

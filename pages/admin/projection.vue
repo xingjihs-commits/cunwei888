@@ -175,7 +175,6 @@ function toggleAuto() {
 </script>
 
 <style lang="scss" scoped>
-@import '@/uni.scss';
 .page-projection {
   min-height: 100vh;
   background: $white;

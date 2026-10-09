@@ -133,7 +133,6 @@ async function goDetail(msg) {
 </script>
 
 <style lang="scss" scoped>
-@import '@/uni.scss';
 .page-message { min-height: 100vh; background: $bg;
   .header-bar { display: flex; align-items: center; justify-content: space-between; padding: $space-md $page-padding; background: $white; box-shadow: $card-shadow;
     .unread-info { display: flex; align-items: baseline;

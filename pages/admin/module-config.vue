@@ -204,7 +204,6 @@ async function onSave() {
 </script>
 
 <style lang="scss" scoped>
-@import '@/uni.scss';
 
 .page-module-config {
   min-height: 100vh;

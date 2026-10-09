@@ -101,7 +101,6 @@ function go(r) {
 </script>
 
 <style lang="scss" scoped>
-@import '@/uni.scss';
 
 .page-search {
   min-height: 100vh;

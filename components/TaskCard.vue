@@ -56,7 +56,6 @@ function onTap() {
 </script>
 
 <style lang="scss" scoped>
-@import '@/uni.scss';
 
 .task-card {
   background-color: $white;

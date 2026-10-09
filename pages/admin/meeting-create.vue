@@ -133,7 +133,6 @@ async function onSubmit() {
 </script>
 
 <style lang="scss" scoped>
-@import '@/uni.scss';
 .page-meeting-create { min-height: 100vh; background: $bg; padding: $page-padding; padding-bottom: 200rpx;
   .card { background: $white; border-radius: $card-radius; padding: $card-padding; box-shadow: $card-shadow;
     .form-group { margin-bottom: 32rpx;

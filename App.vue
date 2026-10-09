@@ -157,7 +157,6 @@ onPageNotFound(() => {
 
 <style lang="scss">
 /* 全局样式 - 引入uni.scss变量 */
-@import '@/uni.scss';
 
 /* 基础重置 */
 page {

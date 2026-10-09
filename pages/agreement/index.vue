@@ -64,7 +64,6 @@ const villagePhone = computed(() => configStore.villagePhone)
 </script>
 
 <style lang="scss" scoped>
-@import '@/uni.scss';
 
 .page-agreement {
   min-height: 100vh;

@@ -267,7 +267,6 @@ async function loadMore() {
 </script>
 
 <style lang="scss" scoped>
-@import '@/uni.scss';
 
 .page-home {
   min-height: 100vh;

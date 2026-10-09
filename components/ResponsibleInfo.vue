@@ -47,7 +47,6 @@ function onCall() {
 </script>
 
 <style lang="scss" scoped>
-@import '@/uni.scss';
 
 .responsible-info {
   display: flex;

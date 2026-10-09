@@ -174,7 +174,6 @@ async function onDispatch() {
 </script>
 
 <style lang="scss" scoped>
-@import '@/uni.scss';
 .page-dispatch {
   min-height: 100vh;
   background: $bg;

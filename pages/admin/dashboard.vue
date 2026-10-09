@@ -244,7 +244,6 @@ async function exportReport() {
 </script>
 
 <style lang="scss" scoped>
-@import '@/uni.scss';
 
 .page-dashboard {
   min-height: 100vh;

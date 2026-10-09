@@ -77,7 +77,6 @@ function goDetail(item) { uni.navigateTo({ url: `/pages/finance/detail?financeId
 </script>
 
 <style lang="scss" scoped>
-@import '@/uni.scss';
 .page-finance { min-height: 100vh; background: $bg;
   .year-bar { display: flex; align-items: center; justify-content: space-between; padding: $space-md $page-padding;
     .year-picker { padding: $space-xs 24rpx; background: $white; border-radius: $radius-sm; font-size: $font-sub; color: $primary; }

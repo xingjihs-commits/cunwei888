@@ -175,7 +175,6 @@ function callVillage() {
 </script>
 
 <style lang="scss" scoped>
-@import '@/uni.scss';
 
 .page-team {
   min-height: 100vh;

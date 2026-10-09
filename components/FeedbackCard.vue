@@ -61,7 +61,6 @@ function onTap() {
 </script>
 
 <style lang="scss" scoped>
-@import '@/uni.scss';
 
 .feedback-card {
   background-color: $white;

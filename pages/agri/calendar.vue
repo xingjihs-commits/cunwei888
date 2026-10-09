@@ -69,9 +69,8 @@ function changeMonth(delta) {
 </script>
 
 <style lang="scss" scoped>
-@import '@/uni.scss';
 .page-agri { min-height: 100vh; background: $bg;
-  .month-bar { display: flex; align-items: center; justify-content: space-between; padding: $card-padding $page-padding; background: linear-gradient(135deg, $success, darken($success, 10%)); color: $white;
+  .month-bar { display: flex; align-items: center; justify-content: space-between; padding: $card-padding $page-padding; background: linear-gradient(135deg, $success, $success-dark); color: $white;
     .month-btn { font-size: 60rpx; padding: 0 $space-xl; }
     .month-text { font-size: $font-title; font-weight: bold; } }
   .list { height: calc(100vh - 120rpx); padding: $page-padding; box-sizing: border-box; }

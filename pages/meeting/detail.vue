@@ -126,7 +126,6 @@ function goReport() {
 </script>
 
 <style lang="scss" scoped>
-@import '@/uni.scss';
 .page-meeting-detail {
   min-height: 100vh; background: $bg; padding: $page-padding;
   .status-banner {

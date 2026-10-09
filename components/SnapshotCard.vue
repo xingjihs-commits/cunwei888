@@ -63,7 +63,6 @@ function onTap() {
 </script>
 
 <style lang="scss" scoped>
-@import '@/uni.scss';
 
 .snapshot-card {
   background-color: $white;

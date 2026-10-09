@@ -74,7 +74,6 @@ function goCreate() { uni.navigateTo({ url: '/pages/vote/create' }) }
 </script>
 
 <style lang="scss" scoped>
-@import '@/uni.scss';
 .page-vote {
   min-height: 100vh; background: $bg;
   .filter-bar { display: flex; background: $white; padding: $space-md $page-padding; box-shadow: $card-shadow; }

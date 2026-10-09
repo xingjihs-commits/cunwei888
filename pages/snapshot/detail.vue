@@ -173,7 +173,6 @@ async function toggleLike() {
 </script>
 
 <style lang="scss" scoped>
-@import '@/uni.scss';
 
 .page-detail {
   min-height: 100vh;

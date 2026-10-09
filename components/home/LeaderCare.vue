@@ -55,7 +55,6 @@ const isVideo = computed(() => !!(props.item && props.item.type === 'video'))
 </script>
 
 <style lang="scss" scoped>
-@import '@/uni.scss';
 
 .showcase {
   background: $white;

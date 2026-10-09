@@ -266,7 +266,6 @@ async function onPublish() {
 </script>
 
 <style lang="scss" scoped>
-@import '@/uni.scss';
 
 .page-publish {
   min-height: 100vh;

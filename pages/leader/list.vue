@@ -69,7 +69,6 @@ function goDetail(item) {
 </script>
 
 <style lang="scss" scoped>
-@import '@/uni.scss';
 
 .page-leader {
   min-height: 100vh;

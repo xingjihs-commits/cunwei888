@@ -88,7 +88,6 @@ function go(path) {
 </script>
 
 <style lang="scss" scoped>
-@import '@/uni.scss';
 
 .page-more {
   min-height: 100vh;

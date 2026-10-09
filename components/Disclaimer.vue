@@ -25,7 +25,6 @@ defineProps({
 </script>
 
 <style lang="scss" scoped>
-@import '@/uni.scss';
 
 .disclaimer {
   margin: $card-gap 0;
