@@ -13,6 +13,7 @@ export default defineConfig({
       include: [
         'cloudfunctions/common/constants.js',
         'cloudfunctions/common/db.js',
+        'cloudfunctions/common/securityLogic.js',
         'utils/format.js'
       ]
     }

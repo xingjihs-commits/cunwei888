@@ -153,42 +153,6 @@
       }
     },
     {
-      "path": "pages/admin/feedback-list",
-      "style": {
-        "navigationBarTitleText": "工单管理"
-      }
-    },
-    {
-      "path": "pages/admin/feedback-handle",
-      "style": {
-        "navigationBarTitleText": "工单处理"
-      }
-    },
-    {
-      "path": "pages/admin/publish",
-      "style": {
-        "navigationBarTitleText": "内容发布"
-      }
-    },
-    {
-      "path": "pages/admin/dashboard",
-      "style": {
-        "navigationBarTitleText": "考核看板"
-      }
-    },
-    {
-      "path": "pages/admin/responsible",
-      "style": {
-        "navigationBarTitleText": "责任人管理"
-      }
-    },
-    {
-      "path": "pages/admin/module-config",
-      "style": {
-        "navigationBarTitleText": "模块配置"
-      }
-    },
-    {
       "path": "pages/agreement/index",
       "style": {
         "navigationBarTitleText": "服务协议"
@@ -322,85 +286,6 @@
       }
     },
     {
-      "path": "pages/admin/dispatch",
-      "style": {
-        "navigationBarTitleText": "分配工单"
-      }
-    },
-    {
-      "path": "pages/admin/projection",
-      "style": {
-        "navigationBarTitleText": "投屏模式",
-        "navigationStyle": "custom"
-      }
-    },
-    {
-      "path": "pages/admin/dispatch-config",
-      "style": {
-        "navigationBarTitleText": "分配地图配置"
-      }
-    },
-    {
-      "path": "pages/admin/secret-list",
-      "style": {
-        "navigationBarTitleText": "亲阅件"
-      }
-    },
-    {
-      "path": "pages/admin/auth-list",
-      "style": {
-        "navigationBarTitleText": "认证审核"
-      }
-    },
-    {
-      "path": "pages/admin/vote-create",
-      "style": {
-        "navigationBarTitleText": "发起表决"
-      }
-    },
-    {
-      "path": "pages/admin/meeting-create",
-      "style": {
-        "navigationBarTitleText": "创建会议"
-      }
-    },
-    {
-      "path": "pages/admin/secretary-mails",
-      "style": {
-        "navigationBarTitleText": "书记信箱管理"
-      }
-    },
-    {
-      "path": "pages/admin/mail-detail",
-      "style": {
-        "navigationBarTitleText": "信件详情"
-      }
-    },
-    {
-      "path": "pages/admin/upper-reports",
-      "style": {
-        "navigationBarTitleText": "对上汇报"
-      }
-    },
-    {
-      "path": "pages/admin/audit-queue",
-      "style": {
-        "navigationBarTitleText": "人工复审"
-      }
-    },
-    {
-      "path": "pages/admin/finance-publish",
-      "style": {
-        "navigationBarTitleText": "财务公示"
-      }
-    },
-    {
-      "path": "pages/admin/my-dispatched",
-      "style": {
-        "navigationBarTitleText": "我的派单"
-      }
-    },
-    {
       "path": "pages/leader/list",
       "style": {
         "navigationBarTitleText": "书记风采",
@@ -414,22 +299,38 @@
       }
     },
     {
-      "path": "pages/admin/name-config",
-      "style": {
-        "navigationBarTitleText": "名称配置"
-      }
-    },
-    {
-      "path": "pages/admin/leader-publish",
-      "style": {
-        "navigationBarTitleText": "书记风采发布"
-      }
-    },
-    {
       "path": "pages/settings/accessibility",
       "style": {
         "navigationBarTitleText": "适老化设置"
       }
+    }
+  ],
+  "subPackages": [
+    {
+      "root": "pages/admin",
+      "pages": [
+        { "path": "feedback-list", "style": { "navigationBarTitleText": "工单管理" } },
+        { "path": "feedback-handle", "style": { "navigationBarTitleText": "工单处理" } },
+        { "path": "publish", "style": { "navigationBarTitleText": "内容发布" } },
+        { "path": "dashboard", "style": { "navigationBarTitleText": "考核看板" } },
+        { "path": "responsible", "style": { "navigationBarTitleText": "责任人管理" } },
+        { "path": "module-config", "style": { "navigationBarTitleText": "模块配置" } },
+        { "path": "dispatch", "style": { "navigationBarTitleText": "分配工单" } },
+        { "path": "projection", "style": { "navigationBarTitleText": "投屏模式", "navigationStyle": "custom" } },
+        { "path": "dispatch-config", "style": { "navigationBarTitleText": "分配地图配置" } },
+        { "path": "secret-list", "style": { "navigationBarTitleText": "亲阅件" } },
+        { "path": "auth-list", "style": { "navigationBarTitleText": "认证审核" } },
+        { "path": "vote-create", "style": { "navigationBarTitleText": "发起表决" } },
+        { "path": "meeting-create", "style": { "navigationBarTitleText": "创建会议" } },
+        { "path": "secretary-mails", "style": { "navigationBarTitleText": "书记信箱管理" } },
+        { "path": "mail-detail", "style": { "navigationBarTitleText": "信件详情" } },
+        { "path": "upper-reports", "style": { "navigationBarTitleText": "对上汇报" } },
+        { "path": "audit-queue", "style": { "navigationBarTitleText": "人工复审" } },
+        { "path": "finance-publish", "style": { "navigationBarTitleText": "财务公示" } },
+        { "path": "my-dispatched", "style": { "navigationBarTitleText": "我的派单" } },
+        { "path": "name-config", "style": { "navigationBarTitleText": "名称配置" } },
+        { "path": "leader-publish", "style": { "navigationBarTitleText": "书记风采发布" } }
+      ]
     }
   ],
   "globalStyle": {

@@ -7,10 +7,11 @@ const cloud = require('wx-server-sdk')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
-const { stripOpenid } = require('../common/listUtils')
+const { safePaging, stripOpenid } = require('../common/listUtils')
 
 exports.main = async (event, context) => {
   const { productName = '' } = event
+  const { page, pageSize } = safePaging(event, 100)
 
   try {
     const conditions = [{ expired: false }]
@@ -22,7 +23,8 @@ exports.main = async (event, context) => {
     const res = await db.collection('market_prices')
       .where(where)
       .orderBy('createTime', 'desc')
-      .limit(100)
+      .skip((page - 1) * pageSize)
+      .limit(pageSize)
       .get()
 
     return { success: true, data: stripOpenid(res.data) }

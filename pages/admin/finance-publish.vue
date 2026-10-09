@@ -17,47 +17,47 @@
 
     <view class="card">
       <view class="card-title">{{ t('financePublish.incomes', '收入项') }}</view>
-      <view v-for="(item, i) in form.incomes" :key="i" class="item-row">
+      <view v-for="(item, i) in form.incomes" :key="item._k" class="item-row">
         <input v-model="item.category" class="input" :placeholder="t('placeholder.category', '分类')" />
         <input v-model="item.item" class="input" :placeholder="t('placeholder.item', '项目')" />
         <input v-model="item.amount" class="input amount" type="digit" :placeholder="t('placeholder.amount', '金额')" />
         <view class="del-btn" @click="form.incomes.splice(i, 1)">×</view>
       </view>
-      <view class="add-btn" @click="form.incomes.push({category:'', item:'', amount:0, remark:''})">+ {{ t('financePublish.addIncome', '添加收入') }}</view>
+      <view class="add-btn" @click="form.incomes.push({category:'', item:'', amount:0, remark:'', _k: uid()})">+ {{ t('financePublish.addIncome', '添加收入') }}</view>
       <view class="summary">{{ t('financePublish.totalLabel', '合计') }}：{{ sumAmount(form.incomes) }} {{ t('financePublish.yuan', '元') }}</view>
     </view>
 
     <view class="card">
       <view class="card-title">{{ t('financePublish.expenses', '支出项') }}</view>
-      <view v-for="(item, i) in form.expenses" :key="i" class="item-row">
+      <view v-for="(item, i) in form.expenses" :key="item._k" class="item-row">
         <input v-model="item.category" class="input" :placeholder="t('placeholder.category', '分类')" />
         <input v-model="item.item" class="input" :placeholder="t('placeholder.item', '项目')" />
         <input v-model="item.amount" class="input amount" type="digit" :placeholder="t('placeholder.amount', '金额')" />
         <view class="del-btn" @click="form.expenses.splice(i, 1)">×</view>
       </view>
-      <view class="add-btn" @click="form.expenses.push({category:'', item:'', amount:0, remark:''})">+ {{ t('financePublish.addExpense', '添加支出') }}</view>
+      <view class="add-btn" @click="form.expenses.push({category:'', item:'', amount:0, remark:'', _k: uid()})">+ {{ t('financePublish.addExpense', '添加支出') }}</view>
       <view class="summary">{{ t('financePublish.totalLabel', '合计') }}：{{ sumAmount(form.expenses) }} {{ t('financePublish.yuan', '元') }}</view>
     </view>
 
     <view class="card">
       <view class="card-title">{{ t('financePublish.assets', '资产') }}</view>
-      <view v-for="(item, i) in form.assets" :key="i" class="item-row">
+      <view v-for="(item, i) in form.assets" :key="item._k" class="item-row">
         <input v-model="item.category" class="input" :placeholder="t('placeholder.category', '分类')" />
         <input v-model="item.item" class="input" :placeholder="t('placeholder.item', '项目')" />
         <input v-model="item.amount" class="input amount" type="digit" :placeholder="t('placeholder.amount', '金额')" />
         <view class="del-btn" @click="form.assets.splice(i, 1)">×</view>
       </view>
-      <view class="add-btn" @click="form.assets.push({category:'', item:'', amount:0, remark:''})">+ {{ t('financePublish.addAsset', '添加资产') }}</view>
+      <view class="add-btn" @click="form.assets.push({category:'', item:'', amount:0, remark:'', _k: uid()})">+ {{ t('financePublish.addAsset', '添加资产') }}</view>
     </view>
 
     <view class="card">
       <view class="card-title">{{ t('financePublish.resources', '资源') }}</view>
-      <view v-for="(item, i) in form.resources" :key="i" class="item-row">
+      <view v-for="(item, i) in form.resources" :key="item._k" class="item-row">
         <input v-model="item.category" class="input" :placeholder="t('placeholder.category', '分类')" />
         <input v-model="item.item" class="input" :placeholder="t('placeholder.item', '项目')" />
         <view class="del-btn placeholder" @click="form.resources.splice(i, 1)">×</view>
       </view>
-      <view class="add-btn" @click="form.resources.push({category:'', item:'', remark:''})">+ {{ t('financePublish.addResource', '添加资源') }}</view>
+      <view class="add-btn" @click="form.resources.push({category:'', item:'', remark:'', _k: uid()})">+ {{ t('financePublish.addResource', '添加资源') }}</view>
     </view>
 
     <view class="card">
@@ -85,13 +85,15 @@ import { useConfigStore } from '@/store/config.js'
 const configStore = useConfigStore()
 function t(p, d = '') { return configStore.getDisplay(p, d) }
 
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 8) }
+
 const form = reactive({
   title: '',
   period: '',
-  incomes: [{category:'', item:'', amount:0, remark:''}],
-  expenses: [{category:'', item:'', amount:0, remark:''}],
-  assets: [{category:'', item:'', amount:0, remark:''}],
-  resources: [{category:'', item:'', remark:''}],
+  incomes: [{category:'', item:'', amount:0, remark:'', _k: uid()}],
+  expenses: [{category:'', item:'', amount:0, remark:'', _k: uid()}],
+  assets: [{category:'', item:'', amount:0, remark:'', _k: uid()}],
+  resources: [{category:'', item:'', remark:'', _k: uid()}],
   summary: ''
 })
 

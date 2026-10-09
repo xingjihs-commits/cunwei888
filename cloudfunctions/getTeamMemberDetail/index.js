@@ -3,6 +3,7 @@
  * 用途：查询班子成员详情
  */
 const cloud = require('wx-server-sdk')
+const { fail } = require('../common/errorUtils')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
@@ -12,7 +13,7 @@ exports.main = async (event, context) => {
   const { memberId } = event
   
   if (!memberId) {
-    return { success: false, message: '参数不完整' }
+    return fail('INVALID_PARAMS')
   }
   
   try {

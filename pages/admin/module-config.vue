@@ -30,7 +30,7 @@
 
     <view class="card">
       <view class="card-title">常用电话</view>
-      <view v-for="(p, i) in config.phones" :key="i" class="phone-row">
+      <view v-for="p in config.phones" :key="p.key" class="phone-row">
         <text class="phone-role">{{ phoneName(p.key) }}</text>
         <input v-model="p.name" class="input small"  :placeholder="t('placeholder.name', '姓名')" />
         <input v-model="p.number" class="input small"  :placeholder="t('placeholder.phone', '电话')" />

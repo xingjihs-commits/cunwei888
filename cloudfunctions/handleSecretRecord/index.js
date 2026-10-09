@@ -4,6 +4,7 @@
  * 改造点：status 全中文
  */
 const cloud = require('wx-server-sdk')
+const { fail } = require('../common/errorUtils')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const { RECORD_STATUS, SUPERVISE_LEVEL } = require('../common/constants')
@@ -14,13 +15,13 @@ exports.main = async (event, context) => {
 
   const isAdmin = await checkAdmin(OPENID)
   if (!isAdmin) {
-    return { success: false, message: '无操作权限' }
+    return fail('FORBIDDEN')
   }
 
   const { recordId, action, note = '' } = event
 
   if (!recordId || !action) {
-    return { success: false, message: '参数不完整' }
+    return fail('INVALID_PARAMS')
   }
 
   try {

@@ -3,6 +3,7 @@
  * 用途：发布 leader_content（type = 'secretary' | 'leader'），checkAdmin + 内容安全
  */
 const cloud = require('wx-server-sdk')
+const { fail } = require('../common/errorUtils')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const { checkAdmin, checkContentSecurity, checkImageSecurity } = require('../common/checkAdmin')
@@ -13,7 +14,7 @@ exports.main = async (event, context) => {
 
   const isAdmin = await checkAdmin(OPENID)
   if (!isAdmin) {
-    return { success: false, message: '无发布权限' }
+    return fail('FORBIDDEN')
   }
 
   if (type !== 'secretary' && type !== 'leader') {

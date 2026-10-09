@@ -6,6 +6,7 @@
  *   3. 图片内容安全
  */
 const cloud = require('wx-server-sdk')
+const { fail } = require('../common/errorUtils')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
@@ -16,7 +17,7 @@ exports.main = async (event, context) => {
 
   const isAdmin = await checkAdmin(OPENID)
   if (!isAdmin) {
-    return { success: false, message: '无发布权限' }
+    return fail('FORBIDDEN')
   }
 
   const { title, content, audioFileID = '', images = [], urgent = false } = event

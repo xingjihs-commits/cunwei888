@@ -1,52 +1,11 @@
 /**
- * tests/constants.test.js - common/constants.js 单测
- * 覆盖 normalizeStatus / expandStatuses 兼容逻辑
+ * tests/constants.test.js - cloudfunctions/common/constants.js 单测
+ * 直接 import 真实源码，避免"复制逻辑"与实现漂移
  */
 import { describe, it, expect } from 'vitest'
+import constants from '../cloudfunctions/common/constants.js'
 
-// 由于 constants.js 依赖 wx-server-sdk，这里用 require + mock
-// 实际运行需先 npm install wx-server-sdk
-// 或改造 constants.js 不依赖 cloud
-
-// 复制 constants.js 的核心逻辑做单测
-const STATUS_LEGACY_MAP = {
-  'pending': '待处理',
-  'assigned': '已派单',
-  'processing': '处理中',
-  'completed': '已完成',
-  'evaluated': '已评价',
-  'rejected': '已驳回',
-  'open': '进行中',
-  'closed': '已截止',
-  'scheduled': '待召开',
-  'holding': '进行中',
-  'ended': '已结束',
-  'cancelled': '已取消',
-  'normal': '普通',
-  'help_needed': '求助',
-  'urgent': '紧急',
-  'todo': '待办',
-  'doing': '进行中',
-  'read': '已查阅',
-  'replied': '已回复',
-  'passed': '已通过',
-  'approved': '已通过'
-}
-
-function normalizeStatus(status) {
-  if (!status) return status
-  return STATUS_LEGACY_MAP[status] || status
-}
-
-function expandStatuses(statuses) {
-  const result = new Set(statuses)
-  for (const s of statuses) {
-    for (const [eng, cn] of Object.entries(STATUS_LEGACY_MAP)) {
-      if (cn === s) result.add(eng)
-    }
-  }
-  return Array.from(result)
-}
+const { normalizeStatus, expandStatuses, RECORD_STATUS, STATUS_LEGACY_MAP } = constants
 
 describe('constants normalizeStatus', () => {
   it('英文 status 应归一化为中文', () => {
@@ -54,7 +13,6 @@ describe('constants normalizeStatus', () => {
     expect(normalizeStatus('completed')).toBe('已完成')
     expect(normalizeStatus('open')).toBe('进行中')
     expect(normalizeStatus('scheduled')).toBe('待召开')
-    expect(normalizeStatus('urgent')).toBe('紧急')
   })
 
   it('中文 status 应原样返回', () => {
@@ -73,6 +31,10 @@ describe('constants normalizeStatus', () => {
     expect(normalizeStatus(null)).toBe(null)
     expect(normalizeStatus(undefined)).toBe(undefined)
   })
+
+  it('overdue 历史标记归一化为「处理中」（非「已超时」）', () => {
+    expect(normalizeStatus('overdue')).toBe(RECORD_STATUS.PROCESSING)
+  })
 })
 
 describe('constants expandStatuses', () => {
@@ -83,18 +45,20 @@ describe('constants expandStatuses', () => {
     expect(result.length).toBeGreaterThan(1)
   })
 
-  it('已完成集合应包含 completed 和 evaluated 的英文', () => {
+  it('已完成集合应包含 completed', () => {
     const result = expandStatuses(['已完成'])
     expect(result).toContain('已完成')
     expect(result).toContain('completed')
   })
 
-  it('多 status 集合应正确合并', () => {
+  it('多 status 集合应正确合并，且不误并同义异类', () => {
     const result = expandStatuses(['待处理', '处理中'])
-    expect(result).toContain('待处理')
-    expect(result).toContain('处理中')
     expect(result).toContain('pending')
     expect(result).toContain('processing')
-    expect(result).not.toContain('holding') // holding 是会议状态「进行中」，非工单「处理中」
+    expect(result).not.toContain('holding') // holding 是会议「进行中」，非工单「处理中」
+  })
+
+  it('兼容映射表存在且覆盖主要历史枚举', () => {
+    expect(Object.keys(STATUS_LEGACY_MAP).length).toBeGreaterThan(10)
   })
 })

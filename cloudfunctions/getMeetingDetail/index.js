@@ -3,6 +3,7 @@
  * 用途：查询会议详情含纪要和决议
  */
 const cloud = require('wx-server-sdk')
+const { fail } = require('../common/errorUtils')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
@@ -12,7 +13,7 @@ exports.main = async (event, context) => {
   const { meetingId } = event
   
   if (!meetingId) {
-    return { success: false, message: '参数不完整' }
+    return fail('INVALID_PARAMS')
   }
   
   try {

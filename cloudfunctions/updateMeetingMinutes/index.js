@@ -6,6 +6,7 @@
  *   3. 决议内容安全
  */
 const cloud = require('wx-server-sdk')
+const { fail } = require('../common/errorUtils')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
@@ -23,13 +24,13 @@ exports.main = async (event, context) => {
 
   const isAdmin = await checkAdmin(OPENID)
   if (!isAdmin) {
-    return { success: false, message: '无操作权限' }
+    return fail('FORBIDDEN')
   }
 
   const { meetingId, minutes, minutesImages = [], decisions = [], signRecords = [], status = '', attendance = 0 } = event
 
   if (!meetingId) {
-    return { success: false, message: '参数不完整' }
+    return fail('INVALID_PARAMS')
   }
 
   // 内容安全检测

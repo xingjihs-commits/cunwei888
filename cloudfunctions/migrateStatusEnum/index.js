@@ -6,6 +6,7 @@
  * 入参：{ dryRun: true } 仅打印不修改
  */
 const cloud = require('wx-server-sdk')
+const { fail } = require('../common/errorUtils')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
@@ -46,7 +47,7 @@ exports.main = async (event, context) => {
   // 仅管理员可执行
   const isAdmin = await checkAdmin(OPENID)
   if (!isAdmin) {
-    return { success: false, message: '无执行权限' }
+    return fail('FORBIDDEN')
   }
 
   const { dryRun = false } = event

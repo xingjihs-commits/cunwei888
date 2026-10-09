@@ -6,6 +6,7 @@
  *   3. 完成/驳回状态写日志
  */
 const cloud = require('wx-server-sdk')
+const { fail } = require('../common/errorUtils')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
@@ -27,11 +28,11 @@ exports.main = async (event, context) => {
 
   const isAdmin = await checkAdmin(OPENID)
   if (!isAdmin) {
-    return { success: false, message: '无操作权限' }
+    return fail('FORBIDDEN')
   }
 
   if (!recordId || !status) {
-    return { success: false, message: '参数不完整' }
+    return fail('INVALID_PARAMS')
   }
 
   // 归一化为中文 status

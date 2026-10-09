@@ -4,6 +4,7 @@
  * 入参：recordId, assigneeOpenid, type, urgentLevel, handleDeadline, note
  */
 const cloud = require('wx-server-sdk')
+const { fail } = require('../common/errorUtils')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const { isInternalCall, INTERNAL_TOKEN } = require('../common/internal')
@@ -17,7 +18,7 @@ exports.main = async (event, context) => {
   const { recordId, assigneeOpenid, type, urgentLevel, handleDeadline, note = '' } = event
   
   if (!recordId || !assigneeOpenid) {
-    return { success: false, message: '参数不完整' }
+    return fail('INVALID_PARAMS')
   }
   
   try {

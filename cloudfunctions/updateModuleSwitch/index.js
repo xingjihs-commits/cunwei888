@@ -4,6 +4,7 @@
  * 入参：{ modules: { feedback: true, snapshot: false, ... } }
  */
 const cloud = require('wx-server-sdk')
+const { fail } = require('../common/errorUtils')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const { checkAdmin } = require('../common/checkAdmin')
@@ -12,7 +13,7 @@ const { writeLog } = require('../common/db')
 exports.main = async (event, context) => {
   const { OPENID } = cloud.getWXContext()
   const isAdmin = await checkAdmin(OPENID)
-  if (!isAdmin) return { success: false, message: '无操作权限' }
+  if (!isAdmin) return fail('FORBIDDEN')
 
   const { modules } = event
   if (!modules || typeof modules !== 'object') {

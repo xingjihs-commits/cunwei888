@@ -1,52 +1,15 @@
 /**
  * tests/format.test.js - utils/format.js 单测
- * 覆盖 normalizeStatus / statusText / urgentText / formatDate / formatMoney
+ * 直接 import 真实源码，避免"复制逻辑"与实现漂移
  */
 import { describe, it, expect } from 'vitest'
-
-// 复制 format.js 的逻辑做单测（避免依赖 uni-app 环境）
-const STATUS_LEGACY_MAP = {
-  'pending': '待处理',
-  'assigned': '已派单',
-  'processing': '处理中',
-  'completed': '已完成',
-  'evaluated': '已评价',
-  'rejected': '已驳回',
-  'open': '进行中',
-  'closed': '已截止',
-  'normal': '普通',
-  'urgent': '紧急',
-  'critical': '特急'
-}
-
-function normalizeStatus(status) {
-  if (!status) return status
-  return STATUS_LEGACY_MAP[status] || status
-}
-
-function urgentText(level) {
-  const map = { '普通': '普通', '紧急': '紧急', '特急': '特急', 'normal': '普通', 'urgent': '紧急', 'critical': '特急' }
-  return map[level] || '普通'
-}
-
-function formatMoney(num) {
-  if (num === null || num === undefined) return '0.00'
-  return Number(num).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-}
-
-function formatDuration(hours) {
-  if (!hours) return '-'
-  if (hours < 1) return Math.floor(hours * 60) + '分钟'
-  if (hours < 24) return Math.floor(hours) + '小时'
-  const days = Math.floor(hours / 24)
-  const restHours = Math.floor(hours % 24)
-  return restHours > 0 ? `${days}天${restHours}小时` : `${days}天`
-}
-
-function maskPhone(phone) {
-  if (!phone || phone.length !== 11) return phone
-  return phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2')
-}
+import {
+  normalizeStatus,
+  urgentText,
+  formatMoney,
+  formatDuration,
+  maskPhone
+} from '../utils/format.js'
 
 describe('format normalizeStatus', () => {
   it('英文 status 转中文', () => {
@@ -57,6 +20,10 @@ describe('format normalizeStatus', () => {
 
   it('中文 status 原样', () => {
     expect(normalizeStatus('已完成')).toBe('已完成')
+  })
+
+  it('overdue 归一化为「已超时」', () => {
+    expect(normalizeStatus('overdue')).toBe('已超时')
   })
 })
 

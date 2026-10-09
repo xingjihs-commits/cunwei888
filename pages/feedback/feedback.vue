@@ -48,7 +48,7 @@
       <view class="section">
         <view class="section-title">上传图片（最多9张）</view>
         <view class="image-grid">
-          <view v-for="(img, i) in form.images" :key="i" class="image-item">
+          <view v-for="(img, i) in form.images" :key="img" class="image-item">
             <image :src="img" mode="aspectFill" @click="previewImage(i)" />
             <view class="image-del" @click="removeImage(i)">×</view>
           </view>

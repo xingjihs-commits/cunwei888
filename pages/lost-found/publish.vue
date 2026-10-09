@@ -26,7 +26,7 @@
       <view class="form-group">
         <text class="form-label">图片（选填）</text>
         <view class="image-grid">
-          <view v-for="(img, i) in form.images" :key="i" class="image-item">
+          <view v-for="(img, i) in form.images" :key="img" class="image-item">
             <image :src="img" mode="aspectFill" />
             <view class="image-del" @click="removeImage(i)">×</view>
           </view>

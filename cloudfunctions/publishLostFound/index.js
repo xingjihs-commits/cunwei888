@@ -34,7 +34,7 @@ exports.main = async (event, context) => {
     const res = await db.collection('records').add({
       data: {
         type: '失物招领',
-        subType: type  // type 是中文 '寻物' 或 '招领',
+        subType: type, // type 是中文 '寻物' 或 '招领'
         title: title,
         content: content,
         images: images,

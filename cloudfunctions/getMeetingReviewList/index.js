@@ -3,6 +3,7 @@
  * 改造点：使用 expandStatuses 兼容中英文老数据
  */
 const cloud = require('wx-server-sdk')
+const { fail } = require('../common/errorUtils')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
@@ -14,7 +15,7 @@ exports.main = async (event, context) => {
 
   const isAdmin = await checkAdmin(OPENID)
   if (!isAdmin) {
-    return { success: false, message: '无查看权限' }
+    return fail('FORBIDDEN')
   }
 
   const { period } = event

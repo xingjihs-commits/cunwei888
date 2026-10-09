@@ -6,6 +6,7 @@
  *   3. 批内并发处理通知，避免逐条串行 callFunction 超时
  */
 const cloud = require('wx-server-sdk')
+const { fail } = require('../common/errorUtils')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
@@ -20,7 +21,7 @@ exports.main = async (event, context) => {
   if (OPENID) {
     const isAdmin = await checkAdmin(OPENID)
     if (!isAdmin) {
-      return { success: false, message: '无权限', code: 'FORBIDDEN' }
+      return fail('FORBIDDEN')
     }
   }
 

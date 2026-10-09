@@ -74,7 +74,7 @@
           <view class="more" @click="goMore('/pages/notice/list')">更多 ></view>
         </view>
         <Skeleton v-if="isLoading && noticeList.length === 0" type="list" :count="2" />
-        <view class="notice-card" v-for="(item, i) in noticeList.slice(0, 3)" :key="i" @click="goNotice(item)">
+        <view class="notice-card" v-for="item in noticeList.slice(0, 3)" :key="item._id" @click="goNotice(item)">
           <view class="notice-row">
             <view class="notice-tag" :class="'tag-' + item.category">{{ item.category }}</view>
             <text class="notice-title">{{ item.title }}</text>
@@ -90,7 +90,7 @@
           <view class="more" @click="goMore('/pages/news/list')">更多 ></view>
         </view>
         <Skeleton v-if="isLoading && newsList.length === 0" type="list" :count="2" />
-        <NewsCard v-for="(item, i) in newsList.slice(0, 3)" :key="i" :news="item" @tap="goNews(item)" />
+        <NewsCard v-for="item in newsList.slice(0, 3)" :key="item._id" :news="item" @tap="goNews(item)" />
       </view>
 
       <!-- ⑧ 更多入口 -->

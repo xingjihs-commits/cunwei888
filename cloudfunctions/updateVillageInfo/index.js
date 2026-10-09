@@ -4,6 +4,7 @@
  * 入参：{ villageName, villagePhone, icpNumber, policeIcpNumber, emergencyPhones }
  */
 const cloud = require('wx-server-sdk')
+const { fail } = require('../common/errorUtils')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
@@ -13,7 +14,7 @@ const { writeLog } = require('../common/db')
 exports.main = async (event, context) => {
   const { OPENID } = cloud.getWXContext()
   const isAdmin = await checkAdmin(OPENID)
-  if (!isAdmin) return { success: false, message: '无操作权限' }
+  if (!isAdmin) return fail('FORBIDDEN')
 
   const { villageName, villagePhone, icpNumber, policeIcpNumber, emergencyPhones } = event
   if (!villageName && !villagePhone && !icpNumber && !policeIcpNumber && !emergencyPhones) {

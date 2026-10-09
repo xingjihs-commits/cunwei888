@@ -4,6 +4,7 @@
  * 入参：{ templates: { new_feedback: 'tmpl_xxx', status_update: 'tmpl_yyy', ... } }
  */
 const cloud = require('wx-server-sdk')
+const { fail } = require('../common/errorUtils')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const { checkAdmin } = require('../common/checkAdmin')
@@ -18,7 +19,7 @@ const ALLOWED_TEMPLATE_KEYS = [
 exports.main = async (event, context) => {
   const { OPENID } = cloud.getWXContext()
   const isAdmin = await checkAdmin(OPENID)
-  if (!isAdmin) return { success: false, message: '无操作权限' }
+  if (!isAdmin) return fail('FORBIDDEN')
 
   const { templates } = event
   if (!templates || typeof templates !== 'object') {

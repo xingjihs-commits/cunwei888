@@ -3,6 +3,7 @@
  * 改造点：内容安全（财务数据敏感）
  */
 const cloud = require('wx-server-sdk')
+const { fail } = require('../common/errorUtils')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
@@ -13,7 +14,7 @@ exports.main = async (event, context) => {
 
   const isAdmin = await checkAdmin(OPENID)
   if (!isAdmin) {
-    return { success: false, message: '无发布权限' }
+    return fail('FORBIDDEN')
   }
 
   const { title, period, incomes = [], expenses = [], assets = [], resources = [], summary = '' } = event

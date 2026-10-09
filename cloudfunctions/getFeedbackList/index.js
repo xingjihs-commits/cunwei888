@@ -6,6 +6,7 @@
  *   3. 条件用 _.and 组合，避免链式 where
  */
 const cloud = require('wx-server-sdk')
+const { fail } = require('../common/errorUtils')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
@@ -17,7 +18,7 @@ exports.main = async (event, context) => {
 
   const isAdmin = await checkAdmin(OPENID)
   if (!isAdmin) {
-    return { success: false, data: [], total: 0, message: '无权限' }
+    return Object.assign(fail('FORBIDDEN'), { data: [], total: 0 })
   }
 
   const { page = 1, pageSize = 20, status = '', type = '', urgentLevel = '' } = event

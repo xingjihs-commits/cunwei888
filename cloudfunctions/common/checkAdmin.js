@@ -17,6 +17,7 @@
 const cloud = require('wx-server-sdk')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
+const { decideSecurity, isAdminCount } = require('./securityLogic')
 
 /**
  * 校验管理员权限（必须在 admins 集合且 enabled=true）
@@ -29,7 +30,7 @@ async function checkAdmin(openid) {
     const res = await db.collection('admins')
       .where({ _openid: openid, enabled: true })
       .count()
-    return res.total > 0
+    return isAdminCount(res)
   } catch (err) {
     console.error('[checkAdmin] 管理员校验失败:', err)
     return false
@@ -74,9 +75,9 @@ async function checkContentSecurity(content, openid, ctx = {}) {
     })
     // v2 API 返回 result.detail + result.suggest
     // suggest: 'pass' / 'review' / 'risky'
-    const suggest = (res.result && res.result.suggest) || (res.suggest) || 'pass'
-    if (suggest === 'pass') return true
-    if (suggest === 'review') {
+    const decision = decideSecurity(res)
+    if (decision === true) return true
+    if (decision === 'review') {
       // 疑似违规，写入复审队列
       await _writeAuditQueue(content, openid, ctx, 'text_review')
       return 'review'
@@ -118,9 +119,9 @@ async function checkImageSecurity(fileID, ctx = {}) {
         value: fileContent
       }
     })
-    const suggest = (res.result && res.result.suggest) || (res.suggest) || 'pass'
-    if (suggest === 'pass') return true
-    if (suggest === 'review') {
+    const decision = decideSecurity(res)
+    if (decision === true) return true
+    if (decision === 'review') {
       await _writeAuditQueue('', '', ctx, 'image_review', fileID)
       return 'review'
     }

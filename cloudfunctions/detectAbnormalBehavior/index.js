@@ -7,6 +7,7 @@
  *   3. 管理员 1 小时内删除 ≥ 50 条记录 → 标记为异常删除
  */
 const cloud = require('wx-server-sdk')
+const { fail } = require('../common/errorUtils')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
@@ -21,7 +22,7 @@ exports.main = async (event, context) => {
   if (OPENID) {
     const isAdmin = await checkAdmin(OPENID)
     if (!isAdmin) {
-      return { success: false, message: '无权限', code: 'FORBIDDEN' }
+      return fail('FORBIDDEN')
     }
   }
 

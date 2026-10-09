@@ -3,6 +3,7 @@
  * 用途：查询表决详情含各选项票数
  */
 const cloud = require('wx-server-sdk')
+const { fail } = require('../common/errorUtils')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
@@ -13,7 +14,7 @@ exports.main = async (event, context) => {
   const { voteId } = event
   
   if (!voteId) {
-    return { success: false, message: '参数不完整' }
+    return fail('INVALID_PARAMS')
   }
   
   try {

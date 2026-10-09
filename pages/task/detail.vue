@@ -85,7 +85,7 @@
       <view class="form-group">
         <text class="form-label">上传图片</text>
         <view class="image-grid">
-          <view v-for="(img, i) in newImages" :key="i" class="image-item">
+          <view v-for="(img, i) in newImages" :key="img" class="image-item">
             <image :src="img" mode="aspectFill" @click="previewImage(newImages, i)" />
             <view class="image-del" @click="removeImage(i)">×</view>
           </view>

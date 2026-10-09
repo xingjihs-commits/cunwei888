@@ -3,6 +3,7 @@
  * 改造点：名字/职务/分工/承诺内容安全
  */
 const cloud = require('wx-server-sdk')
+const { fail } = require('../common/errorUtils')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
@@ -14,7 +15,7 @@ exports.main = async (event, context) => {
 
   const isAdmin = await checkAdmin(OPENID)
   if (!isAdmin) {
-    return { success: false, message: '无操作权限' }
+    return fail('FORBIDDEN')
   }
 
   if (!name || !role || !type) {

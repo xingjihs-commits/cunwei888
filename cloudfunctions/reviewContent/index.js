@@ -3,6 +3,7 @@
  * 改造点：AUDIT_STATUS 全中文
  */
 const cloud = require('wx-server-sdk')
+const { fail } = require('../common/errorUtils')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
@@ -15,11 +16,11 @@ exports.main = async (event, context) => {
 
   const isAdmin = await checkAdmin(OPENID)
   if (!isAdmin) {
-    return { success: false, message: '无复审权限' }
+    return fail('FORBIDDEN')
   }
 
   if (!recordId) {
-    return { success: false, message: '参数不完整' }
+    return fail('INVALID_PARAMS')
   }
 
   try {

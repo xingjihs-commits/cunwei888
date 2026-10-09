@@ -3,6 +3,7 @@
  * 改造点：status 全中文（进行中）+ 内容安全
  */
 const cloud = require('wx-server-sdk')
+const { fail } = require('../common/errorUtils')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
@@ -14,7 +15,7 @@ exports.main = async (event, context) => {
 
   const isAdmin = await checkAdmin(OPENID)
   if (!isAdmin) {
-    return { success: false, message: '无发起权限' }
+    return fail('FORBIDDEN')
   }
 
   const { title, description, options = [], deadline, meetingId = '', voterScope = '村民代表' } = event
