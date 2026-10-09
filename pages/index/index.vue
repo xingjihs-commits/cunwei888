@@ -77,7 +77,7 @@
         <Skeleton v-if="isLoading && noticeList.length === 0" type="list" :count="2" />
         <view class="notice-card" v-for="item in noticeList.slice(0, 3)" :key="item._id" @click="goNotice(item)">
           <view class="notice-row">
-            <view class="notice-tag" :class="'tag-' + item.category">{{ item.category }}</view>
+            <view class="notice-tag" :class="noticeTagClass(item.category)">{{ item.category }}</view>
             <text class="notice-title">{{ item.title }}</text>
           </view>
           <text class="notice-time">{{ formatDate(item.createTime) }}</text>
@@ -123,6 +123,12 @@ import { useRootFontSize } from '@/composables/useA11y.js'
 const userStore = useUserStore()
 const configStore = useConfigStore()
 const rootFontSize = useRootFontSize()
+
+// 公示分类标签类名（英文，避免中文类名导致 WXSS 转义报错）
+function noticeTagClass(category) {
+  const map = { '财务': 'tag-finance', '应急': 'tag-emergency' }
+  return map[category] || 'tag-normal'
+}
 
 const statusBarHeight = ref(20)
 const newsList = ref([])
@@ -362,8 +368,8 @@ async function loadMore() {
         margin-right: 16rpx;
         background: $primary-light;
         color: $primary;
-        &.tag-财务 { background: $gold-light; color: $gold; }
-        &.tag-应急 { background: rgba(198,40,40,0.1); color: $danger; }
+        &.tag-finance { background: $gold-light; color: $gold; }
+        &.tag-emergency { background: rgba(198,40,40,0.1); color: $danger; }
       }
       .notice-title { flex: 1; font-size: $font-body; color: $text-main; font-weight: bold; }
     }

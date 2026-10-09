@@ -24,7 +24,7 @@
         <text class="mail-content">{{ m.content.substring(0, 80) }}{{ m.content.length > 80 ? '...' : '' }}</text>
         <view class="card-footer">
           <text class="time">{{ relativeTime(m.createTime) }}</text>
-          <text v-if="m.urgentLevel" class="urgent-tag" :class="'u-' + m.urgentLevel">{{ urgentText(m.urgentLevel) }}</text>
+          <text v-if="m.urgentLevel" class="urgent-tag" :class="urgentTagClass(m.urgentLevel)">{{ urgentText(m.urgentLevel) }}</text>
         </view>
       </view>
     </view>
@@ -42,7 +42,7 @@ import { useRootFontSize } from '@/composables/useA11y.js'
 import { ref, onMounted } from 'vue'
 import { onPullDownRefresh, onReachBottom } from '@dcloudio/uni-app'
 import { callFunction } from '@/utils/request.js'
-import { relativeTime, urgentText, normalizeStatus } from '@/utils/format.js'
+import { relativeTime, urgentText, normalizeStatus, urgentTagClass } from '@/utils/format.js'
 import Skeleton from '@/components/Skeleton.vue'
 import { useAdminGuard } from '@/composables/useAdminGuard.js'
 import { useConfigStore } from '@/store/config.js'
@@ -137,9 +137,9 @@ function goDetail(id) {
     .card-footer { display: flex; justify-content: space-between; align-items: center;
       .time { font-size: $font-micro; color: $text-weak; }
       .urgent-tag { padding: $space-xs $space-md; border-radius: $radius-sm; font-size: $font-micro;
-        &.u-普通 { background: $bg; color: $text-sub; }
-        &.u-紧急 { background: rgba(230,81,0,0.1); color: $warning; }
-        &.u-特急 { background: rgba(198,40,40,0.1); color: $danger; }
+        &.u-normal { background: $bg; color: $text-sub; }
+        &.u-urgent { background: rgba(230,81,0,0.1); color: $warning; }
+        &.u-critical { background: rgba(198,40,40,0.1); color: $danger; }
       }
     }
   }

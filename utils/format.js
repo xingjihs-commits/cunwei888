@@ -172,6 +172,20 @@ export function urgentColor(level) {
 }
 
 /**
+ * 紧急程度 CSS 类名（英文，避免中文类名——WXSS 压缩会把中文类名转义为
+ * \8d22 形式，微信 WXSS 解析器报 unexpected \）
+ */
+export function urgentTagClass(level) {
+  const t = urgentText(level)
+  const map = {
+    '普通': 'u-normal',
+    '紧急': 'u-urgent',
+    '特急': 'u-critical'
+  }
+  return map[t] || 'u-normal'
+}
+
+/**
  * 处理时长格式化（小时转 天/小时）
  */
 export function formatDuration(hours) {
@@ -209,6 +223,7 @@ export default {
   statusColor,
   urgentText,
   urgentColor,
+  urgentTagClass,
   formatDuration,
   formatFileSize,
   maskPhone

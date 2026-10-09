@@ -26,7 +26,7 @@
         <view class="meta">
           <text class="type-tag">{{ r.type }}</text>
           <text v-if="r.villageGroup" class="group">{{ r.villageGroup }}</text>
-          <text v-if="r.urgentLevel" class="urgent-tag" :class="'u-' + r.urgentLevel">{{ urgentText(r.urgentLevel) }}</text>
+          <text v-if="r.urgentLevel" class="urgent-tag" :class="urgentTagClass(r.urgentLevel)">{{ urgentText(r.urgentLevel) }}</text>
         </view>
         <view v-if="r.handleDeadline" class="deadline">
           处理时限：{{ formatDate(r.handleDeadline) }}
@@ -47,7 +47,7 @@ import { useRootFontSize } from '@/composables/useA11y.js'
 import { ref, onMounted } from 'vue'
 import { onPullDownRefresh, onReachBottom, onShow } from '@dcloudio/uni-app'
 import { callFunction } from '@/utils/request.js'
-import { formatDate, relativeTime, statusText, urgentText, normalizeStatus } from '@/utils/format.js'
+import { formatDate, relativeTime, statusText, urgentText, normalizeStatus, urgentTagClass } from '@/utils/format.js'
 import Skeleton from '@/components/Skeleton.vue'
 import { useUserStore } from '@/store/user.js'
 import { useConfigStore } from '@/store/config.js'
@@ -151,9 +151,9 @@ function goDetail(id) {
       .type-tag { padding: 2rpx 12rpx; background: $primary-light; color: $primary; border-radius: $radius-sm; font-size: $font-micro; }
       .group { font-size: $font-micro; color: $text-sub; }
       .urgent-tag { padding: 2rpx 12rpx; border-radius: $radius-sm; font-size: $font-micro;
-        &.u-普通 { background: $bg; color: $text-sub; }
-        &.u-紧急 { background: rgba(230,81,0,0.1); color: $warning; }
-        &.u-特急 { background: rgba(198,40,40,0.1); color: $danger; }
+        &.u-normal { background: $bg; color: $text-sub; }
+        &.u-urgent { background: rgba(230,81,0,0.1); color: $warning; }
+        &.u-critical { background: rgba(198,40,40,0.1); color: $danger; }
       }
     }
     .deadline { font-size: $font-micro; color: $warning; }
