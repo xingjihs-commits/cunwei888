@@ -3,6 +3,7 @@
   用途：显示所有已注册用户，自动标注状态（正常/待核实/信息不符/重复注册/异常注册），村委可打电话/确认/拉黑
 -->
 <template>
+  <page-meta :root-font-size="rootFontSize" />
   <view class="page-auth-list">
     <view class="filter-bar">
       <view
@@ -42,6 +43,7 @@
 </template>
 
 <script setup>
+import { useRootFontSize } from '@/composables/useA11y.js'
 import { ref, computed, onMounted } from 'vue'
 import { onPullDownRefresh } from '@dcloudio/uni-app'
 import { callFunction } from '@/utils/request.js'
@@ -50,6 +52,7 @@ import { useAdminGuard } from '@/composables/useAdminGuard.js'
 import Skeleton from '@/components/Skeleton.vue'
 import EmptyState from '@/components/EmptyState.vue'
 import { useConfigStore } from '@/store/config.js'
+const rootFontSize = useRootFontSize()
 
 const configStore = useConfigStore()
 function t(p, d = '') { return configStore.getDisplay(p, d) }

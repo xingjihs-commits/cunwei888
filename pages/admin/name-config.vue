@@ -3,6 +3,7 @@
   用途：分 11 组编辑 display_names，保存后写入 module_config.display_names，立即生效
 -->
 <template>
+  <page-meta :root-font-size="rootFontSize" />
   <view class="page-name-config">
     <view v-for="g in groups" :key="g.key" class="card">
       <view class="card-title">{{ g.label }} <text class="card-key">{{ g.key }}</text></view>
@@ -19,11 +20,13 @@
 </template>
 
 <script setup>
+import { useRootFontSize } from '@/composables/useA11y.js'
 import { ref, onMounted } from 'vue'
 import { useConfigStore } from '@/store/config.js'
 import { callFunction } from '@/utils/request.js'
 import { useAdminGuard } from '@/composables/useAdminGuard.js'
 import BigButton from '@/components/BigButton.vue'
+const rootFontSize = useRootFontSize()
 
 const configStore = useConfigStore()
 function t(p, d = '') { return configStore.getDisplay(p, d) }

@@ -3,6 +3,7 @@
   用途：管理员复审机器标记的疑似违规内容
 -->
 <template>
+  <page-meta :root-font-size="rootFontSize" />
   <view class="page-audit">
     <view class="notice">
       <text class="notice-icon">ℹ️</text>
@@ -45,12 +46,14 @@
 </template>
 
 <script setup>
+import { useRootFontSize } from '@/composables/useA11y.js'
 import { ref, onMounted } from 'vue'
 import { onPullDownRefresh } from '@dcloudio/uni-app'
 import { callFunction } from '@/utils/request.js'
 import { formatDate } from '@/utils/format.js'
 import { useAdminGuard } from '@/composables/useAdminGuard.js'
 import { useConfigStore } from '@/store/config.js'
+const rootFontSize = useRootFontSize()
 
 const configStore = useConfigStore()
 function t(p, d = '') { return configStore.getDisplay(p, d) }

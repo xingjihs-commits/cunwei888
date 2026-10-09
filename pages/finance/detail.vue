@@ -2,6 +2,7 @@
   pages/finance/detail.vue - 财务详情
 -->
 <template>
+  <page-meta :root-font-size="rootFontSize" />
   <Skeleton v-if="loading && !report.title" type="detail" />
   <view class="page-finance-detail" v-if="report.title">
     <view class="header-card">
@@ -84,12 +85,14 @@
 </template>
 
 <script setup>
+import { useRootFontSize } from '@/composables/useA11y.js'
 import { ref, onMounted } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import { callFunction } from '@/utils/request.js'
 import { formatMoney } from '@/utils/format.js'
 import Skeleton from '@/components/Skeleton.vue'
 import { useConfigStore } from '@/store/config.js'
+const rootFontSize = useRootFontSize()
 
 const configStore = useConfigStore()
 function t(p, d = '') { return configStore.getDisplay(p, d) }

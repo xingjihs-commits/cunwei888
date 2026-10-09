@@ -28,16 +28,16 @@ $danger: #C62828;          // 拒绝、紧急
 $price: #E63946;           // 价格数字
 
 /* ===================== 字号（适老化） ===================== */
-/* 通过 CSS 变量 --vb-fs（页面根节点由 useA11yStyle 注入）实现全站字号倍数缩放；
-   未注入时默认 1，保持原字号。 */
-$font-title: calc(40rpx * var(--vb-fs, 1));        // 页面标题
-$font-card-title: calc(36rpx * var(--vb-fs, 1));   // 卡片标题
-$font-body: calc(32rpx * var(--vb-fs, 1));         // 正文
-$font-sub: calc(28rpx * var(--vb-fs, 1));          // 辅助文字
-$font-btn: calc(36rpx * var(--vb-fs, 1));          // 按钮文字
-$font-number: calc(48rpx * var(--vb-fs, 1));       // 数字强调
-$font-micro: calc(24rpx * var(--vb-fs, 1));        // 最小字号（不推荐用于正文，仅辅助标签）
-$font-large-number: calc(56rpx * var(--vb-fs, 1)); // 大数字（看板排行榜）
+/* 方案 B：以 rem 为单位，基准 32rpx = 1rem；页面通过 <page-meta :root-font-size>
+   动态设置 rem 基准（含字号倍数），实现全站缩放。基准详见 composables/useA11y.js。 */
+$font-title: 1.25rem;        // 页面标题（40rpx）
+$font-card-title: 1.125rem;  // 卡片标题（36rpx）
+$font-body: 1rem;            // 正文（32rpx）
+$font-sub: 0.875rem;         // 辅助文字（28rpx）
+$font-btn: 1.125rem;         // 按钮文字（36rpx）
+$font-number: 1.5rem;        // 数字强调（48rpx）
+$font-micro: 0.75rem;        // 最小字号（24rpx，不推荐用于正文，仅辅助标签）
+$font-large-number: 1.75rem; // 大数字（56rpx，看板排行榜）
 
 /* 兼容旧变量名（历史页面 privacy / report 使用） */
 $font-small: $font-sub;     // 小字号 → 28rpx

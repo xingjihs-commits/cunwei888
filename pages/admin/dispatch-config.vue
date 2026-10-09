@@ -4,6 +4,7 @@
   显示层：用"姓名（管什么）"
 -->
 <template>
+  <page-meta :root-font-size="rootFontSize" />
   <view class="page-dispatch-config">
     <view class="notice">
       <text class="notice-icon">ℹ️</text>
@@ -68,11 +69,13 @@
 </template>
 
 <script setup>
+import { useRootFontSize } from '@/composables/useA11y.js'
 import { reactive, computed, onMounted } from 'vue'
 import { useConfigStore } from '@/store/config.js'
 import { callFunction, acquireLock, releaseLock } from '@/utils/request.js'
 import { useAdminGuard } from '@/composables/useAdminGuard.js'
 import BigButton from '@/components/BigButton.vue'
+const rootFontSize = useRootFontSize()
 
 const configStore = useConfigStore()
 function t(p, d = '') { return configStore.getDisplay(p, d) }

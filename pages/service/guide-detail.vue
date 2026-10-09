@@ -2,6 +2,7 @@
   pages/service/guide-detail.vue - 办事指南详情
 -->
 <template>
+  <page-meta :root-font-size="rootFontSize" />
   <Skeleton v-if="loading && !guide.title" type="detail" />
   <view class="page-guide-detail" v-if="guide.title">
     <view class="header-card">
@@ -58,11 +59,13 @@
 </template>
 
 <script setup>
+import { useRootFontSize } from '@/composables/useA11y.js'
 import { ref, onMounted } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import { callFunction } from '@/utils/request.js'
 import Skeleton from '@/components/Skeleton.vue'
 import { useConfigStore } from '@/store/config.js'
+const rootFontSize = useRootFontSize()
 
 const configStore = useConfigStore()
 function t(p, d = '') { return configStore.getDisplay(p, d) }

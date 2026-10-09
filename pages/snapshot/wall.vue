@@ -3,6 +3,7 @@
   用途：展示已公示的随手拍，可点赞
 -->
 <template>
+  <page-meta :root-font-size="rootFontSize" />
   <view class="page-wall">
     <view class="filter-bar">
       <view 
@@ -31,6 +32,7 @@
 </template>
 
 <script setup>
+import { useRootFontSize } from '@/composables/useA11y.js'
 import { ref, onMounted } from 'vue'
 import { onPullDownRefresh } from '@dcloudio/uni-app'
 import { callFunction } from '@/utils/request.js'
@@ -39,6 +41,7 @@ import { usePagination } from '@/composables/usePagination.js'
 import SnapshotCard from '@/components/SnapshotCard.vue'
 import EmptyState from '@/components/EmptyState.vue'
 import Skeleton from '@/components/Skeleton.vue'
+const rootFontSize = useRootFontSize()
 
 const configStore = useConfigStore()
 function t(p, d = '') { return configStore.getDisplay(p, d) }

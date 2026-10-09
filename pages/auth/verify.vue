@@ -3,6 +3,7 @@
   用途：填姓名 + 村组 + 手机号（微信一键授权），提交即通过
 -->
 <template>
+  <page-meta :root-font-size="rootFontSize" />
   <view class="page-verify">
     <view class="notice">
       <text class="notice-icon">ℹ️</text>
@@ -55,6 +56,7 @@
 </template>
 
 <script setup>
+import { useRootFontSize } from '@/composables/useA11y.js'
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useUserStore } from '@/store/user.js'
 import { callFunction, acquireLock, releaseLock } from '@/utils/request.js'
@@ -62,6 +64,7 @@ import { requestSubscribe } from '@/utils/subscribe.js'
 import BigButton from '@/components/BigButton.vue'
 import { ensureAuth, AUTH_LOGIN } from '@/utils/auth.js'
 import { useConfigStore } from '@/store/config.js'
+const rootFontSize = useRootFontSize()
 
 const userStore = useUserStore()
 const configStore = useConfigStore()

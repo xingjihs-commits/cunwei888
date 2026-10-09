@@ -3,6 +3,7 @@
   用途：拍照/相册选择，选择问题类型，自动定位，提交随手拍
 -->
 <template>
+  <page-meta :root-font-size="rootFontSize" />
   <view class="page-snapshot">
     <view class="nav-bar" :style="{ paddingTop: statusBarHeight + 'px' }">
       <view class="nav-back" @click="goBack">← 返回</view>
@@ -87,6 +88,7 @@
 </template>
 
 <script setup>
+import { useRootFontSize } from '@/composables/useA11y.js'
 import { ref, reactive, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useConfigStore } from '@/store/config.js'
 import { callFunction, uploadImages, acquireLock, releaseLock, cleanupFileIDs } from '@/utils/request.js'
@@ -95,6 +97,7 @@ import VoiceInput from '@/components/VoiceInput.vue'
 import BigButton from '@/components/BigButton.vue'
 import Disclaimer from '@/components/Disclaimer.vue'
 import { ensureAuth, AUTH_VERIFIED } from '@/utils/auth.js'
+const rootFontSize = useRootFontSize()
 
 const configStore = useConfigStore()
 function t(p, d = '') { return configStore.getDisplay(p, d) }

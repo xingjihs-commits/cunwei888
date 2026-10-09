@@ -3,6 +3,7 @@
   用途：查看任务详情、办理进度，责任人可更新进度
 -->
 <template>
+  <page-meta :root-font-size="rootFontSize" />
   <view class="page-task-detail">
     <Skeleton v-if="loading && !task._id" type="detail" />
     <view class="status-banner" :class="'status-' + task.status">
@@ -105,6 +106,7 @@
 </template>
 
 <script setup>
+import { useRootFontSize } from '@/composables/useA11y.js'
 import { ref, computed, onMounted } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import { callFunction, uploadImages, acquireLock, releaseLock, cleanupFileIDs } from '@/utils/request.js'
@@ -117,6 +119,7 @@ import BigButton from '@/components/BigButton.vue'
 import VoiceInput from '@/components/VoiceInput.vue'
 import Skeleton from '@/components/Skeleton.vue'
 import { useConfigStore } from '@/store/config.js'
+const rootFontSize = useRootFontSize()
 
 const userStore = useUserStore()
 const configStore = useConfigStore()

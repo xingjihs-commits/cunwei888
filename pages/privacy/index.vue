@@ -3,6 +3,7 @@
   用途：独立展示隐私政策页面（合规必需）
 -->
 <template>
+  <page-meta :root-font-size="rootFontSize" />
   <view class="privacy-page">
     <view class="header">
       <text class="title">隐私政策</text>
@@ -89,6 +90,8 @@
 </template>
 
 <script setup>
+import { useRootFontSize } from '@/composables/useA11y.js'
+const rootFontSize = useRootFontSize()
 // 静态页面，无需脚本逻辑
 </script>
 

@@ -3,6 +3,7 @@
   用途：村级办事指南（低保、医保、宅基地等）
 -->
 <template>
+  <page-meta :root-font-size="rootFontSize" />
   <view class="page-guide">
     <view class="search-bar">
       <view class="search-input-wrap">
@@ -41,12 +42,14 @@
 </template>
 
 <script setup>
+import { useRootFontSize } from '@/composables/useA11y.js'
 import { ref, onMounted } from 'vue'
 import { onPullDownRefresh } from '@dcloudio/uni-app'
 import { callFunction } from '@/utils/request.js'
 import EmptyState from '@/components/EmptyState.vue'
 import Skeleton from '@/components/Skeleton.vue'
 import { useConfigStore } from '@/store/config.js'
+const rootFontSize = useRootFontSize()
 
 const configStore = useConfigStore()
 function t(p, d = '') { return configStore.getDisplay(p, d) }

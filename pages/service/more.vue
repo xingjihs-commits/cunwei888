@@ -3,6 +3,7 @@
   分组：办事/查询/生活/学习；名称读 display_names，显隐读 modules；暂未建独立页面的大类指向 category/list?type=xxx
 -->
 <template>
+  <page-meta :root-font-size="rootFontSize" />
   <view class="page-more">
     <view v-for="g in groups" :key="g.title" class="group">
       <view class="group-title">{{ g.title }}</view>
@@ -22,8 +23,10 @@
 </template>
 
 <script setup>
+import { useRootFontSize } from '@/composables/useA11y.js'
 import { computed } from 'vue'
 import { useConfigStore } from '@/store/config.js'
+const rootFontSize = useRootFontSize()
 
 const configStore = useConfigStore()
 function t(p, d = '') { return configStore.getDisplay(p, d) }

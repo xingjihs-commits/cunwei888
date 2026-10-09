@@ -3,6 +3,7 @@
   顶部 Tab 切换，默认书记风采；点击进详情
 -->
 <template>
+  <page-meta :root-font-size="rootFontSize" />
   <view class="page-leader">
     <view class="tabs">
       <view class="tab" :class="{ active: type === 'secretary' }" @click="switchType('secretary')">
@@ -28,6 +29,7 @@
 </template>
 
 <script setup>
+import { useRootFontSize } from '@/composables/useA11y.js'
 import { ref } from 'vue'
 import { onLoad, onPullDownRefresh } from '@dcloudio/uni-app'
 import { callFunction } from '@/utils/request.js'
@@ -36,6 +38,7 @@ import { useConfigStore } from '@/store/config.js'
 import { usePagination } from '@/composables/usePagination.js'
 import EmptyState from '@/components/EmptyState.vue'
 import Skeleton from '@/components/Skeleton.vue'
+const rootFontSize = useRootFontSize()
 
 const configStore = useConfigStore()
 const type = ref('secretary')

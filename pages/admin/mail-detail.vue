@@ -3,6 +3,7 @@
   用途：书记查看信件详情并回信
 -->
 <template>
+  <page-meta :root-font-size="rootFontSize" />
   <view class="page-mail-detail" v-if="mail.subject || mail.content">
     <view class="card">
       <text class="subject">{{ mail.subject }}</text>
@@ -47,6 +48,7 @@
 </template>
 
 <script setup>
+import { useRootFontSize } from '@/composables/useA11y.js'
 import { ref, computed, onMounted } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import { callFunction, acquireLock, releaseLock } from '@/utils/request.js'
@@ -54,6 +56,7 @@ import { formatDate, urgentText } from '@/utils/format.js'
 import { useAdminGuard } from '@/composables/useAdminGuard.js'
 import BigButton from '@/components/BigButton.vue'
 import { useConfigStore } from '@/store/config.js'
+const rootFontSize = useRootFontSize()
 
 const configStore = useConfigStore()
 function t(p, d = '') { return configStore.getDisplay(p, d) }

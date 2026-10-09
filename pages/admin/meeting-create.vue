@@ -3,6 +3,7 @@
   用途：书记创建村务会议
 -->
 <template>
+  <page-meta :root-font-size="rootFontSize" />
   <view class="page-meeting-create">
     <view class="card">
       <view class="form-group">
@@ -47,12 +48,14 @@
 </template>
 
 <script setup>
+import { useRootFontSize } from '@/composables/useA11y.js'
 import { ref, reactive, computed, onMounted } from 'vue'
 import { callFunction, acquireLock, releaseLock } from '@/utils/request.js'
 import { useAdminGuard } from '@/composables/useAdminGuard.js'
 import BigButton from '@/components/BigButton.vue'
 import VoiceInput from '@/components/VoiceInput.vue'
 import { useConfigStore } from '@/store/config.js'
+const rootFontSize = useRootFontSize()
 
 const configStore = useConfigStore()
 function t(p, d = '') { return configStore.getDisplay(p, d) }

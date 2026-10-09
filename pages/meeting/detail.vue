@@ -2,6 +2,7 @@
   pages/meeting/detail.vue - 会议详情
 -->
 <template>
+  <page-meta :root-font-size="rootFontSize" />
   <Skeleton v-if="loading && !meeting.title" type="detail" />
   <view class="page-meeting-detail" v-if="meeting.title">
     <view class="status-banner" :class="'s-' + meeting.status">
@@ -57,12 +58,14 @@
 </template>
 
 <script setup>
+import { useRootFontSize } from '@/composables/useA11y.js'
 import { ref, onMounted } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import { callFunction } from '@/utils/request.js'
 import { formatDate } from '@/utils/format.js'
 import Skeleton from '@/components/Skeleton.vue'
 import { useConfigStore } from '@/store/config.js'
+const rootFontSize = useRootFontSize()
 
 const configStore = useConfigStore()
 function t(p, d = '') { return configStore.getDisplay(p, d) }

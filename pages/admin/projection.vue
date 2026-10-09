@@ -3,6 +3,7 @@
   用途：开会投屏用，全屏大字号，支持左右滑动切换维度
 -->
 <template>
+  <page-meta :root-font-size="rootFontSize" />
   <view class="page-projection" @touchstart="onTouchStart" @touchend="onTouchEnd">
     <!-- 顶部：村名+年月 -->
     <view class="header">
@@ -79,11 +80,13 @@
 </template>
 
 <script setup>
+import { useRootFontSize } from '@/composables/useA11y.js'
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { onLoad, onShow } from '@dcloudio/uni-app'
 import { callFunction } from '@/utils/request.js'
 import { useConfigStore } from '@/store/config.js'
 import { useAdminGuard } from '@/composables/useAdminGuard.js'
+const rootFontSize = useRootFontSize()
 
 const configStore = useConfigStore()
 function t(p, d = '') { return configStore.getDisplay(p, d) }

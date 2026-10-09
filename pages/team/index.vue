@@ -3,6 +3,7 @@
   用途：展示班子成员、党员、村民代表、监委会
 -->
 <template>
+  <page-meta :root-font-size="rootFontSize" />
   <view class="page-team">
     <view class="banner">
       <view class="banner-bg"></view>
@@ -47,12 +48,14 @@
 </template>
 
 <script setup>
+import { useRootFontSize } from '@/composables/useA11y.js'
 import { ref, computed, onMounted } from 'vue'
 import { onPullDownRefresh } from '@dcloudio/uni-app'
 import { callFunction } from '@/utils/request.js'
 import { useConfigStore } from '@/store/config.js'
 import EmptyState from '@/components/EmptyState.vue'
 import Skeleton from '@/components/Skeleton.vue'
+const rootFontSize = useRootFontSize()
 
 const configStore = useConfigStore()
 function t(p, d = '') { return configStore.getDisplay(p, d) }

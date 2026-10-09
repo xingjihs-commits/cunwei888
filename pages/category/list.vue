@@ -4,6 +4,7 @@
   名称读 display_names；大类/小类显隐读 modules
 -->
 <template>
+  <page-meta :root-font-size="rootFontSize" />
   <view class="page-category">
     <view class="cat-header">
       <text class="cat-title">{{ catName }}</text>
@@ -30,10 +31,12 @@
 </template>
 
 <script setup>
+import { useRootFontSize } from '@/composables/useA11y.js'
 import { ref, computed } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import { useConfigStore } from '@/store/config.js'
 import EmptyState from '@/components/EmptyState.vue'
+const rootFontSize = useRootFontSize()
 
 const configStore = useConfigStore()
 

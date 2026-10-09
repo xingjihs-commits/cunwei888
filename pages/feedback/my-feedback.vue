@@ -3,6 +3,7 @@
   用途：查看自己提交的反映工单列表
 -->
 <template>
+  <page-meta :root-font-size="rootFontSize" />
   <view class="page-my-feedback">
     <view class="filter-bar">
       <view 
@@ -31,6 +32,7 @@
 </template>
 
 <script setup>
+import { useRootFontSize } from '@/composables/useA11y.js'
 import { ref, onMounted } from 'vue'
 import { onShow, onPullDownRefresh } from '@dcloudio/uni-app'
 import { callFunction } from '@/utils/request.js'
@@ -40,6 +42,7 @@ import Skeleton from '@/components/Skeleton.vue'
 import { useConfigStore } from '@/store/config.js'
 import { usePagination } from '@/composables/usePagination.js'
 import { ensureAuth, AUTH_LOGIN } from '@/utils/auth.js'
+const rootFontSize = useRootFontSize()
 
 const configStore = useConfigStore()
 function t(p, d = '') { return configStore.getDisplay(p, d) }

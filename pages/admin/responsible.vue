@@ -3,6 +3,7 @@
   用途：管理员管理工单承办人名单
 -->
 <template>
+  <page-meta :root-font-size="rootFontSize" />
   <view class="page-responsible">
     <view class="card">
       <view class="card-title">责任人列表</view>
@@ -42,12 +43,14 @@
 </template>
 
 <script setup>
+import { useRootFontSize } from '@/composables/useA11y.js'
 import { ref, reactive, onMounted } from 'vue'
 import { callFunction } from '@/utils/request.js'
 import BigButton from '@/components/BigButton.vue'
 import EmptyState from '@/components/EmptyState.vue'
 import { useConfigStore } from '@/store/config.js'
 import { useAdminGuard } from '@/composables/useAdminGuard.js'
+const rootFontSize = useRootFontSize()
 
 const configStore = useConfigStore()
 function t(p, d = '') { return configStore.getDisplay(p, d) }

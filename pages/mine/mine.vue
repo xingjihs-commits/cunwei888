@@ -7,7 +7,8 @@
     4. 默认头像用 base64 PNG 替代 SVG（兼容性更好）
 -->
 <template>
-  <view class="page-mine" :style="a11yStyle">
+  <page-meta :root-font-size="rootFontSize" />
+  <view class="page-mine">
     <view class="header" :style="{ paddingTop: statusBarHeight + 'px' }">
       <view class="user-card">
         <!-- 头像：用 button open-type=chooseAvatar -->
@@ -237,12 +238,12 @@ import { ref, computed, onMounted } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 import { useUserStore } from '@/store/user.js'
 import { useConfigStore } from '@/store/config.js'
-import { useA11yStyle } from '@/composables/useA11y.js'
+import { useRootFontSize } from '@/composables/useA11y.js'
 
 const userStore = useUserStore()
 const configStore = useConfigStore()
 function t(p, d = '') { return configStore.getDisplay(p, d) }
-const a11yStyle = useA11yStyle()
+const rootFontSize = useRootFontSize()
 const statusBarHeight = ref(20)
 
 // 默认头像：用一个简单的圆形红底白字"民"

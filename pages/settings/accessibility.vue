@@ -4,6 +4,7 @@
   入口：mine.vue → 服务协议下方"适老化设置"
 -->
 <template>
+  <page-meta :root-font-size="rootFontSize" />
   <view class="page-settings">
     <view class="card">
       <view class="card-title">字号大小</view>
@@ -74,10 +75,12 @@
 </template>
 
 <script setup>
+import { useRootFontSize } from '@/composables/useA11y.js'
 import { ref, computed, onMounted } from 'vue'
 import BigButton from '@/components/BigButton.vue'
 import { useConfigStore } from '@/store/config.js'
 import { a11y, loadA11y, saveA11y } from '@/utils/accessibility.js'
+const rootFontSize = useRootFontSize()
 
 const configStore = useConfigStore()
 function t(p, d = '') { return configStore.getDisplay(p, d) }

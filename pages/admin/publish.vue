@@ -3,6 +3,7 @@
   用途：管理员发布新闻、公示、项目、价格、任务
 -->
 <template>
+  <page-meta :root-font-size="rootFontSize" />
   <view class="page-publish">
     <view class="type-tabs">
       <view 
@@ -62,6 +63,7 @@
 </template>
 
 <script setup>
+import { useRootFontSize } from '@/composables/useA11y.js'
 import { ref, reactive, computed, onMounted } from 'vue'
 import { callFunction, uploadImages, acquireLock, releaseLock, cleanupFileIDs } from '@/utils/request.js'
 import { useAdminGuard } from '@/composables/useAdminGuard.js'
@@ -70,6 +72,7 @@ import VoiceInput from '@/components/VoiceInput.vue'
 import PublishExtraFields from '@/components/admin/PublishExtraFields.vue'
 import { autoFormat } from '@/utils/formatText.js'
 import { useConfigStore } from '@/store/config.js'
+const rootFontSize = useRootFontSize()
 
 const configStore = useConfigStore()
 function t(p, d = '') { return configStore.getDisplay(p, d) }

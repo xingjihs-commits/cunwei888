@@ -3,6 +3,7 @@
   用途：村民直送书记，不经派单流程
 -->
 <template>
+  <page-meta :root-font-size="rootFontSize" />
   <view class="page-mailbox">
     <view class="hero">
       <view class="hero-icon">✉️</view>
@@ -56,6 +57,7 @@
 </template>
 
 <script setup>
+import { useRootFontSize } from '@/composables/useA11y.js'
 import { reactive, computed, onMounted, onUnmounted, watch } from 'vue'
 import { callFunction, acquireLock, releaseLock } from '@/utils/request.js'
 import { requestSubscribe } from '@/utils/subscribe.js'
@@ -64,6 +66,7 @@ import Disclaimer from '@/components/Disclaimer.vue'
 import VoiceInput from '@/components/VoiceInput.vue'
 import { ensureAuth, AUTH_VERIFIED } from '@/utils/auth.js'
 import { useConfigStore } from '@/store/config.js'
+const rootFontSize = useRootFontSize()
 
 const configStore = useConfigStore()
 function t(p, d = '') { return configStore.getDisplay(p, d) }

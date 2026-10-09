@@ -4,6 +4,7 @@
   入参（通过 url query）：targetType, targetId, targetTitle
 -->
 <template>
+  <page-meta :root-font-size="rootFontSize" />
   <view class="report-page">
     <view class="target-card">
       <view class="target-label">举报对象</view>
@@ -67,6 +68,7 @@
 </template>
 
 <script setup>
+import { useRootFontSize } from '@/composables/useA11y.js'
 import { ref, computed } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import { useUserStore } from '@/store/user.js'
@@ -75,6 +77,7 @@ import { requestSubscribe } from '@/utils/subscribe.js'
 import BigButton from '@/components/BigButton.vue'
 import { useConfigStore } from '@/store/config.js'
 import { ensureAuth, AUTH_VERIFIED } from '@/utils/auth.js'
+const rootFontSize = useRootFontSize()
 
 const userStore = useUserStore()
 const configStore = useConfigStore()

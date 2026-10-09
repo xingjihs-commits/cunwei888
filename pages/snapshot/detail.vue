@@ -3,6 +3,7 @@
   用途：查看随手拍详情，可点赞
 -->
 <template>
+  <page-meta :root-font-size="rootFontSize" />
   <Skeleton v-if="loading && !record.title" type="detail" />
   <view class="page-detail" v-if="record.title">
     <view class="status-banner" :class="'status-' + recordStatusClass">
@@ -81,6 +82,7 @@
 </template>
 
 <script setup>
+import { useRootFontSize } from '@/composables/useA11y.js'
 import { ref, computed, onMounted } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import { callFunction } from '@/utils/request.js'
@@ -88,6 +90,7 @@ import { formatDate, statusText, formatDuration } from '@/utils/format.js'
 import { useConfigStore } from '@/store/config.js'
 import ResponsibleInfo from '@/components/ResponsibleInfo.vue'
 import Skeleton from '@/components/Skeleton.vue'
+const rootFontSize = useRootFontSize()
 
 const configStore = useConfigStore()
 function t(p, d = '') { return configStore.getDisplay(p, d) }

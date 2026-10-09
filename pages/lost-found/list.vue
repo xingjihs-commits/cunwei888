@@ -2,6 +2,7 @@
   pages/lost-found/list.vue - 失物招领
 -->
 <template>
+  <page-meta :root-font-size="rootFontSize" />
   <view class="page-lf">
     <view class="filter-bar">
       <view class="filter-item" :class="{ active: currentType === '' }" @click="switchType('')">全部</view>
@@ -32,6 +33,7 @@
 </template>
 
 <script setup>
+import { useRootFontSize } from '@/composables/useA11y.js'
 import { ref, onMounted } from 'vue'
 import { onPullDownRefresh } from '@dcloudio/uni-app'
 import { callFunction } from '@/utils/request.js'
@@ -40,6 +42,7 @@ import EmptyState from '@/components/EmptyState.vue'
 import Skeleton from '@/components/Skeleton.vue'
 import { useConfigStore } from '@/store/config.js'
 import { usePagination } from '@/composables/usePagination.js'
+const rootFontSize = useRootFontSize()
 
 const configStore = useConfigStore()
 function t(p, d = '') { return configStore.getDisplay(p, d) }

@@ -2,6 +2,7 @@
   pages/lost-found/publish.vue - 发布失物招领
 -->
 <template>
+  <page-meta :root-font-size="rootFontSize" />
   <view class="page-lf-publish">
     <view class="card">
       <view class="form-group">
@@ -52,6 +53,7 @@
 </template>
 
 <script setup>
+import { useRootFontSize } from '@/composables/useA11y.js'
 import { reactive, computed, onMounted, watch } from 'vue'
 import { callFunction, uploadImages, acquireLock, releaseLock, cleanupFileIDs } from '@/utils/request.js'
 import { requestSubscribe } from '@/utils/subscribe.js'
@@ -59,6 +61,7 @@ import BigButton from '@/components/BigButton.vue'
 import VoiceInput from '@/components/VoiceInput.vue'
 import { useConfigStore } from '@/store/config.js'
 import { ensureAuth, AUTH_VERIFIED } from '@/utils/auth.js'
+const rootFontSize = useRootFontSize()
 
 const configStore = useConfigStore()
 function t(p, d = '') { return configStore.getDisplay(p, d) }

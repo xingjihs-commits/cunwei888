@@ -3,6 +3,7 @@
   [暂不使用] V1.7 起从 pages.json 移除路由（代码/云函数保留，恢复只需重新注册路由）
 -->
 <template>
+  <page-meta :root-font-size="rootFontSize" />
   <view class="page-vote-detail" v-if="vote.title">
     <view class="status-banner" :class="'s-' + voteStatusClass">
       <text>{{ statusText(vote.status) }}</text>
@@ -69,6 +70,7 @@
 </template>
 
 <script setup>
+import { useRootFontSize } from '@/composables/useA11y.js'
 import { ref, computed, onMounted } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import { callFunction, acquireLock, releaseLock } from '@/utils/request.js'
@@ -76,6 +78,7 @@ import { requestSubscribe } from '@/utils/subscribe.js'
 import { formatDate } from '@/utils/format.js'
 import BigButton from '@/components/BigButton.vue'
 import { useConfigStore } from '@/store/config.js'
+const rootFontSize = useRootFontSize()
 
 const configStore = useConfigStore()
 function t(p, d = '') { return configStore.getDisplay(p, d) }

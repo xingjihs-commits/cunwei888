@@ -12,7 +12,8 @@
   名称读 display_names，显隐读 modules
 -->
 <template>
-  <view class="page-home" :style="a11yStyle">
+  <page-meta :root-font-size="rootFontSize" />
+  <view class="page-home">
     <!-- ① 顶部栏 + 消息入口 -->
     <view class="nav-bar" :style="{ paddingTop: statusBarHeight + 'px' }">
       <view class="nav-top">
@@ -117,11 +118,11 @@ import SecretaryCards from '@/components/home/SecretaryCards.vue'
 import PhoneGrid from '@/components/home/PhoneGrid.vue'
 import CategoryList from '@/components/home/CategoryList.vue'
 import LeaderCare from '@/components/home/LeaderCare.vue'
-import { useA11yStyle } from '@/composables/useA11y.js'
+import { useRootFontSize } from '@/composables/useA11y.js'
 
 const userStore = useUserStore()
 const configStore = useConfigStore()
-const a11yStyle = useA11yStyle()
+const rootFontSize = useRootFontSize()
 
 const statusBarHeight = ref(20)
 const newsList = ref([])

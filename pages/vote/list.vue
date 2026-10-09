@@ -3,6 +3,7 @@
   [暂不使用] V1.7 起从 pages.json 移除路由（代码/云函数保留，恢复只需重新注册路由）
 -->
 <template>
+  <page-meta :root-font-size="rootFontSize" />
   <view class="page-vote">
     <view class="filter-bar">
       <view v-for="item in statusFilters" :key="item.value" class="filter-item"
@@ -35,6 +36,7 @@
 </template>
 
 <script setup>
+import { useRootFontSize } from '@/composables/useA11y.js'
 import { ref, onMounted } from 'vue'
 import { onPullDownRefresh } from '@dcloudio/uni-app'
 import { callFunction } from '@/utils/request.js'
@@ -44,6 +46,7 @@ import EmptyState from '@/components/EmptyState.vue'
 import Skeleton from '@/components/Skeleton.vue'
 import { useConfigStore } from '@/store/config.js'
 import { usePagination } from '@/composables/usePagination.js'
+const rootFontSize = useRootFontSize()
 
 const userStore = useUserStore()
 const configStore = useConfigStore()

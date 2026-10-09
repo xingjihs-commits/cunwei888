@@ -3,6 +3,7 @@
   用途：书记查看所有信箱来信，按状态筛选
 -->
 <template>
+  <page-meta :root-font-size="rootFontSize" />
   <view class="page-mails">
     <view class="status-tabs">
       <view v-for="s in statusFilters" :key="s.value" class="tab" :class="{active: currentStatus === s.value}" @tap="onTabChange(s.value)">{{ s.label }}</view>
@@ -37,6 +38,7 @@
 </template>
 
 <script setup>
+import { useRootFontSize } from '@/composables/useA11y.js'
 import { ref, onMounted } from 'vue'
 import { onPullDownRefresh, onReachBottom } from '@dcloudio/uni-app'
 import { callFunction } from '@/utils/request.js'
@@ -45,6 +47,7 @@ import Skeleton from '@/components/Skeleton.vue'
 import { useAdminGuard } from '@/composables/useAdminGuard.js'
 import { useConfigStore } from '@/store/config.js'
 import { usePagination } from '@/composables/usePagination.js'
+const rootFontSize = useRootFontSize()
 
 const configStore = useConfigStore()
 function t(p, d = '') { return configStore.getDisplay(p, d) }

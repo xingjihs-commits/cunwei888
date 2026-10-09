@@ -4,6 +4,7 @@
   显示层：用"姓名（管什么）"，不用正式职务
 -->
 <template>
+  <page-meta :root-font-size="rootFontSize" />
   <view class="page-dispatch">
     <!-- 工单摘要 -->
     <view class="card summary-card">
@@ -87,6 +88,7 @@
 </template>
 
 <script setup>
+import { useRootFontSize } from '@/composables/useA11y.js'
 import { ref, reactive } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import { callFunction } from '@/utils/request.js'
@@ -95,6 +97,7 @@ import { useAdminGuard } from '@/composables/useAdminGuard.js'
 import StatusTag from '@/components/StatusTag.vue'
 import BigButton from '@/components/BigButton.vue'
 import { useConfigStore } from '@/store/config.js'
+const rootFontSize = useRootFontSize()
 
 const configStore = useConfigStore()
 function t(p, d = '') { return configStore.getDisplay(p, d) }

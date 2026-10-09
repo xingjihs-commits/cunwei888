@@ -3,6 +3,7 @@
   用途：村务会议公示、纪要查看
 -->
 <template>
+  <page-meta :root-font-size="rootFontSize" />
   <view class="page-meeting">
     <view class="filter-bar">
       <view v-for="item in typeFilters" :key="item.value" class="filter-item"
@@ -40,6 +41,7 @@
 </template>
 
 <script setup>
+import { useRootFontSize } from '@/composables/useA11y.js'
 import { ref, onMounted } from 'vue'
 import { onShow, onPullDownRefresh } from '@dcloudio/uni-app'
 import { callFunction } from '@/utils/request.js'
@@ -49,6 +51,7 @@ import EmptyState from '@/components/EmptyState.vue'
 import Skeleton from '@/components/Skeleton.vue'
 import { useConfigStore } from '@/store/config.js'
 import { usePagination } from '@/composables/usePagination.js'
+const rootFontSize = useRootFontSize()
 
 const userStore = useUserStore()
 const configStore = useConfigStore()

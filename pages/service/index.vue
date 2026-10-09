@@ -4,6 +4,7 @@
   导航：custom，与首页/我的一致
 -->
 <template>
+  <page-meta :root-font-size="rootFontSize" />
   <view class="page-service">
     <view class="nav-bar" :style="{ paddingTop: statusBarHeight + 'px' }">
       <text class="nav-title">{{ t('pageTitle.service', '服务') }}</text>
@@ -25,8 +26,10 @@
 </template>
 
 <script setup>
+import { useRootFontSize } from '@/composables/useA11y.js'
 import { ref, computed, onMounted } from 'vue'
 import { useConfigStore } from '@/store/config.js'
+const rootFontSize = useRootFontSize()
 
 const configStore = useConfigStore()
 const statusBarHeight = ref(20)

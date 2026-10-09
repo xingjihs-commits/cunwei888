@@ -3,6 +3,7 @@
   用途：展示村务连心桥服务协议
 -->
 <template>
+  <page-meta :root-font-size="rootFontSize" />
   <view class="page-agreement">
     <view class="content">
       <text class="title">村务连心桥服务协议</text>
@@ -53,8 +54,10 @@
 </template>
 
 <script setup>
+import { useRootFontSize } from '@/composables/useA11y.js'
 import { computed } from 'vue'
 import { useConfigStore } from '@/store/config.js'
+const rootFontSize = useRootFontSize()
 
 const configStore = useConfigStore()
 const villagePhone = computed(() => configStore.villagePhone)

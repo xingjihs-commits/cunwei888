@@ -3,6 +3,7 @@
   视频规范：720p / 1Mbps / 单条 ≤15MB / faststart / 存云开发存储 / 不自动播放 / 图文兜底
 -->
 <template>
+  <page-meta :root-font-size="rootFontSize" />
   <view class="page-leader-publish">
     <view class="card">
       <view class="form-group">
@@ -43,11 +44,13 @@
 </template>
 
 <script setup>
+import { useRootFontSize } from '@/composables/useA11y.js'
 import { reactive, ref, onMounted } from 'vue'
 import { callFunction } from '@/utils/request.js'
 import { useAdminGuard } from '@/composables/useAdminGuard.js'
 import BigButton from '@/components/BigButton.vue'
 import { useConfigStore } from '@/store/config.js'
+const rootFontSize = useRootFontSize()
 
 const configStore = useConfigStore()
 function t(p, d = '') { return configStore.getDisplay(p, d) }

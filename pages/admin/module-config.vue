@@ -4,6 +4,7 @@
   修复：原 useAdminGuard import 误置于 <style> 块，此处已移到 script
 -->
 <template>
+  <page-meta :root-font-size="rootFontSize" />
   <view class="page-module-config">
     <view class="card">
       <view class="card-title">村基础信息</view>
@@ -55,11 +56,13 @@
 </template>
 
 <script setup>
+import { useRootFontSize } from '@/composables/useA11y.js'
 import { ref, reactive, onMounted } from 'vue'
 import { useConfigStore } from '@/store/config.js'
 import { callFunction } from '@/utils/request.js'
 import { useAdminGuard } from '@/composables/useAdminGuard.js'
 import BigButton from '@/components/BigButton.vue'
+const rootFontSize = useRootFontSize()
 
 const configStore = useConfigStore()
 const saving = ref(false)

@@ -3,6 +3,7 @@
   用途：查看自己提交的随手拍记录
 -->
 <template>
+  <page-meta :root-font-size="rootFontSize" />
   <view class="page-my-snapshots">
     <scroll-view scroll-y class="list" @scrolltolower="loadMore">
       <Skeleton v-if="loading && list.length === 0" type="list" />
@@ -19,6 +20,7 @@
 </template>
 
 <script setup>
+import { useRootFontSize } from '@/composables/useA11y.js'
 import { onMounted } from 'vue'
 import { onShow, onPullDownRefresh } from '@dcloudio/uni-app'
 import { callFunction } from '@/utils/request.js'
@@ -28,6 +30,7 @@ import Skeleton from '@/components/Skeleton.vue'
 import { useConfigStore } from '@/store/config.js'
 import { usePagination } from '@/composables/usePagination.js'
 import { ensureAuth, AUTH_LOGIN } from '@/utils/auth.js'
+const rootFontSize = useRootFontSize()
 
 const configStore = useConfigStore()
 function t(p, d = '') { return configStore.getDisplay(p, d) }

@@ -3,6 +3,7 @@
   用途：查看新闻详情，点赞，分享
 -->
 <template>
+  <page-meta :root-font-size="rootFontSize" />
   <view class="page-news-detail">
     <view v-if="news.title" class="news-content">
       <view class="news-header">
@@ -60,11 +61,13 @@
 </template>
 
 <script setup>
+import { useRootFontSize } from '@/composables/useA11y.js'
 import { ref, computed, onMounted } from 'vue'
 import { onLoad, onShareAppMessage } from '@dcloudio/uni-app'
 import { callFunction } from '@/utils/request.js'
 import { formatDate } from '@/utils/format.js'
 import { useConfigStore } from '@/store/config.js'
+const rootFontSize = useRootFontSize()
 
 const configStore = useConfigStore()
 function t(p, d = '') { return configStore.getDisplay(p, d) }

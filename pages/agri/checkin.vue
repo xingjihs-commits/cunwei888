@@ -2,6 +2,7 @@
   pages/agri/checkin.vue - 留守老人每日签到
 -->
 <template>
+  <page-meta :root-font-size="rootFontSize" />
   <view class="page-checkin">
     <view class="hero">
       <view class="hero-icon">☀️</view>
@@ -42,12 +43,14 @@
 </template>
 
 <script setup>
+import { useRootFontSize } from '@/composables/useA11y.js'
 import { ref, onMounted } from 'vue'
 import { callFunction } from '@/utils/request.js'
 import { requestSubscribe } from '@/utils/subscribe.js'
 import BigButton from '@/components/BigButton.vue'
 import { useConfigStore } from '@/store/config.js'
 import { ensureAuth, AUTH_VERIFIED } from '@/utils/auth.js'
+const rootFontSize = useRootFontSize()
 
 const configStore = useConfigStore()
 function t(p, d = '') { return configStore.getDisplay(p, d) }

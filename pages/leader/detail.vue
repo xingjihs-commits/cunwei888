@@ -3,6 +3,7 @@
   视频用 <video> 不自动播放；无视频时图文兜底
 -->
 <template>
+  <page-meta :root-font-size="rootFontSize" />
   <view class="page-leader-detail">
     <view v-if="detail" class="content">
       <text class="title">{{ detail.title }}</text>
@@ -28,12 +29,14 @@
 </template>
 
 <script setup>
+import { useRootFontSize } from '@/composables/useA11y.js'
 import { ref } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import { callFunction } from '@/utils/request.js'
 import { formatDate } from '@/utils/format.js'
 import EmptyState from '@/components/EmptyState.vue'
 import { useConfigStore } from '@/store/config.js'
+const rootFontSize = useRootFontSize()
 
 const configStore = useConfigStore()
 function t(p, d = '') { return configStore.getDisplay(p, d) }

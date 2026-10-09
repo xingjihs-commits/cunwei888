@@ -2,6 +2,7 @@
   pages/secretary/mail-detail.vue - 信件详情
 -->
 <template>
+  <page-meta :root-font-size="rootFontSize" />
   <view class="page-mail-detail">
     <view v-if="mail.subject" class="card">
       <view class="mail-header">
@@ -34,11 +35,13 @@
 </template>
 
 <script setup>
+import { useRootFontSize } from '@/composables/useA11y.js'
 import { ref, onMounted } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import { callFunction } from '@/utils/request.js'
 import { formatDate, urgentText } from '@/utils/format.js'
 import { useConfigStore } from '@/store/config.js'
+const rootFontSize = useRootFontSize()
 
 const configStore = useConfigStore()
 function t(p, d = '') { return configStore.getDisplay(p, d) }

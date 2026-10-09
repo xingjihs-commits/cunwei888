@@ -3,6 +3,7 @@
   用途：开会投屏用，5维度统计+导出+投屏入口
 -->
 <template>
+  <page-meta :root-font-size="rootFontSize" />
   <view class="page-dashboard">
     <view class="date-bar">
       <picker mode="selector" :range="months" :value="monthIndex" @change="onMonthChange">
@@ -121,6 +122,7 @@
 </template>
 
 <script setup>
+import { useRootFontSize } from '@/composables/useA11y.js'
 import { ref, onMounted } from 'vue'
 import { onPullDownRefresh } from '@dcloudio/uni-app'
 import { callFunction } from '@/utils/request.js'
@@ -128,6 +130,7 @@ import EmptyState from '@/components/EmptyState.vue'
 import Skeleton from '@/components/Skeleton.vue'
 import { useConfigStore } from '@/store/config.js'
 import { useAdminGuard } from '@/composables/useAdminGuard.js'
+const rootFontSize = useRootFontSize()
 
 const configStore = useConfigStore()
 function t(p, d = '') { return configStore.getDisplay(p, d) }

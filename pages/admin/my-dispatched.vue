@@ -3,6 +3,7 @@
   用途：责任人查看分配给自己的工单，作为处理入口
 -->
 <template>
+  <page-meta :root-font-size="rootFontSize" />
   <view class="page-dispatched">
     <view class="status-tabs">
       <view v-for="s in statusFilters" :key="s.value" class="tab" :class="{active: currentStatus === s.value}" @tap="onTabChange(s.value)">{{ s.label }}</view>
@@ -42,6 +43,7 @@
 </template>
 
 <script setup>
+import { useRootFontSize } from '@/composables/useA11y.js'
 import { ref, onMounted } from 'vue'
 import { onPullDownRefresh, onReachBottom, onShow } from '@dcloudio/uni-app'
 import { callFunction } from '@/utils/request.js'
@@ -50,6 +52,7 @@ import Skeleton from '@/components/Skeleton.vue'
 import { useUserStore } from '@/store/user.js'
 import { useConfigStore } from '@/store/config.js'
 import { usePagination } from '@/composables/usePagination.js'
+const rootFontSize = useRootFontSize()
 
 const userStore = useUserStore()
 const configStore = useConfigStore()

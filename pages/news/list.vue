@@ -3,7 +3,8 @@
   用途：展示村务新闻列表，可按分类筛选
 -->
 <template>
-  <view class="page-news" :style="a11yStyle">
+  <page-meta :root-font-size="rootFontSize" />
+  <view class="page-news">
     <view class="filter-bar">
       <view 
         v-for="cat in categories"
@@ -41,11 +42,11 @@ import EmptyState from '@/components/EmptyState.vue'
 import Skeleton from '@/components/Skeleton.vue'
 import { useConfigStore } from '@/store/config.js'
 import { usePagination } from '@/composables/usePagination.js'
-import { useA11yStyle } from '@/composables/useA11y.js'
+import { useRootFontSize } from '@/composables/useA11y.js'
 
 const configStore = useConfigStore()
 function t(p, d = '') { return configStore.getDisplay(p, d) }
-const a11yStyle = useA11yStyle()
+const rootFontSize = useRootFontSize()
 
 const currentCategory = ref('全部')
 const categories = ['全部', '村务', '党建', '通知', '活动']

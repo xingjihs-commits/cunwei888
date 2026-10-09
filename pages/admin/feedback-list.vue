@@ -3,6 +3,7 @@
   用途：管理员查看所有工单，可派单、处理
 -->
 <template>
+  <page-meta :root-font-size="rootFontSize" />
   <view class="page-admin-feedback">
     <view class="filter-bar">
       <view 
@@ -75,6 +76,7 @@
 </template>
 
 <script setup>
+import { useRootFontSize } from '@/composables/useA11y.js'
 import { ref, computed, onMounted } from 'vue'
 import { onShow, onPullDownRefresh } from '@dcloudio/uni-app'
 import { callFunction } from '@/utils/request.js'
@@ -83,6 +85,7 @@ import FeedbackCard from '@/components/FeedbackCard.vue'
 import EmptyState from '@/components/EmptyState.vue'
 import Skeleton from '@/components/Skeleton.vue'
 import { useAdminGuard } from '@/composables/useAdminGuard.js'
+const rootFontSize = useRootFontSize()
 
 const configStore = useConfigStore()
 function t(p, d = '') { return configStore.getDisplay(p, d) }

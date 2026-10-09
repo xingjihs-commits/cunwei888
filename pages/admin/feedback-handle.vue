@@ -3,6 +3,7 @@
   用途：管理员派单、处理、回复工单
 -->
 <template>
+  <page-meta :root-font-size="rootFontSize" />
   <view class="page-handle">
     <Skeleton v-if="loading && !record._id" type="detail" />
     <view class="status-banner" :class="'status-' + record.status">
@@ -102,6 +103,7 @@
 </template>
 
 <script setup>
+import { useRootFontSize } from '@/composables/useA11y.js'
 import { ref, reactive, onMounted } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import { callFunction, uploadImages, acquireLock, releaseLock, cleanupFileIDs } from '@/utils/request.js'
@@ -111,6 +113,7 @@ import { useAdminGuard } from '@/composables/useAdminGuard.js'
 import StatusTag from '@/components/StatusTag.vue'
 import BigButton from '@/components/BigButton.vue'
 import Skeleton from '@/components/Skeleton.vue'
+const rootFontSize = useRootFontSize()
 
 const configStore = useConfigStore()
 function t(p, d = '') { return configStore.getDisplay(p, d) }

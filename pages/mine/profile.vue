@@ -3,6 +3,7 @@
   用途：查看和编辑个人信息
 -->
 <template>
+  <page-meta :root-font-size="rootFontSize" />
   <view class="page-profile">
     <view class="card">
       <view class="card-title">基本信息</view>
@@ -51,12 +52,14 @@
 </template>
 
 <script setup>
+import { useRootFontSize } from '@/composables/useA11y.js'
 import { computed, onMounted } from 'vue'
 import { useUserStore } from '@/store/user.js'
 import { maskPhone } from '@/utils/format.js'
 import BigButton from '@/components/BigButton.vue'
 import { useConfigStore } from '@/store/config.js'
 import { ensureAuth, AUTH_LOGIN } from '@/utils/auth.js'
+const rootFontSize = useRootFontSize()
 
 const userStore = useUserStore()
 const configStore = useConfigStore()

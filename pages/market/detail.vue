@@ -3,6 +3,7 @@
   用途：查看某农产品的价格历史趋势
 -->
 <template>
+  <page-meta :root-font-size="rootFontSize" />
   <view class="page-market-detail">
     <view class="header-card">
       <text class="product-name">{{ currentProduct }}</text>
@@ -38,12 +39,14 @@
 </template>
 
 <script setup>
+import { useRootFontSize } from '@/composables/useA11y.js'
 import { ref, computed, onMounted } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import { callFunction } from '@/utils/request.js'
 import { formatDate } from '@/utils/format.js'
 import EmptyState from '@/components/EmptyState.vue'
 import { useConfigStore } from '@/store/config.js'
+const rootFontSize = useRootFontSize()
 
 const configStore = useConfigStore()
 function t(p, d = '') { return configStore.getDisplay(p, d) }
