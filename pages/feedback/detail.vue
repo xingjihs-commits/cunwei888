@@ -4,7 +4,7 @@
 -->
 <template>
   <Skeleton v-if="loading && !record.title" type="detail" />
-  <view class="page-detail" v-if="record.title">
+  <view class="page-detail" v-if="record.title" :style="a11yStyle">
     <view class="status-banner" :class="'status-' + recordStatusClass">
       <text class="status-text">{{ statusText(record.status) }}</text>
       <text v-if="record.isOverdue" class="overdue-tip">⚠️ 已超时</text>
@@ -140,9 +140,11 @@ import BigButton from '@/components/BigButton.vue'
 import ProgressTimeline from '@/components/ProgressTimeline.vue'
 import Skeleton from '@/components/Skeleton.vue'
 import { ensureAuth, AUTH_VERIFIED } from '@/utils/auth.js'
+import { useA11yStyle } from '@/composables/useA11y.js'
 
 const configStore = useConfigStore()
 function t(p, d = '') { return configStore.getDisplay(p, d) }
+const a11yStyle = useA11yStyle()
 const record = ref({})
 const recordId = ref('')
 const evaluation = ref(0)

@@ -3,7 +3,7 @@
   用途：选择事项类型，填写描述，上传图片，提交工单
 -->
 <template>
-  <view class="page-feedback">
+  <view class="page-feedback" :style="a11yStyle">
     <view class="nav-bar" :style="{ paddingTop: statusBarHeight + 'px' }">
       <view class="nav-back" @click="goBack">← 返回</view>
       <text class="nav-title">{{ t('pageTitle.feedback', '村民反映') }}</text>
@@ -103,9 +103,11 @@ import BigButton from '@/components/BigButton.vue'
 import Disclaimer from '@/components/Disclaimer.vue'
 import { ensureAuth, AUTH_VERIFIED } from '@/utils/auth.js'
 import { requestSubscribe } from '@/utils/subscribe.js'
+import { useA11yStyle } from '@/composables/useA11y.js'
 
 const configStore = useConfigStore()
 function t(p, d = '') { return configStore.getDisplay(p, d) }
+const a11yStyle = useA11yStyle()
 const statusBarHeight = ref(20)
 
 const DRAFT_KEY = 'draft_feedback'
