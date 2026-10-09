@@ -28,45 +28,28 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { onMounted } from 'vue'
 import { onPullDownRefresh } from '@dcloudio/uni-app'
 import { callFunction } from '@/utils/request.js'
 import { relativeTime } from '@/utils/format.js'
 import EmptyState from '@/components/EmptyState.vue'
 import Skeleton from '@/components/Skeleton.vue'
 import { useConfigStore } from '@/store/config.js'
+import { usePagination } from '@/composables/usePagination.js'
 
 const configStore = useConfigStore()
 function t(p, d = '') { return configStore.getDisplay(p, d) }
 
-const list = ref([])
-const loading = ref(false)
-const page = ref(1)
-const total = ref(0)
+const { list, loading, refresh, loadMore } = usePagination(
+  (params) => callFunction('getBroadcasts', params),
+  { pageSize: 10 }
+)
 
 onMounted(() => {
   uni.setNavigationBarTitle({ title: t('pageTitle.broadcast', '书记广播') })
-  loadData()
+  refresh()
 })
-onPullDownRefresh(() => { page.value = 1; loadData() })
-
-async function loadData() {
-  if (loading.value) return
-  loading.value = true
-  try {
-    const res = await callFunction('getBroadcasts', { page: page.value, pageSize: 10 })
-    if (res.success) {
-      if (page.value === 1) list.value = res.data
-      else list.value = list.value.concat(res.data)
-      total.value = res.total
-    }
-  } catch (err) { console.error(err) }
-  finally { loading.value = false; uni.stopPullDownRefresh() }
-}
-
-function loadMore() {
-  if (list.value.length < total.value && !loading.value) { page.value++; loadData() }
-}
+onPullDownRefresh(() => refresh())
 
 function goDetail(item) {
   uni.navigateTo({ url: `/pages/secretary/broadcast-detail?broadcastId=${item._id}` })

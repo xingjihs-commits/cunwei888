@@ -33,59 +33,32 @@ import { onLoad, onPullDownRefresh } from '@dcloudio/uni-app'
 import { callFunction } from '@/utils/request.js'
 import { formatDate } from '@/utils/format.js'
 import { useConfigStore } from '@/store/config.js'
+import { usePagination } from '@/composables/usePagination.js'
 import EmptyState from '@/components/EmptyState.vue'
 import Skeleton from '@/components/Skeleton.vue'
 
 const configStore = useConfigStore()
 const type = ref('secretary')
-const list = ref([])
-const loading = ref(false)
-let page = 1
-let total = 0
+
+const { list, loading, refresh, loadMore } = usePagination(
+  (params) => callFunction('getLeaderContentList', { ...params, type: type.value }),
+  { pageSize: 10 }
+)
 
 function t(p, d = '') { return configStore.getDisplay(p, d) }
 
 function switchType(ty) {
   if (type.value === ty) return
   type.value = ty
-  page = 1
-  list.value = []
-  load()
+  refresh()
 }
 
 onLoad((q) => {
   if (q && q.type) type.value = q.type
-  load()
+  refresh()
 })
 
-onPullDownRefresh(async () => {
-  page = 1
-  await load()
-  uni.stopPullDownRefresh()
-})
-
-async function load() {
-  if (loading.value) return
-  loading.value = true
-  try {
-    const res = await callFunction('getLeaderContentList', { type: type.value, page, pageSize: 10 })
-    if (res.success) {
-      list.value = page === 1 ? res.data : list.value.concat(res.data)
-      total = res.total || 0
-    }
-  } catch (err) {
-    console.error('[leader list] 加载失败:', err)
-  } finally {
-    loading.value = false
-  }
-}
-
-function loadMore() {
-  if (list.value.length < total && !loading.value) {
-    page++
-    load()
-  }
-}
+onPullDownRefresh(() => refresh())
 
 function goDetail(item) {
   uni.navigateTo({ url: '/pages/leader/detail?id=' + item._id })
