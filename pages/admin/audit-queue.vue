@@ -112,19 +112,17 @@ async function onHandle(item, passed) {
 
   uni.showLoading({ title: '处理中...', mask: true })
   try {
-    if (item.recordId) {
-      const res = await callFunction('reviewContent', {
-        recordId: item.recordId,
-        passed: passed,
-        reason: '人工复审'
-      })
-      if (res.success) {
-        uni.showToast({ title: passed ? '已放行' : '已驳回', icon: 'success' })
-        loadData()
-      }
+    const res = await callFunction('reviewContent', {
+      queueId: item._id,
+      recordId: item.recordId || '',
+      passed: passed,
+      reason: '人工复审'
+    })
+    if (res.success) {
+      uni.showToast({ title: passed ? '已放行' : '已驳回', icon: 'success' })
+      loadData()
     } else {
-      // 没有 recordId 的（图片复审）暂时只能从 audit_queue 删除
-      uni.showToast({ title: '已处理（请到控制台手工删除该 audit_queue 记录）', icon: 'none', duration: 3000 })
+      uni.showToast({ title: res.message || '操作失败', icon: 'none' })
     }
   } catch (err) {
     console.error('[复审失败]:', err)
