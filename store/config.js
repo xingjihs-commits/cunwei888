@@ -13,31 +13,31 @@ import { callFunction } from '@/utils/request.js'
 // 默认展示名称（11 类）
 export const DEFAULT_DISPLAY_NAMES = {
   tab: { home: '村里', service: '办事', committee: '村委', mine: '我的' },
-  category: { info: '信息公示', complaint: '投诉举报', study: '学习培训', service: '办事查询', life: '生活服务' },
+  category: { info: '村务公开', complaint: '反映问题', study: '学习培训', service: '办事指南', life: '生活服务' },
   subCategory: {
     finance: '财务公示', project: '项目公示', policy: '政策公示',
-    meeting: '会议纪要', news: '村务新闻', team: '村委班子',
-    feedback: '村民反映', snapshot: '随手拍', mailbox: '书记信箱',
-    myFeedback: '我的反映', report: '举报入口',
+    meeting: '会议记录', news: '村里事', team: '村委',
+    feedback: '反映问题', snapshot: '随手拍', mailbox: '书记信箱',
+    myFeedback: '我的反映', report: '反映问题', vote: '投票表决',
     policyStudy: '政策宣讲', partyStudy: '党建学习', agriStudy: '农技培训',
     lawStudy: '普法教育', healthStudy: '健康知识',
-    guide: '办事指南', market: '惠农价格', subsidy: '惠农补贴',
-    task: '政策任务', calendar: '农事日历', checkin: '留守签到',
+    guide: '办事指南', market: '惠农信息', subsidy: '惠农补贴',
+    task: '政策落实', calendar: '农事日历', checkin: '留守签到',
     lostFound: '失物招领', phone: '常用电话'
   },
   entry: {
-    feedback: '村民反映', snapshot: '随手拍', mailbox: '书记信箱',
-    project: '集体项目', market: '惠农信息', policy: '政策落实',
-    broadcast: '书记广播', finance: '财务公示', meeting: '村务会议',
-    team: '村委班子', guide: '办事指南', lostFound: '失物招领',
+    feedback: '我要反映', snapshot: '随手拍', mailbox: '书记信箱',
+    project: '项目收益', market: '惠农信息', policy: '政策落实',
+    broadcast: '书记广播', finance: '财务公示', meeting: '会议记录',
+    team: '村委', guide: '办事指南', lostFound: '失物招领',
     calendar: '农事日历', checkin: '留守签到', message: '消息中心'
   },
   pageTitle: {
-    index: '村务连心桥', service: '服务', message: '消息中心', mine: '我的',
-    feedback: '村民反映', snapshot: '随手拍', mailbox: '书记信箱',
-    broadcast: '书记广播', notice: '信息公示', news: '村务新闻',
-    finance: '财务三资', project: '集体项目', market: '惠农信息',
-    task: '政策落实', team: '村委班子', meeting: '村务会议',
+    index: '村务连心桥', service: '办事', message: '消息中心', mine: '我的',
+    feedback: '反映问题', snapshot: '随手拍', mailbox: '书记信箱',
+    broadcast: '书记广播', notice: '村务公开', news: '村里事',
+    finance: '村里钱怎么花', project: '项目收益', market: '惠农信息',
+    task: '政策落实', team: '村委', meeting: '会议记录',
     guide: '办事指南', lostFound: '失物招领', calendar: '农事日历',
     checkin: '留守签到', leader: '书记风采', category: '分类列表'
   },
@@ -83,8 +83,9 @@ export const DEFAULT_DISPLAY_NAMES = {
   },
   home: {
     secretarySub: '直达书记，不经派单', noBroadcast: '暂无广播', unset: '待配置',
-    categoryTitle: '服务分类', leaderCare: '领导关怀', viewAll: '查看全部',
-    leaderSecretary: '支部书记工作风采'
+    categoryTitle: '服务分类', leaderCare: '上级走访', viewAll: '查看全部',
+    leaderSecretary: '支部书记工作风采',
+    findSecretary: '找书记', searchHint: '搜办事：低保、停水、医保...'
   },
   placeholder: {
     searchProduct: '搜索农产品名称',
@@ -229,7 +230,7 @@ export const DEFAULT_DISPLAY_NAMES = {
     totalLabel: '合计', yuan: '元'
   },
   leaderPublish: {
-    typeLabel: '类型', secretary: '书记风采', leader: '领导关怀',
+    typeLabel: '类型', secretary: '书记风采', leader: '上级走访',
     titleLabel: '标题', contentLabel: '正文', coverLabel: '封面图',
     chooseCover: '选择封面', videoLabel: '视频（可选，≤15MB，720p/1Mbps/faststart）',
     reselectVideo: '重新选择视频', chooseVideo: '选择视频'
@@ -358,11 +359,11 @@ export const useConfigStore = defineStore('config', {
     quickEntries: [
       { key: 'snapshot', name: '随手拍', icon: '📷', path: '/pages/snapshot/snapshot' },
       { key: 'feedback', name: '村民反映', icon: '💬', path: '/pages/feedback/feedback' },
-      { key: 'notice', name: '信息公示', icon: '📢', path: '/pages/notice/list' },
+      { key: 'notice', name: '村务公开', icon: '📢', path: '/pages/notice/list' },
       { key: 'project', name: '项目收益', icon: '💰', path: '/pages/project/list' },
       { key: 'market', name: '惠农信息', icon: '🌾', path: '/pages/market/list' },
       { key: 'task', name: '政策落实', icon: '📜', path: '/pages/task/list' },
-      { key: 'team', name: '村委班子', icon: '👥', path: '/pages/team/index' },
+      { key: 'team', name: '村委', icon: '👥', path: '/pages/team/index' },
       { key: 'mine', name: '办事大厅', icon: '🏛️', path: '/pages/mine/mine' }
     ],
 

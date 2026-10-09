@@ -82,8 +82,8 @@ const noticeCatIndex = ref(0)
 const newsCatIndex = ref(0)
 
 const publishTypes = [
-  { value: 'news', label: '村务新闻' },
-  { value: 'notice', label: '信息公示' },
+  { value: 'news', label: '村里事' },
+  { value: 'notice', label: '村务公开' },
   { value: 'project', label: '项目收益' },
   { value: 'market', label: '惠农价格' },
   { value: 'task', label: '政策任务' }

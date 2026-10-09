@@ -10,7 +10,7 @@
         <text class="form-label">{{ t('leaderPublish.typeLabel', '类型') }}</text>
         <view class="type-row">
           <view class="type-item" :class="{ active: form.type === 'secretary' }" @click="form.type = 'secretary'">{{ t('leaderPublish.secretary', '书记风采') }}</view>
-          <view class="type-item" :class="{ active: form.type === 'leader' }" @click="form.type = 'leader'">{{ t('leaderPublish.leader', '领导关怀') }}</view>
+          <view class="type-item" :class="{ active: form.type === 'leader' }" @click="form.type = 'leader'">{{ t('leaderPublish.leader', '上级走访') }}</view>
         </view>
       </view>
 

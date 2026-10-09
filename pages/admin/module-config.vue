@@ -90,17 +90,17 @@ const homeBlockLabels = {
 }
 
 const entryLabels = {
-  feedback: '村民反映', snapshot: '随手拍', mailbox: '书记信箱', broadcast: '书记广播',
-  notice: '信息公示', news: '村务新闻', finance: '财务公示', project: '集体项目',
-  market: '惠农信息', task: '政策落实', team: '村委班子', meeting: '村务会议',
+  feedback: '我要反映', snapshot: '随手拍', mailbox: '书记信箱', broadcast: '书记广播',
+  notice: '村务公开', news: '村里事', finance: '财务公示', project: '项目收益',
+  market: '惠农信息', task: '政策落实', team: '村委', meeting: '会议记录',
   guide: '办事指南', lostFound: '失物招领', calendar: '农事日历', checkin: '留守签到',
-  message: '消息中心', report: '举报', leader: '书记风采', vote: '一事一议'
+  message: '消息中心', report: '反映问题', leader: '书记风采', vote: '投票表决'
 }
 
 const moduleGroups = ref([
   { key: 'tab', label: '底部导航', items: [
-    { key: 'home', name: '首页' }, { key: 'service', name: '服务' },
-    { key: 'message', name: '消息' }, { key: 'mine', name: '我的' } ] },
+    { key: 'home', name: '村里' }, { key: 'service', name: '办事' },
+    { key: 'message', name: '村委' }, { key: 'mine', name: '我的' } ] },
   { key: 'category', label: '大类', items: [] },
   { key: 'entry', label: '入口', items: [] },
   { key: 'homeBlock', label: '首页区块', items: [] }

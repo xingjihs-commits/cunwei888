@@ -60,7 +60,7 @@ const { list, loading, refresh, loadMore } = usePagination(
 )
 
 onMounted(() => {
-  uni.setNavigationBarTitle({ title: t('pageTitle.news', '村务新闻') })
+  uni.setNavigationBarTitle({ title: t('pageTitle.news', '村里事') })
   refresh()
 })
 onPullDownRefresh(() => refresh())

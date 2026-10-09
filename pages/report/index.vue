@@ -106,8 +106,8 @@ const reasonOptions = [
 
 const targetTypeText = computed(() => {
   const map = {
-    news: '村务新闻',
-    notice: '信息公示',
+    news: '村里事',
+    notice: '村务公开',
     record: '工单/反映',
     snapshot: '随手拍',
     broadcast: '书记广播',

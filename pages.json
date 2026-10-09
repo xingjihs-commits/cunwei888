@@ -11,7 +11,7 @@
     {
       "path": "pages/feedback/feedback",
       "style": {
-        "navigationBarTitleText": "村民反映",
+        "navigationBarTitleText": "反映问题",
         "navigationStyle": "custom"
       }
     },
@@ -58,7 +58,7 @@
     {
       "path": "pages/notice/list",
       "style": {
-        "navigationBarTitleText": "信息公示",
+        "navigationBarTitleText": "村务公开",
         "enablePullDownRefresh": true
       }
     },
@@ -123,7 +123,7 @@
     {
       "path": "pages/news/list",
       "style": {
-        "navigationBarTitleText": "村务新闻",
+        "navigationBarTitleText": "村里事",
         "enablePullDownRefresh": true
       }
     },
@@ -199,7 +199,7 @@
     {
       "path": "pages/service/index",
       "style": {
-        "navigationBarTitleText": "服务",
+        "navigationBarTitleText": "办事",
         "navigationStyle": "custom"
       }
     },
@@ -230,7 +230,7 @@
     {
       "path": "pages/meeting/list",
       "style": {
-        "navigationBarTitleText": "村务会议",
+        "navigationBarTitleText": "会议记录",
         "enablePullDownRefresh": true
       }
     },
@@ -301,7 +301,7 @@
     {
       "path": "pages/settings/accessibility",
       "style": {
-        "navigationBarTitleText": "适老化设置"
+        "navigationBarTitleText": "字号设置"
       }
     }
   ],

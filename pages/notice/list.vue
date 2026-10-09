@@ -77,7 +77,7 @@ const { list, total, loading, refresh, loadMore } = usePagination(
 )
 
 onMounted(() => {
-  uni.setNavigationBarTitle({ title: t('pageTitle.notice', '信息公示') })
+  uni.setNavigationBarTitle({ title: t('pageTitle.notice', '村务公开') })
   refresh()
 })
 onPullDownRefresh(() => refresh())

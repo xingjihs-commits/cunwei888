@@ -9,7 +9,7 @@
       <view class="tab" :class="{ active: type === 'secretary' }" @click="switchType('secretary')">
         {{ t('pageTitle.leader', '书记风采') }}
       </view>
-      <view class="tab" :class="{ active: type === 'leader' }" @click="switchType('leader')">领导关怀</view>
+      <view class="tab" :class="{ active: type === 'leader' }" @click="switchType('leader')">上级走访</view>
     </view>
 
     <scroll-view scroll-y class="list" @scrolltolower="loadMore">
