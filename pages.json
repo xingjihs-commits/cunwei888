@@ -348,19 +348,19 @@
     "list": [
       {
         "pagePath": "pages/index/index",
-        "text": "首页",
+        "text": "村里",
         "iconPath": "static/tabbar/home.png",
         "selectedIconPath": "static/tabbar/home-active.png"
       },
       {
         "pagePath": "pages/service/index",
-        "text": "服务",
+        "text": "办事",
         "iconPath": "static/tabbar/service.png",
         "selectedIconPath": "static/tabbar/service-active.png"
       },
       {
-        "pagePath": "pages/message/center",
-        "text": "消息",
+        "pagePath": "pages/team/index",
+        "text": "村委",
         "iconPath": "static/tabbar/message.png",
         "selectedIconPath": "static/tabbar/message-active.png"
       },

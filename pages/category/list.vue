@@ -35,6 +35,7 @@ import { useRootFontSize } from '@/composables/useA11y.js'
 import { ref, computed } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import { useConfigStore } from '@/store/config.js'
+import { goPage } from '@/utils/nav.js'
 import EmptyState from '@/components/EmptyState.vue'
 const rootFontSize = useRootFontSize()
 
@@ -105,7 +106,7 @@ function subName(key) {
   return configStore.getDisplay('subCategory.' + key, key)
 }
 function go(path) {
-  uni.navigateTo({ url: path })
+  goPage(path)
 }
 </script>
 

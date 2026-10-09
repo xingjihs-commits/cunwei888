@@ -12,7 +12,7 @@ import { callFunction } from '@/utils/request.js'
 
 // 默认展示名称（11 类）
 export const DEFAULT_DISPLAY_NAMES = {
-  tab: { home: '首页', service: '服务', message: '消息', mine: '我的' },
+  tab: { home: '村里', service: '办事', committee: '村委', mine: '我的' },
   category: { info: '信息公示', complaint: '投诉举报', study: '学习培训', service: '办事查询', life: '生活服务' },
   subCategory: {
     finance: '财务公示', project: '项目公示', policy: '政策公示',

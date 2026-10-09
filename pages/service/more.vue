@@ -26,6 +26,7 @@
 import { useRootFontSize } from '@/composables/useA11y.js'
 import { computed } from 'vue'
 import { useConfigStore } from '@/store/config.js'
+import { goPage } from '@/utils/nav.js'
 const rootFontSize = useRootFontSize()
 
 const configStore = useConfigStore()
@@ -82,7 +83,7 @@ const groups = computed(() =>
 )
 
 function go(path) {
-  uni.navigateTo({ url: path })
+  goPage(path)
 }
 </script>
 
