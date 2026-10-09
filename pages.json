@@ -9,6 +9,12 @@
       }
     },
     {
+      "path": "pages/search/index",
+      "style": {
+        "navigationBarTitleText": "搜索"
+      }
+    },
+    {
       "path": "pages/feedback/feedback",
       "style": {
         "navigationBarTitleText": "反映问题",

@@ -134,7 +134,7 @@ onMounted(() => {
 function go(path) { goPage(path) }
 
 function onSearch() {
-  uni.showToast({ title: '搜索功能即将上线', icon: 'none' })
+  uni.navigateTo({ url: '/pages/search/index' })
 }
 
 function callPhone(number) {

@@ -1,0 +1,9 @@
+{
+  "name": "searchAll",
+  "version": "1.0.0",
+  "description": "聚合搜索（news/notices/records 等）",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

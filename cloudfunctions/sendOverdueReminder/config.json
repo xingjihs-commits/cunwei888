@@ -1,0 +1,10 @@
+{
+  "triggers": [
+    {
+      "name": "dailyOverdueReminder",
+      "type": "timer",
+      "config": "0 0 9 * * * *",
+      "remark": "每天 9:00 检查超时工单：催办责任人，超时≥3天升级书记"
+    }
+  ]
+}

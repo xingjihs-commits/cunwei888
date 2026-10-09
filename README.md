@@ -20,8 +20,8 @@
 
 | 类型 | 数量 | 说明 |
 |------|------|------|
-| 页面 | 70 | `pages/` 下 `.vue` 70 个，注册路由 68 个（`vote` 2 页已下线），含 21 个 admin 页面 |
-| 云函数 | 92 | `cloudfunctions/` 业务目录（另含 `common/` 公共模块，不部署） |
+| 页面 | 71 | `pages/` 下 `.vue` 71 个，注册路由 69 个（`vote` 2 页已下线），含 21 个 admin 页面 |
+| 云函数 | 93 | `cloudfunctions/` 业务目录（另含 `common/` 公共模块，不部署） |
 | 组件 | 18 | `components/` 下 `.vue`（含 `home/`、`admin/` 子目录） |
 | 组合式函数 | 1 | `composables/useAdminGuard.js` |
 | Store | 2 | `store/user.js`、`store/config.js` |
