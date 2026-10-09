@@ -27,6 +27,9 @@
       </view>
     </view>
 
+    <!-- 今日天气农事 -->
+    <WeatherBar v-if="show('homeBlock.weather')" :weather="weather" :farming="farming" />
+
     <!-- 错误 banner -->
     <view v-if="loadError" class="error-banner">
       <text class="error-icon">⚠️</text>
@@ -93,6 +96,8 @@ import NewsCard from '@/components/NewsCard.vue'
 import Skeleton from '@/components/Skeleton.vue'
 import SecretaryCards from '@/components/home/SecretaryCards.vue'
 import LeaderCare from '@/components/home/LeaderCare.vue'
+import WeatherBar from '@/components/home/WeatherBar.vue'
+import { getFarmingAdvice } from '@/utils/farmingCalendar.js'
 import { useRootFontSize } from '@/composables/useA11y.js'
 
 const configStore = useConfigStore()
@@ -113,6 +118,8 @@ const isLoading = ref(false)
 const careTab = ref('secretary')
 const secretaryItem = ref(null)
 const leaderItem = ref(null)
+const weather = ref(null)
+const farming = ref('')
 let lastLoadTime = 0
 let newsPage = 1
 let newsHasMore = true
@@ -134,6 +141,7 @@ onMounted(() => {
   statusBarHeight.value = sysInfo.statusBarHeight || 20
   // #endif
   configStore.loadConfig()
+  farming.value = getFarmingAdvice().yi
   loadData()
 })
 
@@ -165,6 +173,7 @@ async function loadData() {
       newsPage = 1
       newsHasMore = (res.data.news || []).length >= 5
       loadShowcase()
+      loadWeather()
     } else {
       loadError.value = true
     }
@@ -187,6 +196,17 @@ async function loadShowcase() {
     if (l && l.success && l.data && l.data.length) leaderItem.value = l.data[0]
   } catch (err) {
     console.error('[风采加载失败]:', err)
+  }
+}
+
+async function loadWeather() {
+  const code = String(configStore.county_code || '').trim()
+  if (!code) return
+  try {
+    const res = await callFunction('getWeather', { stationId: code })
+    if (res && res.success && res.data) weather.value = res.data
+  } catch (err) {
+    console.error('[天气加载失败]:', err)
   }
 }
 

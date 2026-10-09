@@ -1,0 +1,9 @@
+{
+  "name": "getWeather",
+  "version": "1.0.0",
+  "description": "天气代理（中国气象局 weather.cma.cn，无需 key）",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

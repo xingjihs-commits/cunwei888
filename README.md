@@ -21,11 +21,11 @@
 | 类型 | 数量 | 说明 |
 |------|------|------|
 | 页面 | 70 | `pages/` 下 `.vue` 70 个，注册路由 68 个（`vote` 2 页已下线），含 21 个 admin 页面 |
-| 云函数 | 91 | `cloudfunctions/` 业务目录（另含 `common/` 公共模块，不部署） |
-| 组件 | 17 | `components/` 下 `.vue`（含 `home/`、`admin/` 子目录） |
+| 云函数 | 92 | `cloudfunctions/` 业务目录（另含 `common/` 公共模块，不部署） |
+| 组件 | 18 | `components/` 下 `.vue`（含 `home/`、`admin/` 子目录） |
 | 组合式函数 | 1 | `composables/useAdminGuard.js` |
 | Store | 2 | `store/user.js`、`store/config.js` |
-| Utils | 12 | `utils/request.js`、`format.js`、`validate.js`、`audio.js`、`display.js`、`module.js`、`formatText.js`、`auth.js`、`accessibility.js`、`errorUtils.js`、`lockKeys.js`、`nav.js` |
+| Utils | 13 | `utils/request.js`、`format.js`、`validate.js`、`audio.js`、`display.js`、`module.js`、`formatText.js`、`auth.js`、`accessibility.js`、`errorUtils.js`、`lockKeys.js`、`nav.js`、`farmingCalendar.js` |
 | 文档 | 41 | `docs/` 下 `.md`（含 `01-合规文本/` 子目录 3 篇）；顶层 38 篇 |
 
 ## 项目结构

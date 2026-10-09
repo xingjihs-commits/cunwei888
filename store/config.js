@@ -255,7 +255,7 @@ export const DEFAULT_MODULES = {
   },
   homeBlock: {
     secretary: true, phone: true, category: true,
-    leader: true, notice: true, news: true
+    leader: true, notice: true, news: true, weather: true
   }
 }
 

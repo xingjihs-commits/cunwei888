@@ -29,8 +29,8 @@
         <input v-model="config.duty_phone" class="input" placeholder="值班人员电话" />
       </view>
       <view class="form-group">
-        <text class="form-label">县城气象代码</text>
-        <input v-model="config.county_code" class="input" placeholder="如：101010100（天气定位兜底）" />
+        <text class="form-label">气象站号</text>
+        <input v-model="config.county_code" class="input" placeholder="本村固定站号，如 58448（weather.cma.cn）" />
       </view>
     </view>
 
@@ -100,13 +100,13 @@ const config = reactive({
       meeting: true, guide: true, lostFound: true, calendar: true, checkin: true,
       message: true, report: true, leader: true, vote: false
     },
-    homeBlock: { secretary: true, phone: true, category: true, leader: true, notice: true, news: true }
+    homeBlock: { secretary: true, phone: true, category: true, leader: true, notice: true, news: true, weather: true }
   }
 })
 
 const homeBlockLabels = {
-  secretary: '书记直达', phone: '常用电话', category: '服务分类',
-  leader: '书记风采', notice: '最新公示', news: '最新新闻'
+  secretary: '找书记', phone: '常用电话', category: '服务分类',
+  leader: '书记风采', notice: '村务公开', news: '村里事', weather: '今日天气农事'
 }
 
 const entryLabels = {
