@@ -3,10 +3,10 @@
  * 用途：发布 leader_content（type = 'secretary' | 'leader'），checkAdmin + 内容安全
  */
 const cloud = require('wx-server-sdk')
-const { fail } = require('../common/errorUtils')
+const { fail } = require('./common/errorUtils')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
-const { checkAdmin, checkContentSecurity, checkImageSecurity } = require('../common/checkAdmin')
+const { checkAdmin, checkContentSecurity, checkImageSecurity, attachQueueRecord } = require('./common/checkAdmin')
 
 exports.main = async (event, context) => {
   const { OPENID } = cloud.getWXContext()
@@ -31,21 +31,25 @@ exports.main = async (event, context) => {
   }
 
   try {
-    // 1. 文本内容安全
+    // 1. 文本内容安全（分段检测）
     const textCheck = await checkContentSecurity(title + '\n' + content, OPENID, { collection: 'leader_content' })
-    if (textCheck === false) {
+    if (textCheck.result === false) {
       return { success: false, message: '内容包含违规信息' }
     }
     // 2. 封面图安全
+    let coverQueueId = ''
     if (coverImage) {
       const imgCheck = await checkImageSecurity(coverImage, { collection: 'leader_content' })
-      if (imgCheck === false) {
+      if (imgCheck.result === false) {
         return { success: false, message: '封面图包含违规内容' }
       }
+      if (imgCheck.result === 'review') coverQueueId = imgCheck.queueId
     }
 
     const now = new Date()
     const needVideoReview = !!videoFileID
+    // 文本/封面/视频任一待复审 → 先不发布（阻断先发后审）
+    const needReview = needVideoReview || textCheck.result === 'review' || !!coverQueueId
     const res = await db.collection('leader_content').add({
       data: {
         type: type,
@@ -53,8 +57,8 @@ exports.main = async (event, context) => {
         content: content,
         coverImage: coverImage,
         videoFileID: videoFileID,
-        published: !needVideoReview,
-        auditStatus: needVideoReview || textCheck === 'review' ? '待复审' : '',
+        published: !needReview,
+        auditStatus: needReview ? '待复审' : '',
         publisher: OPENID,
         publishTime: now,
         createTime: now,
@@ -62,6 +66,14 @@ exports.main = async (event, context) => {
         _openid: OPENID
       }
     })
+
+    // 复审队列回填
+    if (textCheck.result === 'review') {
+      await attachQueueRecord(textCheck.queueId, 'leader_content', res._id)
+    }
+    if (coverQueueId) {
+      await attachQueueRecord(coverQueueId, 'leader_content', res._id)
+    }
 
     // 视频无官方内容安全 API，强制入复审队列，人工审核通过后才发布
     if (needVideoReview) {
@@ -83,7 +95,7 @@ exports.main = async (event, context) => {
     return {
       success: true,
       id: res._id,
-      message: needVideoReview ? '已提交，视频审核通过后才发布' : '发布成功'
+      message: needReview ? '已提交人工复审，通过后发布' : '发布成功'
     }
   } catch (err) {
     console.error('[publishLeaderContent] 失败:', err)

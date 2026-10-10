@@ -6,8 +6,8 @@ const cloud = require('wx-server-sdk')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
-const { RECORD_STATUS, expandStatuses } = require('../common/constants')
-const { safePaging, stripOpenid } = require('../common/listUtils')
+const { RECORD_STATUS, expandStatuses } = require('./common/constants')
+const { safePaging, stripOpenid } = require('./common/listUtils')
 
 // 公示墙只显示待处理/已派单/处理中/已完成（不显示已驳回，保护村民隐私）
 const WALL_STATUSES = expandStatuses([
@@ -22,7 +22,7 @@ exports.main = async (event, context) => {
   const { page, pageSize } = safePaging(event, 20)
 
   try {
-    const conditions = [{ 'extra.category': 'snapshot', isPublic: true, status: _.in(WALL_STATUSES) }]
+    const conditions = [{ 'extra.category': 'snapshot', isPublic: true, status: _.in(WALL_STATUSES), auditStatus: _.neq('待复审') }]
     if (type) conditions.push({ type: type })
     const where = _.and(conditions)
 

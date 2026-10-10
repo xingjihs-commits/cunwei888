@@ -3,12 +3,12 @@
  * 改造点：使用 expandStatuses 兼容中英文老数据
  */
 const cloud = require('wx-server-sdk')
-const { fail } = require('../common/errorUtils')
+const { fail } = require('./common/errorUtils')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
-const { RECORD_OPEN_STATUSES, expandStatuses } = require('../common/constants')
-const { checkAdmin } = require('../common/checkAdmin')
+const { RECORD_OPEN_STATUSES, expandStatuses } = require('./common/constants')
+const { checkAdmin } = require('./common/checkAdmin')
 
 exports.main = async (event, context) => {
   const { OPENID } = cloud.getWXContext()
@@ -56,7 +56,8 @@ exports.main = async (event, context) => {
     }))
 
     let badQuery = db.collection('records').where({
-      evaluation: _.lte(2),
+      // 只算真实差评：evaluation>0 且 ≤2（0 分是未评价，不能混入）
+      evaluation: _.and(_.gt(0), _.lte(2)),
       isSecret: _.neq(true)
     })
     if (startDate) badQuery = badQuery.where({ createTime: _.gte(startDate) })

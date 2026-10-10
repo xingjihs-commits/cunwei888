@@ -3,11 +3,11 @@
  * 改造点：内容安全 + 图片安全
  */
 const cloud = require('wx-server-sdk')
-const { fail } = require('../common/errorUtils')
+const { fail } = require('./common/errorUtils')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
-const { checkAdminWeight, checkContentSecurity, checkImageSecurity, checkImagesSecurity } = require('../common/checkAdmin')
+const { checkAdminWeight, checkContentSecurity, checkImageSecurity, checkImagesSecurity, attachQueueRecord } = require('./common/checkAdmin')
 
 exports.main = async (event, context) => {
   const { OPENID } = cloud.getWXContext()
@@ -27,19 +27,25 @@ exports.main = async (event, context) => {
   if (content.length > 5000) {
     return { success: false, message: '内容不能超过5000字' }
   }
+  if (images.length > 9) {
+    return { success: false, message: '最多上传9张图片' }
+  }
 
   try {
-    // 1. 文本内容安全
+    let imageQueueIds = []
+    let coverQueueId = ''
+    // 1. 文本内容安全（分段检测）
     const textCheck = await checkContentSecurity(title + '\n' + content, OPENID, { collection: 'news' })
-    if (textCheck === false) {
+    if (textCheck.result === false) {
       return { success: false, message: '内容包含违规信息' }
     }
     // 2. 封面图安全
     if (coverImage) {
       const imgCheck = await checkImageSecurity(coverImage, { collection: 'news' })
-      if (imgCheck === false) {
+      if (imgCheck.result === false) {
         return { success: false, message: '封面图包含违规内容' }
       }
+      if (imgCheck.result === 'review') coverQueueId = imgCheck.queueId
     }
     // 3. 内容图片安全（并行检测）
     if (images && images.length) {
@@ -47,6 +53,7 @@ exports.main = async (event, context) => {
       if (!imgRes.ok) {
         return { success: false, message: '图片包含违规内容' }
       }
+      if (imgRes.queueIds && imgRes.queueIds.length) imageQueueIds = imgRes.queueIds
     }
 
     const now = new Date()
@@ -62,13 +69,18 @@ exports.main = async (event, context) => {
         viewCount: 0,
         likeCount: 0,
         likeUsers: [],
-        auditStatus: textCheck === 'review' ? '待复审' : '',
+        auditStatus: textCheck.result === 'review' ? '待复审' : '',
         publisher: OPENID,
         createTime: now,
         updateTime: now,
         _openid: OPENID
       }
     })
+
+    // 复审队列回填
+    if (textCheck.result === 'review') await attachQueueRecord(textCheck.queueId, 'news', res._id)
+    if (coverQueueId) await attachQueueRecord(coverQueueId, 'news', res._id)
+    for (const qid of imageQueueIds) await attachQueueRecord(qid, 'news', res._id)
 
     return { success: true, id: res._id, message: '新闻发布成功' }
   } catch (err) {

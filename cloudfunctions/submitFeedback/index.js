@@ -12,10 +12,10 @@ const cloud = require('wx-server-sdk')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
-const { RECORD_STATUS, SUPERVISE_LEVEL, FEEDBACK_TYPES, SECRET_TYPES, DEADLINE_MAP } = require('../common/constants')
-const { checkContentSecurity, checkImagesSecurity } = require('../common/checkAdmin')
-const { INTERNAL_TOKEN } = require('../common/internal')
-const { isBlocked } = require('../common/blocked')
+const { RECORD_STATUS, SUPERVISE_LEVEL, FEEDBACK_TYPES, SECRET_TYPES, DEADLINE_MAP } = require('./common/constants')
+const { checkContentSecurity, checkImagesSecurity, attachQueueRecord } = require('./common/checkAdmin')
+const { INTERNAL_TOKEN } = require('./common/internal')
+const { isBlocked } = require('./common/blocked')
 
 // 类型→责任人默认映射（数据库未配置时的兜底，与 store/config.js feedbackTypes 一致）
 const DEFAULT_DISPATCH = {
@@ -55,9 +55,10 @@ exports.main = async (event, context) => {
   }
 
   try {
-    // 1. 文本内容安全检测（fail-closed）
-    const textCheck = await checkContentSecurity(content, OPENID, { collection: 'records', recordId: '' })
-    if (textCheck === false) {
+    let imageQueueIds = []
+    // 1. 文本内容安全检测（fail-closed，分段检测）
+    const textCheck = await checkContentSecurity(content, OPENID, { collection: 'records' })
+    if (textCheck.result === false) {
       return { success: false, message: '内容包含违规信息，请修改后重试' }
     }
     // 2. 图片内容安全检测（并行）
@@ -66,6 +67,7 @@ exports.main = async (event, context) => {
       if (!imgRes.ok) {
         return { success: false, message: '图片包含违规内容，请删除后重试' }
       }
+      if (imgRes.queueIds && imgRes.queueIds.length) imageQueueIds = imgRes.queueIds
     }
 
     // 3. 查询 dispatchMap 获取责任人
@@ -140,7 +142,7 @@ exports.main = async (event, context) => {
       isPublic: false,
       likeCount: 0,
       likeUsers: [],
-      auditStatus: textCheck === 'review' ? '待复审' : '',
+      auditStatus: textCheck.result === 'review' ? '待复审' : '',
       extra: {},
       createTime: now,
       updateTime: now,
@@ -148,6 +150,14 @@ exports.main = async (event, context) => {
     }
 
     const res = await db.collection('records').add({ data: recordData })
+
+    // 5.5 复审队列回填（文本/图片 review 条目关联记录 id，复审闭环依赖此步）
+    if (textCheck.result === 'review') {
+      await attachQueueRecord(textCheck.queueId, 'records', res._id)
+    }
+    for (const qid of imageQueueIds) {
+      await attachQueueRecord(qid, 'records', res._id)
+    }
 
     // 6. 通知责任人（亲阅件不通知）
     if (!isSecret && assignee.openid) {

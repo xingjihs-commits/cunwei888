@@ -6,11 +6,13 @@ const cloud = require('wx-server-sdk')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
-const { OPENID } = cloud.getWXContext()
 
 const EMPTY = { data: [] }
 
 exports.main = async (event, context) => {
+  // 必须在 main 内取上下文：云函数实例热复用时模块只加载一次，
+  // 顶层取 OPENID 会固化为首个请求者，导致未读数串号
+  const { OPENID } = cloud.getWXContext()
   try {
     // 用 allSettled 思路：每个都 catch 兜底
     const [newsRes, noticeRes, priceRes, teamRes, broadcastRes, unreadRes, emergencyRes] = await Promise.all([

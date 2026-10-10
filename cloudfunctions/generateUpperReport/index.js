@@ -3,12 +3,13 @@
  * 改造点：使用 expandStatuses 兼容中英文老数据；tasks 状态全中文
  */
 const cloud = require('wx-server-sdk')
-const { fail } = require('../common/errorUtils')
+const { fail } = require('./common/errorUtils')
+const { fetchAll } = require('./common/db')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
-const { RECORD_DONE_STATUSES, TASK_DONE_STATUSES, expandStatuses } = require('../common/constants')
-const { checkAdmin } = require('../common/checkAdmin')
+const { RECORD_DONE_STATUSES, TASK_DONE_STATUSES, expandStatuses } = require('./common/constants')
+const { checkAdmin } = require('./common/checkAdmin')
 
 exports.main = async (event, context) => {
   const { OPENID } = cloud.getWXContext()
@@ -48,13 +49,16 @@ exports.main = async (event, context) => {
       db.collection('team_members').where({ type: 'party', enabled: true }).count()
     ])
 
-    const evalRecords = await db.collection('records')
-      .where({ createTime: _.gte(startDate).and(_.lt(endDate)), evaluation: _.gt(0) })
-      .get()
+    // fetchAll 分页拉取评价记录，破单次 get 100 条上限
+    const evalRecords = await fetchAll(
+      'records',
+      { createTime: _.gte(startDate).and(_.lt(endDate)), evaluation: _.gt(0) },
+      { max: 5000 }
+    )
     let avgEval = 0
-    if (evalRecords.data.length > 0) {
-      const sum = evalRecords.data.reduce((s, r) => s + (r.evaluation || 0), 0)
-      avgEval = Math.round((sum / evalRecords.data.length) * 10) / 10
+    if (evalRecords.length > 0) {
+      const sum = evalRecords.reduce((s, r) => s + (r.evaluation || 0), 0)
+      avgEval = Math.round((sum / evalRecords.length) * 10) / 10
     }
 
     // 从 module_config 读取村名
@@ -96,6 +100,12 @@ exports.main = async (event, context) => {
       generatedBy: OPENID,
       createTime: now
     }
+
+    // 幂等：同 year+month+type 先删旧报告再插入（对照 generatePerformanceReport 覆盖式）
+    await db.collection('upper_reports')
+      .where({ year: y, month: m, type: reportType })
+      .remove()
+      .catch(() => {})
 
     const res = await db.collection('upper_reports').add({ data: reportData })
 

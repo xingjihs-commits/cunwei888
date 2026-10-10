@@ -9,10 +9,10 @@ const cloud = require('wx-server-sdk')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
-const { RECORD_STATUS, SUPERVISE_LEVEL } = require('../common/constants')
-const { checkContentSecurity, checkImagesSecurity } = require('../common/checkAdmin')
-const { INTERNAL_TOKEN } = require('../common/internal')
-const { isBlocked } = require('../common/blocked')
+const { RECORD_STATUS, SUPERVISE_LEVEL } = require('./common/constants')
+const { checkContentSecurity, checkImagesSecurity, attachQueueRecord } = require('./common/checkAdmin')
+const { INTERNAL_TOKEN } = require('./common/internal')
+const { isBlocked } = require('./common/blocked')
 
 // 随手拍类型默认派单映射
 const SNAPSHOT_DISPATCH = {
@@ -47,14 +47,19 @@ exports.main = async (event, context) => {
   }
 
   try {
+    let imageQueueIds = []
+    let textQueueId = ''
     // 1. 文本内容安全
     let auditStatus = ''
     if (content) {
       const textCheck = await checkContentSecurity(content, OPENID, { collection: 'records' })
-      if (textCheck === false) {
+      if (textCheck.result === false) {
         return { success: false, message: '内容包含违规信息' }
       }
-      if (textCheck === 'review') auditStatus = '待复审'
+      if (textCheck.result === 'review') {
+        auditStatus = '待复审'
+        textQueueId = textCheck.queueId
+      }
     }
     // 2. 图片内容安全（并行检测）
     if (images && images.length) {
@@ -62,6 +67,7 @@ exports.main = async (event, context) => {
       if (!imgRes.ok) {
         return { success: false, message: '图片包含违规内容' }
       }
+      if (imgRes.queueIds && imgRes.queueIds.length) imageQueueIds = imgRes.queueIds
     }
 
     // 3. 自动匹配责任人
@@ -90,7 +96,7 @@ exports.main = async (event, context) => {
     const res = await db.collection('records').add({
       data: {
         type: type,
-        title: '随手拍-' + (content || '无描述'),
+        title: ('随手拍-' + (content || '无描述')).substring(0, 50),
         content: content,
         images: images,
         location: location,
@@ -121,6 +127,12 @@ exports.main = async (event, context) => {
         _openid: OPENID
       }
     })
+
+    // 复审队列回填（文本/图片 review 条目关联记录 id）
+    if (textQueueId) await attachQueueRecord(textQueueId, 'records', res._id)
+    for (const qid of imageQueueIds) {
+      await attachQueueRecord(qid, 'records', res._id)
+    }
 
     // 通知责任人
     if (assignee.openid) {

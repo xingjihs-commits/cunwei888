@@ -3,6 +3,7 @@
  * 改造点：status 全中文（正常/求助/紧急）
  */
 const cloud = require('wx-server-sdk')
+const { fetchAll } = require('./common/db')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
@@ -31,33 +32,64 @@ exports.main = async (event, context) => {
     const now = new Date()
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
 
-    // 检查今天是否已签到
-    const existing = await db.collection('checkin_records')
-      .where({ _openid: OPENID, checkinDate: _.gte(today) })
-      .get()
-
-    if (existing.data.length > 0) {
-      return { success: false, message: '今日已签到' }
+    // 事务内查重+插入，防并发双签到（rollback 抛业务 Error 由下方 catch 处理）
+    try {
+      await db.runTransaction(async transaction => {
+        const existing = await transaction.collection('checkin_records')
+          .where({ _openid: OPENID, checkinDate: _.gte(today) })
+          .get()
+        if (existing.data.length > 0) {
+          throw new Error('今日已签到')
+        }
+        await transaction.collection('checkin_records').add({
+          data: {
+            checkinDate: now,
+            status: normalizedStatus,
+            note: note,
+            location: event.location || null,
+            createTime: now,
+            _openid: OPENID
+          }
+        })
+      })
+    } catch (txErr) {
+      if (txErr && txErr.message === '今日已签到') {
+        return { success: false, message: '今日已签到' }
+      }
+      // 事务不可用时降级为普通查重+写入
+      const check = await db.collection('checkin_records')
+        .where({ _openid: OPENID, checkinDate: _.gte(today) })
+        .count()
+      if (check.total > 0) {
+        return { success: false, message: '今日已签到' }
+      }
+      await db.collection('checkin_records').add({
+        data: {
+          checkinDate: now,
+          status: normalizedStatus,
+          note: note,
+          location: event.location || null,
+          createTime: now,
+          _openid: OPENID
+        }
+      })
     }
 
-    await db.collection('checkin_records').add({
-      data: {
-        checkinDate: now,
-        status: normalizedStatus,
-        note: note,
-        location: event.location || null,
-        createTime: now,
-        _openid: OPENID
-      }
-    })
-
-    // 求助/紧急：通知所有管理员
+    // 求助/紧急：通知所有管理员（fetchAll 分页，破 100 条上限）
     if (normalizedStatus === '紧急' || normalizedStatus === '求助') {
+      // 备注内容安全（违规词直达管理员通知）
+      if (note) {
+        const { checkContentSecurity } = require('./common/checkAdmin')
+        const noteCheck = await checkContentSecurity(note, OPENID, { collection: 'checkin_records' })
+        if (noteCheck.result === false) {
+          return { success: false, message: '备注包含违规信息' }
+        }
+      }
       const user = await db.collection('users').where({ _openid: OPENID }).get()
       const userName = user.data.length > 0 && user.data[0].realName ? user.data[0].realName : '某村民'
 
-      const admins = await db.collection('admins').where({ enabled: true }).get()
-      for (const admin of admins.data) {
+      const admins = await fetchAll('admins', { enabled: true }, { max: 500 })
+      for (const admin of admins) {
         await db.collection('messages').add({
           data: {
             type: 'elderly_alert',

@@ -6,18 +6,32 @@
 const cloud = require('wx-server-sdk')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
-const { checkAdmin } = require('../common/checkAdmin')
+const { checkAdmin } = require('./common/checkAdmin')
 
-// 集合清单（v2.0 完整版）
+// 集合清单（v3 完整版：补齐 reports/blocked_users/leader_content）
 const COLLECTIONS = [
   'records', 'type_config', 'users', 'admins', 'notices',
   'projects', 'market_prices', 'tasks', 'task_progress',
   'news', 'team_members', 'performance', 'rectifications',
   'subscriptions', 'logs', 'module_config', 'audit_queue', 'faq',
-  // v2.0 新增集合
   'secretary_mails', 'broadcasts', 'service_guides',
   'upper_reports', 'meetings', 'votes', 'finance_reports',
-  'messages', 'subsidies', 'agri_calendar', 'checkin_records'
+  'messages', 'subsidies', 'agri_calendar', 'checkin_records',
+  // v3 补齐（此前清单遗漏，导致举报/封禁/书记风采在新环境不可用）
+  'reports', 'blocked_users', 'leader_content'
+]
+
+// 高频查询建议索引（wx-server-sdk 无建索引 API，需在云开发控制台手工创建）
+const INDEX_HINTS = [
+  'records: createTime desc, assigneeOpenid asc, status asc, isSecret asc, isPublic asc',
+  'messages: targetOpenid asc + isRead asc（组合）',
+  'audit_queue: status asc + createTime desc（组合）',
+  'checkin_records: _openid asc + checkinDate desc（组合）',
+  'users: _openid asc, phone asc',
+  'reports: reporterOpenid asc + status asc（组合）',
+  'task_progress: taskId asc + createTime desc（组合）',
+  'module_config: moduleKey asc',
+  'subscriptions: _openid asc + productName asc（组合）'
 ]
 
 exports.main = async (event, context) => {
@@ -67,10 +81,12 @@ exports.main = async (event, context) => {
   } catch (err) {
     results.errors.push(`初始化数据失败: ${err.message || ''}`)
   }
+
+  results.indexHints = INDEX_HINTS
   
   return {
     success: true,
-    message: '数据库初始化完成',
+    message: '数据库初始化完成（请在控制台按 indexHints 创建索引）',
     results: results
   }
 }

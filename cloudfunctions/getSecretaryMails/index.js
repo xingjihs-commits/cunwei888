@@ -3,22 +3,24 @@
  * 用途：书记/管理员查看所有来信
  */
 const cloud = require('wx-server-sdk')
-const { fail } = require('../common/errorUtils')
+const { fail } = require('./common/errorUtils')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
+const { safePaging } = require('./common/listUtils')
 
 
 exports.main = async (event, context) => {
   const { OPENID } = cloud.getWXContext()
   
-  const checkAdmin = require('../common/checkAdmin')
+  const checkAdmin = require('./common/checkAdmin')
   const isAdmin = await checkAdmin(OPENID)
   if (!isAdmin) {
     return Object.assign(fail('FORBIDDEN'), { data: [] })
   }
   
-  const { page = 1, pageSize = 20, status = '' } = event
+  const { status = '' } = event
+  const { page, pageSize } = safePaging(event, 20)
   
   try {
     let query = db.collection('secretary_mails')

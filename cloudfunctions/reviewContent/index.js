@@ -1,24 +1,36 @@
 /**
  * cloudfunctions/reviewContent/index.js - 人工复审
- * 改造点：
- *   1. AUDIT_STATUS 全中文
- *   2. 复审后回写 audit_queue 原条 status='已处理'，避免重复复审
- *   3. 媒体（视频/音频）复审通过后分发到 mediaReview 自动发布
- *   4. 支持 queueId（图片等无 recordId 的复审）
+ * 闭环设计：
+ *   1. 提交/发布时疑似违规（review）内容先入库（auditStatus='待复审'），复审队列
+ *      条目由 attachQueueRecord 回填 collection + recordId（媒体类入队自带）。
+ *   2. 本函数按 queueItem.collection 分发回写：
+ *      - 媒体类（broadcasts/leader_content）→ mediaReview.applyMediaReview（置 published 并补群发）
+ *      - 内容类（news/notices/projects/finance_reports/market_prices/tasks/
+ *        team_members/meetings/votes）→ 通过=auditStatus 已通过；驳回=删除文档
+ *      - 业务类（records/reports/secretary_mails/users/task_progress）→ 按集合语义回写
+ *   3. 回写后置队列条目 status='已处理'，避免重复复审。
  */
 const cloud = require('wx-server-sdk')
-const { fail } = require('../common/errorUtils')
+const { fail } = require('./common/errorUtils')
+const { pluckDoc } = require('./common/docUtils')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
-const { AUDIT_STATUS, RECORD_STATUS } = require('../common/constants')
-const { checkAdmin } = require('../common/checkAdmin')
-const { applyMediaReview } = require('../common/mediaReview')
+const { AUDIT_STATUS, RECORD_STATUS, VERIFY_STATUS, MAIL_STATUS } = require('./common/constants')
+const { checkAdmin } = require('./common/checkAdmin')
+const { applyMediaReview } = require('./common/mediaReview')
 
 const MEDIA_COLLECTIONS = ['leader_content', 'broadcasts']
 
+// 删除型集合：复审驳回即删除文档（违规内容不公开）
+const REMOVE_ON_REJECT = [
+  'news', 'notices', 'projects', 'market_prices', 'finance_reports',
+  'tasks', 'team_members', 'meetings', 'votes'
+]
+
 exports.main = async (event, context) => {
   const { OPENID } = cloud.getWXContext()
-  const { recordId, queueId, passed, reason = '' } = event
+  const { recordId, queueId, passed: passedRaw, reason = '' } = event
+  const passed = !!passedRaw
 
   const isAdmin = await checkAdmin(OPENID)
   if (!isAdmin) {
@@ -36,7 +48,7 @@ exports.main = async (event, context) => {
     let queueItem = null
     if (queueId) {
       const doc = await db.collection('audit_queue').doc(queueId).get().catch(() => null)
-      queueItem = doc && doc.data ? doc.data : null
+      queueItem = pluckDoc(doc)
       if (queueItem) queueItem._id = queueItem._id || queueId
     }
     if (!queueItem && recordId) {
@@ -49,10 +61,14 @@ exports.main = async (event, context) => {
       queueItem = (qRes.data && qRes.data[0]) || null
     }
 
-    // 复审记录（保留原行为）
+    const targetCollection = (queueItem && queueItem.collection) || 'records'
+    const targetRecordId = (queueItem && queueItem.recordId) || recordId || ''
+
+    // 写复审记录（补 collection 便于追溯）
     await db.collection('audit_queue').add({
       data: {
-        recordId: recordId || '',
+        recordId: targetRecordId,
+        collection: targetCollection,
         reviewer: OPENID,
         passed: passed,
         reason: reason,
@@ -60,30 +76,56 @@ exports.main = async (event, context) => {
       }
     }).catch((e) => console.warn('[reviewContent] 复审记录写入失败:', e && e.errMsg))
 
-    const isMedia = queueItem && MEDIA_COLLECTIONS.indexOf(queueItem.collection) > -1
-    if (isMedia) {
-      // 视频/音频：分发到对应集合，置 published 并补群发
-      const r = await applyMediaReview(queueItem, passed)
-      if (!r.handled) {
-        console.warn('[reviewContent] 媒体分发未处理:', r.message)
-      }
-    } else if (queueItem && !queueItem.recordId && queueItem.fileID) {
-      // 图片类（无 recordId）：驳回时尽力删除云存储文件
-      if (!passed) {
-        await cloud.deleteFile({ fileList: [queueItem.fileID] }).catch((e) => {
-          console.warn('[reviewContent] 删除违规文件失败:', e && e.errMsg)
+    if (targetRecordId && targetCollection) {
+      if (MEDIA_COLLECTIONS.indexOf(targetCollection) > -1 && queueItem) {
+        // 视频/音频：分发到对应集合，置 published 并补群发
+        const r = await applyMediaReview(queueItem, passed)
+        if (!r.handled) {
+          console.warn('[reviewContent] 媒体分发未处理:', r.message)
+        }
+      } else if (!queueItem && !targetRecordId) {
+        // 无定位信息（历史遗留条目）
+        console.warn('[reviewContent] 队列条目缺少定位信息，跳过回写')
+      } else if (targetCollection === 'records') {
+        // 工单/随手拍/失物招领：驳回置已驳回
+        await db.collection('records').doc(targetRecordId).update({
+          data: passed
+            ? { auditStatus: AUDIT_STATUS.PASSED, updateTime: now }
+            : { auditStatus: AUDIT_STATUS.REJECTED, status: RECORD_STATUS.REJECTED, updateTime: now }
         })
-      }
-    } else if (recordId) {
-      // records 集合（文本/图片记录）
-      if (passed) {
-        await db.collection('records').doc(recordId).update({
-          data: { auditStatus: AUDIT_STATUS.PASSED, updateTime: now }
+      } else if (targetCollection === 'reports') {
+        await db.collection('reports').doc(targetRecordId).update({
+          data: passed
+            ? { auditStatus: AUDIT_STATUS.PASSED, updateTime: now }
+            : { status: RECORD_STATUS.REJECTED, auditStatus: AUDIT_STATUS.REJECTED, updateTime: now }
         })
+      } else if (targetCollection === 'secretary_mails') {
+        await db.collection('secretary_mails').doc(targetRecordId).update({
+          data: passed
+            ? { auditStatus: AUDIT_STATUS.PASSED, updateTime: now }
+            : { auditStatus: AUDIT_STATUS.REJECTED, status: MAIL_STATUS.CLOSED, updateTime: now }
+        })
+      } else if (targetCollection === 'users') {
+        await db.collection('users').doc(targetRecordId).update({
+          data: passed
+            ? { auditStatus: AUDIT_STATUS.PASSED, updateTime: now }
+            : { isVerified: false, verifyStatus: VERIFY_STATUS.REJECTED, auditStatus: AUDIT_STATUS.REJECTED, updateTime: now }
+        })
+      } else if (targetCollection === 'task_progress') {
+        if (!passed) {
+          await db.collection('task_progress').doc(targetRecordId).remove()
+        }
+      } else if (REMOVE_ON_REJECT.indexOf(targetCollection) > -1) {
+        if (passed) {
+          await db.collection(targetCollection).doc(targetRecordId).update({
+            data: { auditStatus: AUDIT_STATUS.PASSED, updateTime: now }
+          })
+        } else {
+          // 驳回即删除（违规内容不对外公开）
+          await db.collection(targetCollection).doc(targetRecordId).remove()
+        }
       } else {
-        await db.collection('records').doc(recordId).update({
-          data: { auditStatus: AUDIT_STATUS.REJECTED, status: RECORD_STATUS.REJECTED, updateTime: now }
-        })
+        console.warn('[reviewContent] 未知集合，仅标记队列已处理:', targetCollection)
       }
     }
 
@@ -97,7 +139,8 @@ exports.main = async (event, context) => {
     await db.collection('logs').add({
       data: {
         action: 'review_content',
-        recordId: recordId || '',
+        recordId: targetRecordId,
+        collection: targetCollection,
         queueId: queueItem ? queueItem._id : '',
         passed: passed,
         operator: OPENID,

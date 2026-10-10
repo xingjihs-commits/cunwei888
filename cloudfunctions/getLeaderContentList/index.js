@@ -7,17 +7,24 @@ const cloud = require('wx-server-sdk')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
+const { safePaging } = require('./common/listUtils')
 
 exports.main = async (event, context) => {
-  const { page = 1, pageSize = 10, type = '', id = '' } = event
+  const { type = '', id = '' } = event
+  const { page, pageSize } = safePaging(event, 10)
 
   try {
     if (id) {
       const doc = await db.collection('leader_content').doc(id).get()
-      return { success: true, data: doc.data }
+      const item = doc && doc.data
+      // 未发布（视频待复审）与待复审内容不对外可见
+      if (!item || item.published === false || item.auditStatus === '待复审') {
+        return { success: false, data: null, message: '内容不存在' }
+      }
+      return { success: true, data: item }
     }
 
-    const conditions = [{ published: _.neq(false) }]
+    const conditions = [{ published: _.neq(false) }, { auditStatus: _.neq('待复审') }]
     if (type) conditions.push({ type: type })
     const where = _.and(conditions)
 

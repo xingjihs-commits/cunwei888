@@ -6,12 +6,12 @@
  *   3. 决议内容安全
  */
 const cloud = require('wx-server-sdk')
-const { fail } = require('../common/errorUtils')
+const { fail } = require('./common/errorUtils')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
-const { MEETING_STATUS, normalizeStatus } = require('../common/constants')
-const { checkAdmin, checkContentSecurity } = require('../common/checkAdmin')
+const { MEETING_STATUS, normalizeStatus } = require('./common/constants')
+const { checkAdmin, checkContentSecurity } = require('./common/checkAdmin')
 
 const ALLOWED_STATUSES = [
   MEETING_STATUS.SCHEDULED, MEETING_STATUS.HOLDING, MEETING_STATUS.ENDED, MEETING_STATUS.CANCELLED,
@@ -37,7 +37,7 @@ exports.main = async (event, context) => {
   if (minutes) {
     const checkText = minutes + ' ' + decisions.map(d => typeof d === 'string' ? d : (d.content || '')).join(' ')
     const textCheck = await checkContentSecurity(checkText, OPENID, { collection: 'meetings', recordId: meetingId })
-    if (textCheck === false) {
+    if (textCheck.result === false) {
       return { success: false, message: '纪要内容包含违规信息' }
     }
   }

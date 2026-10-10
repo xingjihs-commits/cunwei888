@@ -7,14 +7,14 @@ const cloud = require('wx-server-sdk')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
-const { safePaging, stripOpenid } = require('../common/listUtils')
+const { safePaging, stripOpenid } = require('./common/listUtils')
 
 exports.main = async (event, context) => {
   const { subType = '' } = event
   const { page, pageSize } = safePaging(event, 20)
 
   try {
-    const conditions = [{ type: '失物招领', isPublic: true }]
+    const conditions = [{ type: '失物招领', isPublic: true, auditStatus: _.neq('待复审') }]
     if (subType) conditions.push({ subType: subType })
     const where = _.and(conditions)
 

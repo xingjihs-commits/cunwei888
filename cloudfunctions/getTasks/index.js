@@ -6,13 +6,17 @@ const cloud = require('wx-server-sdk')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
+const { TASK_STATUS, normalizeStatus } = require('./common/constants')
+const { safePaging } = require('./common/listUtils')
 
 
 exports.main = async (event, context) => {
-  const { page = 1, pageSize = 20, status = '' } = event
+  const { status = '' } = event
+  const { page, pageSize } = safePaging(event, 20)
   
   try {
-    let query = db.collection('tasks')
+    // review 阻断：待复审任务不对村民公开
+    let query = db.collection('tasks').where({ auditStatus: _.neq('待复审') })
     if (status) query = query.where({ status: status })
     
     const total = await query.count()
@@ -22,10 +26,10 @@ exports.main = async (event, context) => {
       .limit(pageSize)
       .get()
     
-    // 检查是否超时
+    // 检查是否超时（状态归一化后判断，兼容中英文）
     const now = new Date()
     for (const task of list.data) {
-      if (task.deadline && new Date(task.deadline) < now && task.status !== 'completed') {
+      if (task.deadline && new Date(task.deadline) < now && normalizeStatus(task.status) !== TASK_STATUS.COMPLETED) {
         task.isOverdue = true
       }
     }

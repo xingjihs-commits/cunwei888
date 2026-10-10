@@ -2,6 +2,73 @@
 
 本项目所有重要变更记录在此。格式参考 [Keep a Changelog](https://keepachangelog.com/zh-CN/)。
 
+## [1.8.0] - 2026-10-10
+
+### 后端云函数全面体检修复（P0×5 / P1×14 / P2×20）
+
+#### 部署基础（Wave 0）
+- 新增 `scripts/sync-common.js`（`npm run sync:common`）：common 公共模块复制进各云函数目录，
+  修复「跨目录 require 线上无法解析」的致命部署问题（此前后端从未成功部署）
+- 70 个云函数 `require('../common/')` 统一改写为 `require('./common/')`（零残留）
+- 根 `project.config.json` 的 `cloudfunctionRoot` 由错误的 `../../cloudfunctions/` 修正为 `cloudfunctions/`
+- 新增 `common/docUtils.js`（pluckDoc / hashId / csvEscape / escapeRegExp，纯函数可单测）
+
+#### P0 功能瘫痪修复
+- 修复 21 处 `doc().get()` 返回值误用（单对象被当数组取 `.data[0]`）：
+  详情页 8 处返回 undefined、点赞/投票事务 3 处 TypeError、评价/进度/审核 3 处失效、
+  派单/回信/统计 7 处静默失败——核心链路（详情→点赞→投票→评价）此前 100% 不可用
+- getVoteDetail 补缺失的 constants 导入（原 normalizeStatus 未定义必崩），`'closed'` 改用常量
+- searchAll 越权修复：records 源强制 `isPublic + 排除亲阅件`，防止村民搜索他人私密工单；
+  修正 leader_contents→leader_content、lost_found→records(extra.category) 两个失效搜索源
+- submitVote 校验 optionKey 存在（原无效选项也计 totalVotes 并返回成功）
+- getMeetingReviewList 差评查询补 `evaluation>0`（原把全部未评价工单算进差评清单）
+
+#### P1 严重缺陷修复
+- 复审闭环：内容安全返回 `{result, queueId}`；15 处提交/发布入库后 `attachQueueRecord`
+  回填 recordId；reviewContent 按 collection 分发回写（内容类驳回=删除，业务类=状态回写）
+- review 阻断：文本/图片疑似违规时广播不再直接群发全村、风采不再直接发布；
+  村民侧 16 个公开列表/详情统一过滤 `auditStatus='待复审'`（本人与管理端不受影响）
+- 破 100 条上限：db.js 新增 fetchAll，接入看板/导出/考核/汇报/广播群发/老人签到/
+  订阅消息/用户列表（原单月工单>100 条统计全错、村民>100 人广播漏发）
+- 权限收口：updateVillageInfo/updateModuleSwitch/updateSubscribeTemplates/updateDispatchMap
+  统一升 weight≥90（消灭 4 条绕过路径）；handleSecretRecord 限书记 role；
+  dispatchRecord 禁止重派亲阅件 + 存在性校验
+- 投票隐私：getVotes/getVoteDetail 剥离 options[].voters（原泄露全体投票人 openid）
+- initDatabase 补齐 reports/blocked_users/leader_content 集合 + 返回索引创建提示
+- migrateStatusEnum 修复 skip 分页（原固定 skip(processed) 大量漏迁）
+- approveUser 驳回补写 rejectTime（原 verifyUser 的 24h 限重提永不生效）；
+  verifyUser `'正常'` 改用 VERIFY_STATUS.APPROVED + 实名字段限长
+- getTasks 超时判断改 normalizeStatus（原硬编码英文 'completed' 迁移后全错）
+- 匿名加固：reporterOpenid 匿名改 sha256 短哈希（原为 openid 前 8 位明文截断）
+- getMyMessages 管理员可读 targetRole 类通知（原新举报/新来信无人可读）
+- getHomeData 顶层 getWXContext 移入 main（原实例热复用未读数串号）
+- publishLostFound 补 title/图片检测 + subType 白名单 + contactInfo 限长 + 封禁校验
+- 内容安全 >2500 字分段逐段检测（原后 2500 字不检测即入库）
+- detectAbnormalBehavior 防封禁记录堆积 + 删除未实现的规则3注释
+
+#### P2 健壮性
+- internal.js 令牌支持环境变量 INTERNAL_TOKEN 覆盖；logError 加封禁校验+限流+字段校验
+- 长度/枚举/数值校验收口（12 个函数）；formatText 输入≤10000 字
+- 4 处 STATUS_MAP 收口到 constants.normalizeStatus；onTimeRate 四处口径统一
+  （完成且未超时/总数）；generateUpperReport 同月报告覆盖式幂等
+- safePaging 推广 11 个裸分页函数；getMarketPrices/getServiceGuides 正则转义；
+  getAgriCalendar month parseInt
+- elderlyCheckin/subscribePriceAlert 事务防并发双击；elderlyCheckin note 过内容安全
+- exportPerformanceReport 接 csvEscape（公式/注入防护）；sendSubscribeMessage
+  按类型映射跳转页面（TYPE_PAGE_MAP）
+- updateModuleSwitch moduleKey 白名单（防误禁 village_info 等功能配置）；
+  updateVillageInfo/updateDispatchMap 结构限长校验；publishTeamMember 编辑校验存在性
+- getAgriCalendar/getDispatchMap/getModuleConfig/getResolvedFeedback 降级响应加 degraded 标记；
+  markMessageRead messageIds≤100；getMyFeedback/getMyDispatched 状态过滤接 expandStatuses；
+  speechRecognition 删除 callBaiduASR 死代码
+
+#### 测试与文档
+- 新增 tests/docUtils.test.js（17 用例：pluckDoc 双形态/hashId/csvEscape/escapeRegExp），
+  全量 51/51 通过；`node --check` 105 文件零语法错误；lint 零错误
+- docs/06 部署清单：头部重写（v1.8 部署方式变更 9 条必读、云函数数 94）
+- 遗留项（本次明确不做，见方案确认记录）：举报管理接口（getReports/updateReportStatus）
+  未新增，举报仍只有提交入口；管理端列表保留 _openid（匿名仅对普通村民生效）
+
 ## [1.7.0] - 2026-10-09
 
 ### 变更

@@ -6,12 +6,13 @@
  *   3. 拒绝原因内容安全
  */
 const cloud = require('wx-server-sdk')
-const { fail } = require('../common/errorUtils')
+const { fail } = require('./common/errorUtils')
+const { pluckDoc } = require('./common/docUtils')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
-const { VERIFY_STATUS } = require('../common/constants')
-const { checkAdminWeight, checkContentSecurity } = require('../common/checkAdmin')
+const { VERIFY_STATUS } = require('./common/constants')
+const { checkAdminWeight, checkContentSecurity } = require('./common/checkAdmin')
 
 exports.main = async (event, context) => {
   const { OPENID } = cloud.getWXContext()
@@ -29,10 +30,10 @@ exports.main = async (event, context) => {
   try {
     // 先查询当前状态，防止重复审核
     const userRes = await db.collection('users').doc(userId).get()
-    if (userRes.data.length === 0) {
+    const current = pluckDoc(userRes)
+    if (!current) {
       return { success: false, message: '用户不存在' }
     }
-    const current = userRes.data[0]
     if (current.verifyStatus && current.verifyStatus !== VERIFY_STATUS.PENDING && current.verifyStatus !== '待审核') {
       return { success: false, message: `该用户已审核过（当前状态：${current.verifyStatus}），不可重复审核` }
     }
@@ -40,7 +41,7 @@ exports.main = async (event, context) => {
     // 拒绝原因内容安全检测
     if (!approved && reason) {
       const check = await checkContentSecurity(reason, OPENID, { collection: 'users', recordId: userId })
-      if (check === false) {
+      if (check.result === false) {
         return { success: false, message: '驳回原因包含违规信息' }
       }
     }
@@ -53,6 +54,8 @@ exports.main = async (event, context) => {
         rejectReason: reason,
         approvedBy: OPENID,
         approvedTime: now,
+        // 驳回时补写 rejectTime（verifyUser 用它实现"驳回后 24h 限重提"）
+        rejectTime: approved ? null : now,
         updateTime: now
       }
     })

@@ -10,26 +10,30 @@ const _ = db.command
 
 exports.main = async (event, context) => {
   const { month = 0 } = event
-  
+  // 月份强转数字（前端传字符串 '3' 时 where 数字月份也能命中）
+  const monthNum = parseInt(month) || 0
+
   try {
     let query = db.collection('agri_calendar').where({ enabled: true })
-    if (month > 0) {
-      query = query.where({ month: month })
+    if (monthNum > 0) {
+      query = query.where({ month: monthNum })
     }
-    
+
     const res = await query
       .orderBy('sortOrder', 'asc')
       .limit(100)
       .get()
-    
+
+    if (!res.data.length && monthNum > 0) {
+      // 数据库无该月数据时降级默认数据（标记 degraded 供前端感知）
+      return { success: true, degraded: true, data: getDefaultCalendar(monthNum) }
+    }
+
     return { success: true, data: res.data }
   } catch (err) {
     console.error('查询失败:', err)
-    // 返回默认数据
-    return {
-      success: true,
-      data: getDefaultCalendar(month)
-    }
+    // 返回默认数据（降级，标记 degraded）
+    return { success: true, degraded: true, data: getDefaultCalendar(monthNum) }
   }
 }
 

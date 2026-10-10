@@ -1,18 +1,17 @@
 /**
  * cloudfunctions/common/checkAdmin.js - 管理员权限与内容安全共用模块
  * 用途：
- *   1. 校验 openid 是否在管理员白名单
- *   2. 文本内容安全检测（msgSecCheck，fail-closed）
+ *   1. 校验 openid 是否在管理员白名单（checkAdmin / checkAdminWeight / checkSecretary）
+ *   2. 文本内容安全检测（msgSecCheck，>2400 字自动分段逐段检测，fail-closed）
  *   3. 图片内容安全检测（imgSecCheck，先 downloadFile 再传 buffer，fail-closed）
- *   4. 自动写入 audit_queue 复审队列（疑似违规时）
+ *   4. 自动写入 audit_queue 复审队列（疑似违规时），并支持入库后回填 recordId
  *
- * 使用方式（推荐解构）：
- *   const { checkAdmin, checkContentSecurity, checkImageSecurity } = require('../common/checkAdmin')
- *
- * 兼容方式（保留旧用法）：
- *   const checkAdmin = require('../common/checkAdmin')
- *   await checkAdmin(OPENID)
- *   checkAdmin.checkContentSecurity(...)
+ * 返回值约定（v2）：
+ *   checkContentSecurity / checkImageSecurity → { result: true|false|'review', queueId }
+ *   checkImagesSecurity → { ok, risky, queueIds }
+ *   调用方在业务记录入库成功后，若 result==='review'（或 queueIds 非空），
+ *   必须调用 attachQueueRecord(queueId, collection, recordId) 回填，
+ *   否则复审时无法定位业务记录（复审闭环断裂）。
  */
 const cloud = require('wx-server-sdk')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
@@ -57,8 +56,6 @@ async function getAdminInfo(openid) {
 /**
  * 获取管理员角色与权重（4 档：50 网格员 / 70 委员 / 90 主任 / 100 支书）
  * 兼容：未设置 weight 的历史管理员视为 100（全权），避免升级误伤
- * @param {string} openid
- * @returns {Promise<{enabled:boolean, role:string, weight:number}>}
  */
 async function getAdminRole(openid) {
   const doc = await getAdminInfo(openid)
@@ -69,10 +66,6 @@ async function getAdminRole(openid) {
 
 /**
  * 权限门槛校验（在 checkAdmin 基础上按 weight 收紧）
- * 敏感操作在鉴权处使用：await checkAdminWeight(OPENID, 90)
- * @param {string} openid
- * @param {number} minWeight 最低权重
- * @returns {Promise<boolean>}
  */
 async function checkAdminWeight(openid, minWeight = 0) {
   if (!openid) return false
@@ -81,64 +74,91 @@ async function checkAdminWeight(openid, minWeight = 0) {
 }
 
 /**
- * 文本内容安全检测（fail-closed 失败时拒绝）
- * 注意：返回 false 时调用方应阻止入库；返回 'review' 时应入 audit_queue 让管理员复审
+ * 校验是否为书记（亲阅件专属操作使用：mark_secret / resolve / 重派亲阅件）
+ * @param {string} openid
+ * @returns {Promise<boolean>}
+ */
+async function checkSecretary(openid) {
+  if (!openid) return false
+  try {
+    const res = await db.collection('admins')
+      .where({ _openid: openid, enabled: true, role: '书记' })
+      .count()
+    return isAdminCount(res)
+  } catch (err) {
+    console.error('[checkSecretary] 书记校验失败:', err)
+    return false
+  }
+}
+
+// ============== 内容安全 ==============
+
+// msgSecCheck 单次上限 2500 字，按 2400 字分段留余量
+const MAX_SEGMENT = 2400
+
+function splitSegments(text) {
+  if (text.length <= MAX_SEGMENT) return [text]
+  const segs = []
+  for (let i = 0; i < text.length; i += MAX_SEGMENT) {
+    segs.push(text.substring(i, i + MAX_SEGMENT))
+  }
+  return segs
+}
+
+/**
+ * 文本内容安全检测（分段并行，fail-closed）
  * @param {string} content 待检测文本
  * @param {string} openid 提交者 openid
- * @param {object} ctx 附加上下文（用于写复审队列）
- * @returns {Promise<boolean|string>} true=通过 / false=拒绝 / 'review'=复审
+ * @param {object} ctx { collection, recordId? } 复审队列入队上下文
+ * @returns {Promise<{result: boolean|'review', queueId: string}>}
  */
 async function checkContentSecurity(content, openid, ctx = {}) {
-  if (!content || !content.trim()) return true
-  // 字数上限保护（msgSecCheck 单次上限 2500 字）
-  const text = content.length > 2500 ? content.substring(0, 2500) : content
+  if (!content || !String(content).trim()) return { result: true, queueId: '' }
+  const segments = splitSegments(String(content))
   try {
-    const res = await cloud.openapi.security.msgSecCheck({
-      content: text,
-      openid: openid,
-      scene: 1,        // 1=资料 2=评论 3=论坛 4=社交
-      version: 2
-    })
-    // v2 API 返回 result.detail + result.suggest
-    // suggest: 'pass' / 'review' / 'risky'
-    const decision = decideSecurity(res)
-    if (decision === true) return true
-    if (decision === 'review') {
-      // 疑似违规，写入复审队列
-      await _writeAuditQueue(content, openid, ctx, 'text_review')
-      return 'review'
+    const results = await Promise.all(
+      segments.map(seg =>
+        cloud.openapi.security.msgSecCheck({
+          content: seg,
+          openid: openid,
+          scene: 1,        // 1=资料 2=评论 3=论坛 4=社交
+          version: 2
+        })
+      )
+    )
+    const decisions = results.map(decideSecurity)
+    if (decisions.includes(false)) {
+      // 任一段明确违规 → 整体拒绝（修复"后 2500 字绕过"）
+      return { result: false, queueId: '' }
     }
-    // risky 或其他 → 直接拒绝
-    return false
+    if (decisions.includes('review')) {
+      const queueId = await _writeAuditQueue(content, openid, ctx, 'text_review')
+      return { result: 'review', queueId: queueId || '' }
+    }
+    return { result: true, queueId: '' }
   } catch (err) {
-    // fail-closed：API 调用失败时拒绝入库，避免违规内容绕过
-    // 仅在 errcode=0 但 suggest 异常或 API 不可用时拒绝
-    // 测试号无 openapi 权限时也拒绝，强制管理员开通
-    console.error('[checkContentSecurity] 检测失败（fail-closed 拒绝）:', err && err.errMsg || err)
-    // 写入复审队列由人工判断（避免完全阻断业务）
-    await _writeAuditQueue(content, openid, ctx, 'text_api_error').catch(() => {})
-    return 'review'
+    // fail-closed：API 调用失败时入复审队列由人工判断，不直接放行
+    console.error('[checkContentSecurity] 检测失败（fail-closed）:', err && err.errMsg || err)
+    const queueId = await _writeAuditQueue(content, openid, ctx, 'text_api_error').catch(() => '')
+    return { result: 'review', queueId: queueId || '' }
   }
 }
 
 /**
  * 图片内容安全检测（fail-closed）
- * 关键修复：必须先 downloadFile 拿到 buffer 再传给 imgSecCheck，不能传 fileID 字符串
- * @param {string} fileID 云存储 fileID
- * @param {object} ctx 附加上下文
- * @returns {Promise<boolean|string>} true=通过 / false=拒绝 / 'review'=复审
+ * 关键：必须先 downloadFile 拿到 buffer 再传给 imgSecCheck，不能传 fileID 字符串
+ * @returns {Promise<{result: boolean|'review', queueId: string}>}
  */
 async function checkImageSecurity(fileID, ctx = {}) {
-  if (!fileID) return true
+  if (!fileID) return { result: true, queueId: '' }
   try {
-    // 步骤1：下载文件拿到 buffer
     const downloadRes = await cloud.downloadFile({ fileID })
     const fileContent = downloadRes.fileContent
     if (!fileContent) {
       console.error('[checkImageSecurity] 文件下载为空')
-      return 'review'
+      const queueId = await _writeAuditQueue('', '', ctx, 'image_empty', fileID)
+      return { result: 'review', queueId: queueId || '' }
     }
-    // 步骤2：检测图片（注意 media.value 必须是 Buffer）
     const res = await cloud.openapi.security.imgSecCheck({
       media: {
         contentType: 'image/jpeg',
@@ -146,40 +166,58 @@ async function checkImageSecurity(fileID, ctx = {}) {
       }
     })
     const decision = decideSecurity(res)
-    if (decision === true) return true
+    if (decision === true) return { result: true, queueId: '' }
     if (decision === 'review') {
-      await _writeAuditQueue('', '', ctx, 'image_review', fileID)
-      return 'review'
+      const queueId = await _writeAuditQueue('', '', ctx, 'image_review', fileID)
+      return { result: 'review', queueId: queueId || '' }
     }
-    return false
+    return { result: false, queueId: '' }
   } catch (err) {
-    console.error('[checkImageSecurity] 检测失败（fail-closed 拒绝）:', err && err.errMsg || err)
-    await _writeAuditQueue('', '', ctx, 'image_api_error', fileID).catch(() => {})
-    return 'review'
+    console.error('[checkImageSecurity] 检测失败（fail-closed）:', err && err.errMsg || err)
+    const queueId = await _writeAuditQueue('', '', ctx, 'image_api_error', fileID).catch(() => '')
+    return { result: 'review', queueId: queueId || '' }
   }
 }
 
 /**
  * 图片批量内容安全检测（并行，避免多图串行导致云函数超时）
- * @param {string[]} fileIDs 云存储 fileID 数组
- * @param {object} ctx 附加上下文
- * @returns {Promise<{ok: boolean, risky: string[]}>} ok=false 表示存在明确违规图片
+ * @returns {Promise<{ok: boolean, risky: string[], queueIds: string[]}>}
+ *          ok=false 表示存在明确违规图片
  */
 async function checkImagesSecurity(fileIDs, ctx = {}) {
-  if (!fileIDs || !fileIDs.length) return { ok: true, risky: [] }
+  if (!fileIDs || !fileIDs.length) return { ok: true, risky: [], queueIds: [] }
   const results = await Promise.all(
-    fileIDs.map((f) => checkImageSecurity(f, ctx).catch(() => 'review'))
+    fileIDs.map((f) => checkImageSecurity(f, ctx).catch(() => ({ result: 'review', queueId: '' })))
   )
-  const risky = fileIDs.filter((_, i) => results[i] === false)
-  return { ok: risky.length === 0, risky: risky }
+  const risky = fileIDs.filter((_, i) => results[i].result === false)
+  const queueIds = results.map((r) => r.queueId).filter(Boolean)
+  return { ok: risky.length === 0, risky: risky, queueIds: queueIds }
 }
 
 /**
- * 内部方法：写入复审队列
+ * 复审条目回填：业务记录入库后，把 recordId 补写到复审队列条目。
+ * 调用时机：checkContentSecurity/checkImageSecurity 返回 review 且记录已入库。
+ * @param {string} queueId 复审队列条目 _id
+ * @param {string} collection 业务集合名
+ * @param {string} recordId 业务记录 _id
+ */
+async function attachQueueRecord(queueId, collection, recordId) {
+  if (!queueId || !collection || !recordId) return
+  try {
+    await db.collection('audit_queue').doc(queueId).update({
+      data: { collection: collection, recordId: recordId, updateTime: new Date() }
+    })
+  } catch (e) {
+    console.warn('[attachQueueRecord] 回填失败:', e && e.errMsg)
+  }
+}
+
+/**
+ * 内部方法：写入复审队列，返回条目 _id（失败返回 ''）
  */
 async function _writeAuditQueue(content, openid, ctx, reason, fileID = '') {
   try {
-    await db.collection('audit_queue').add({
+    const res = await db.collection('audit_queue').add({
       data: {
         content: (content || '').substring(0, 500),
         openid: openid || '',
@@ -191,35 +229,34 @@ async function _writeAuditQueue(content, openid, ctx, reason, fileID = '') {
         createTime: new Date()
       }
     })
+    return res._id
   } catch (e) {
     console.error('[audit_queue] 写入失败:', e)
+    return ''
   }
 }
 
 // ============== 导出：同时兼容旧用法 ==============
-// 旧：const checkAdmin = require('../common/checkAdmin'); await checkAdmin(OPENID)
-// 旧：checkAdmin.checkContentSecurity(...)
-// 新：const { checkAdmin, checkContentSecurity, checkImageSecurity } = require('../common/checkAdmin')
-
-// 把模块导出为一个 async 函数（保持旧调用方式）
 const exported = async function checkAdminWrapper(openid) {
   return checkAdmin(openid)
 }
-// 同时挂载所有方法
 exported.checkAdmin = checkAdmin
 exported.getAdminInfo = getAdminInfo
 exported.getAdminRole = getAdminRole
 exported.checkAdminWeight = checkAdminWeight
+exported.checkSecretary = checkSecretary
 exported.checkContentSecurity = checkContentSecurity
 exported.checkImageSecurity = checkImageSecurity
 exported.checkImagesSecurity = checkImagesSecurity
+exported.attachQueueRecord = attachQueueRecord
 
 module.exports = exported
-// 同时按对象方式导出，便于解构使用
 module.exports.checkAdmin = checkAdmin
 module.exports.getAdminInfo = getAdminInfo
 module.exports.getAdminRole = getAdminRole
 module.exports.checkAdminWeight = checkAdminWeight
+module.exports.checkSecretary = checkSecretary
 module.exports.checkContentSecurity = checkContentSecurity
 module.exports.checkImageSecurity = checkImageSecurity
 module.exports.checkImagesSecurity = checkImagesSecurity
+module.exports.attachQueueRecord = attachQueueRecord

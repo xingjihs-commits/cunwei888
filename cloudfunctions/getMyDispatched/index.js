@@ -7,10 +7,13 @@ const cloud = require('wx-server-sdk')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
+const { expandStatuses } = require('./common/constants')
+const { safePaging } = require('./common/listUtils')
 
 exports.main = async (event, context) => {
   const { OPENID } = cloud.getWXContext()
-  const { page = 1, pageSize = 20, status = '' } = event
+  const { status = '' } = event
+  const { page, pageSize } = safePaging(event, 20)
   
   try {
     let query = db.collection('records').where({
@@ -19,7 +22,7 @@ exports.main = async (event, context) => {
     })
     
     if (status) {
-      query = query.where({ status: status })
+      query = query.where({ status: _.in(expandStatuses([status])) })
     }
     
     const total = await query.count()

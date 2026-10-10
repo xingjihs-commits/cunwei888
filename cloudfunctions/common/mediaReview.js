@@ -5,11 +5,12 @@
  * 说明：leader_content → published:true；broadcasts → published:true 并补发村民通知。
  */
 const cloud = require('wx-server-sdk')
+const { fetchAll } = require('./db')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 
 /**
- * 广播发布后补发村民通知（分批写入，每批 20 条）
+ * 广播发布后补发村民通知（分页拉取破 100 条上限 + 分批写入，每批 20 条）
  * @param {string} broadcastId
  * @returns {Promise<number>} 通知人数（失败返回 0）
  */
@@ -19,17 +20,14 @@ async function notifyBroadcast(broadcastId) {
   if (!b) return 0
 
   const now = new Date()
-  const verifiedUsers = await db.collection('users')
-    .where({ isVerified: true })
-    .field({ _openid: true })
-    .get()
+  const verifiedUsers = await fetchAll('users', { isVerified: true }, { max: 5000 })
 
-  const total = verifiedUsers.data.length
+  const total = verifiedUsers.length
   let processed = 0
   const batchSize = 20
 
   while (processed < total) {
-    const batch = verifiedUsers.data.slice(processed, processed + batchSize)
+    const batch = verifiedUsers.slice(processed, processed + batchSize)
     const addOps = batch.map(user =>
       db.collection('messages').add({
         data: {

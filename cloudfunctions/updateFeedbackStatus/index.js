@@ -6,13 +6,14 @@
  *   3. 完成/驳回状态写日志
  */
 const cloud = require('wx-server-sdk')
-const { fail } = require('../common/errorUtils')
+const { fail } = require('./common/errorUtils')
+const { pluckDoc } = require('./common/docUtils')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
-const { RECORD_STATUS, normalizeStatus } = require('../common/constants')
-const { checkAdmin, checkContentSecurity } = require('../common/checkAdmin')
-const { INTERNAL_TOKEN } = require('../common/internal')
+const { RECORD_STATUS, normalizeStatus } = require('./common/constants')
+const { checkAdmin, checkContentSecurity } = require('./common/checkAdmin')
+const { INTERNAL_TOKEN } = require('./common/internal')
 
 // 允许的状态白名单（中文 + 英文兼容映射）
 const ALLOWED_STATUSES = [
@@ -55,7 +56,7 @@ exports.main = async (event, context) => {
     if (reply) {
       // 回复内容安全检测
       const check = await checkContentSecurity(reply, OPENID, { collection: 'records', recordId })
-      if (check === false) {
+      if (check.result === false) {
         return { success: false, message: '回复内容包含违规信息' }
       }
       updateData.reply = reply
@@ -63,9 +64,10 @@ exports.main = async (event, context) => {
     }
 
     if (normalizedStatus === RECORD_STATUS.COMPLETED) {
-      const record = await db.collection('records').doc(recordId).get()
-      if (record.data.length > 0) {
-        const createTime = record.data[0].createTime
+      const recordRes = await db.collection('records').doc(recordId).get()
+      const record = pluckDoc(recordRes)
+      if (record && record.createTime) {
+        const createTime = record.createTime
         const duration = (now - new Date(createTime)) / (1000 * 60 * 60)
         updateData.handleDuration = Math.round(duration * 10) / 10
       }

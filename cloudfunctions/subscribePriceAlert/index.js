@@ -15,26 +15,23 @@ exports.main = async (event, context) => {
   if (!productName) {
     return { success: false, message: '请指定品种' }
   }
-  
+  if (String(productName).length > 30) {
+    return { success: false, message: '品种名称不能超过30字' }
+  }
+
   try {
-    // 检查是否已订阅
-    const existing = await db.collection('subscriptions').where({
-      _openid: OPENID,
-      productName: productName,
-      type: 'price_alert'
-    }).count()
-    
-    if (existing.total > 0) {
-      // 取消订阅
-      await db.collection('subscriptions').where({
-        _openid: OPENID,
-        productName: productName,
-        type: 'price_alert'
-      }).remove()
-      return { success: true, subscribed: false, message: '已取消订阅' }
-    } else {
-      // 订阅
-      await db.collection('subscriptions').add({
+    // 事务内查重+订阅/退订，防并发双击造成重复订阅
+    const result = await db.runTransaction(async transaction => {
+      const existing = await transaction.collection('subscriptions')
+        .where({ _openid: OPENID, productName: productName, type: 'price_alert' })
+        .get()
+      if (existing.data.length > 0) {
+        await transaction.collection('subscriptions')
+          .where({ _openid: OPENID, productName: productName, type: 'price_alert' })
+          .remove()
+        return { subscribed: false }
+      }
+      await transaction.collection('subscriptions').add({
         data: {
           _openid: OPENID,
           productName: productName,
@@ -42,8 +39,10 @@ exports.main = async (event, context) => {
           createTime: new Date()
         }
       })
-      return { success: true, subscribed: true, message: '订阅成功' }
-    }
+      return { subscribed: true }
+    })
+
+    return { success: true, subscribed: result.subscribed, message: result.subscribed ? '订阅成功' : '已取消订阅' }
   } catch (err) {
     console.error('订阅失败:', err)
     return { success: false, message: '操作失败' }

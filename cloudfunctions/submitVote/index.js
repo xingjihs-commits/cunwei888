@@ -7,11 +7,12 @@
  *   4. 用 runTransaction 防并发
  */
 const cloud = require('wx-server-sdk')
-const { fail } = require('../common/errorUtils')
+const { fail } = require('./common/errorUtils')
+const { pluckDoc } = require('./common/docUtils')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
-const { VOTE_STATUS } = require('../common/constants')
+const { VOTE_STATUS } = require('./common/constants')
 
 exports.main = async (event, context) => {
   const { OPENID } = cloud.getWXContext()
@@ -36,11 +37,10 @@ exports.main = async (event, context) => {
 
     const result = await db.runTransaction(async transaction => {
       const voteRes = await transaction.collection('votes').doc(voteId).get()
-      if (voteRes.data.length === 0) {
+      const vote = pluckDoc(voteRes)
+      if (!vote) {
         throw new Error('表决不存在')
       }
-
-      const vote = voteRes.data[0]
 
       // 兼容老英文 'open'
       const status = vote.status
@@ -50,6 +50,12 @@ exports.main = async (event, context) => {
 
       if (vote.deadline && new Date(vote.deadline) < new Date()) {
         throw new Error('表决已截止')
+      }
+
+      // 校验选项存在（防止无效 optionKey 造成假成功 + 计数脱钩）
+      const targetOpt = (vote.options || []).find(opt => opt.key === optionKey)
+      if (!targetOpt) {
+        throw new Error('投票选项不存在')
       }
 
       // 检查是否已投票
@@ -85,6 +91,7 @@ exports.main = async (event, context) => {
     return { success: true, message: '投票成功' }
   } catch (err) {
     console.error('[submitVote] 失败:', err)
-    return { success: false, message: err.message || '投票失败' }
+    const bizMsgs = ['表决不存在', '表决已结束', '表决已截止', '投票选项不存在', '您已投过票', '您的账号存在多次违规举报，已被限制投票功能']
+    return { success: false, message: bizMsgs.includes(err.message) ? err.message : '投票失败' }
   }
 }

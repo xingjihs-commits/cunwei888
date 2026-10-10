@@ -41,6 +41,9 @@ function autoFormat(input) {
 exports.main = async (event, context) => {
   const { text } = event
   if (!text) return { success: false, message: '无内容' }
+  if (String(text).length > 10000) {
+    return { success: false, message: '内容过长，请分段处理' }
+  }
   try {
     return { success: true, data: autoFormat(text) }
   } catch (err) {

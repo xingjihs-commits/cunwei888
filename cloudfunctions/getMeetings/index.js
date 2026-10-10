@@ -6,13 +6,16 @@ const cloud = require('wx-server-sdk')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
+const { safePaging } = require('./common/listUtils')
 
 
 exports.main = async (event, context) => {
-  const { page = 1, pageSize = 20, type = '', status = '' } = event
+  const { type = '', status = '' } = event
+  const { page, pageSize } = safePaging(event, 20)
   
   try {
-    let query = db.collection('meetings')
+    // review 阻断：待复审会议不对村民公开
+    let query = db.collection('meetings').where({ auditStatus: _.neq('待复审') })
     if (type) query = query.where({ type: type })
     if (status) query = query.where({ status: status })
     

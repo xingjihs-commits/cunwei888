@@ -6,13 +6,13 @@
  *   3. 批内并发处理通知，避免逐条串行 callFunction 超时
  */
 const cloud = require('wx-server-sdk')
-const { fail } = require('../common/errorUtils')
+const { fail } = require('./common/errorUtils')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
-const { RECORD_OPEN_STATUSES, expandStatuses, RECTIFICATION_STATUS } = require('../common/constants')
-const { INTERNAL_TOKEN } = require('../common/internal')
-const { checkAdmin } = require('../common/checkAdmin')
+const { RECORD_OPEN_STATUSES, expandStatuses, RECTIFICATION_STATUS } = require('./common/constants')
+const { INTERNAL_TOKEN } = require('./common/internal')
+const { checkAdmin } = require('./common/checkAdmin')
 
 exports.main = async (event, context) => {
   const { OPENID } = cloud.getWXContext()

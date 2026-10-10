@@ -2,18 +2,18 @@
  * cloudfunctions/detectAbnormalBehavior/index.js - 异常行为检测
  * 定时触发：每小时扫一次，检测异常行为并自动锁定
  * 检测规则：
- *   1. 1 小时内同 openid 提交 ≥ 10 次反映 → 标记为刷单，临时锁定 1 小时
- *   2. 1 小时内同 openid 发起 ≥ 5 次举报 → 标记为恶意举报
- *   3. 管理员 1 小时内删除 ≥ 50 条记录 → 标记为异常删除
+ *   1. 1 小时内同 openid 提交 ≥ 10 次反映 → 临时锁定 1 小时
+ *   2. 1 小时内同 openid 发起 ≥ 5 次举报 → 临时锁定 24 小时
+ * 说明：已被锁定（blockedUntil 未过期）的用户本次跳过，避免 blocked_users 无限堆积
  */
 const cloud = require('wx-server-sdk')
-const { fail } = require('../common/errorUtils')
+const { fail } = require('./common/errorUtils')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
 const $ = db.command.aggregate
-const { writeLog } = require('../common/db')
-const { checkAdmin } = require('../common/checkAdmin')
+const { writeLog } = require('./common/db')
+const { checkAdmin } = require('./common/checkAdmin')
 
 exports.main = async (event, context) => {
   const { OPENID } = cloud.getWXContext()
@@ -49,8 +49,17 @@ exports.main = async (event, context) => {
       .catch(() => ({ list: [] }))
 
     const flagged = []
+    // 已处于封禁期的 openid 集合（防重复入队堆积）
+    let activeBlocked = new Set()
+    try {
+      const active = await db.collection('blocked_users')
+        .where({ blockedUntil: _.gt(now) })
+        .get()
+      activeBlocked = new Set(active.data.map(b => b.openid))
+    } catch (e) {}
+
     for (const item of (feedbackSpam.list || [])) {
-      if (!item._id) continue
+      if (!item._id || activeBlocked.has(item._id)) continue
       await db.collection('blocked_users').add({
         data: {
           openid: item._id,
@@ -63,7 +72,7 @@ exports.main = async (event, context) => {
     }
 
     for (const item of (reportSpam.list || [])) {
-      if (!item._id) continue
+      if (!item._id || activeBlocked.has(item._id)) continue
       await db.collection('blocked_users').add({
         data: {
           openid: item._id,

@@ -12,11 +12,11 @@ exports.main = async (event, context) => {
   const { category = '', keyword = '' } = event
   
   try {
-    let query = db.collection('service_guides').where({ enabled: true })
+    let query = db.collection('service_guides').where({ enabled: true, auditStatus: _.neq('待复审') })
     if (category) query = query.where({ category: category })
     if (keyword) {
       query = query.where({
-        title: db.RegExp({ regexp: keyword, options: 'i' })
+        title: db.RegExp({ regexp: keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), options: 'i' })
       })
     }
     

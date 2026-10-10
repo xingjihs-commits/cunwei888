@@ -6,17 +6,20 @@ const cloud = require('wx-server-sdk')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
-const { FEEDBACK_TYPES } = require('../common/constants')
+const { FEEDBACK_TYPES, expandStatuses } = require('./common/constants')
+const { safePaging } = require('./common/listUtils')
 
 exports.main = async (event, context) => {
   const { OPENID } = cloud.getWXContext()
-  const { page = 1, pageSize = 10, status = '' } = event
+  const { status = '' } = event
+  const { page, pageSize } = safePaging(event, 10)
 
   try {
     let query = db.collection('records').where({ _openid: OPENID, type: _.in(FEEDBACK_TYPES) })
 
     if (status) {
-      query = query.where({ status: status })
+      // expandStatuses 兼容中英文老数据
+      query = query.where({ status: _.in(expandStatuses([status])) })
     }
 
     const total = await query.count()

@@ -3,12 +3,12 @@
  * 改造点：使用 expandStatuses 兼容中英文老数据
  */
 const cloud = require('wx-server-sdk')
-const { fail } = require('../common/errorUtils')
+const { fail } = require('./common/errorUtils')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
-const { RECORD_DONE_STATUSES, expandStatuses } = require('../common/constants')
-const { checkAdmin } = require('../common/checkAdmin')
+const { RECORD_DONE_STATUSES, expandStatuses } = require('./common/constants')
+const { checkAdmin } = require('./common/checkAdmin')
 
 exports.main = async (event, context) => {
   const { OPENID } = cloud.getWXContext()
@@ -47,6 +47,15 @@ exports.main = async (event, context) => {
       })
       .count()
 
+    // 按时率口径统一：完成且未超时 / 总数（用 count 联合条件直接算）
+    const onTimeRes = await db.collection('records')
+      .where({
+        createTime: _.gte(startDate).and(_.lt(endDate)),
+        status: _.in(doneStatuses),
+        isOverdue: _.neq(true)
+      })
+      .count()
+
     const perfList = await db.collection('performance')
       .where({ year: y, month: m })
       .orderBy('completedOnTime', 'desc')
@@ -62,7 +71,7 @@ exports.main = async (event, context) => {
           completed: completedRes.total,
           overdue: overdueRes.total,
           onTimeRate: totalRes.total > 0
-            ? Math.round(((completedRes.total - overdueRes.total) / totalRes.total) * 100)
+            ? Math.round((onTimeRes.total / totalRes.total) * 100)
             : 0
         },
         ranking: perfList.data

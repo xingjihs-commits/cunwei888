@@ -4,10 +4,11 @@
  * 入参：recordId, assigneeOpenid, type, urgentLevel, handleDeadline, note
  */
 const cloud = require('wx-server-sdk')
-const { fail } = require('../common/errorUtils')
+const { fail } = require('./common/errorUtils')
+const { pluckDoc } = require('./common/docUtils')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
-const { isInternalCall, INTERNAL_TOKEN } = require('../common/internal')
+const { isInternalCall, INTERNAL_TOKEN } = require('./common/internal')
 
 exports.main = async (event, context) => {
   // 仅允许云函数内部互调，拒绝前端直接调用（防伪造派单通知）
@@ -23,11 +24,11 @@ exports.main = async (event, context) => {
   
   try {
     // 查询工单摘要
-    const record = await db.collection('records').doc(recordId).get()
-    if (record.data.length === 0) {
+    const recordRes = await db.collection('records').doc(recordId).get()
+    const r = pluckDoc(recordRes)
+    if (!r) {
       return { success: false, message: '工单不存在' }
     }
-    const r = record.data[0]
     
     // 组装通知内容
     const urgentText = { normal: '一般', urgent: '紧急', critical: '特急' }[urgentLevel] || '一般'
@@ -63,7 +64,7 @@ exports.main = async (event, context) => {
           _internal: INTERNAL_TOKEN
         }
       })
-    } catch (e) { console.log('订阅消息发送跳过') }
+    } catch (e) { console.warn('订阅消息发送跳过:', e && e.errMsg) }
     
     return { success: true, message: '通知已发送' }
   } catch (err) {

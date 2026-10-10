@@ -7,14 +7,15 @@ const cloud = require('wx-server-sdk')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
-const { safePaging, stripOpenid } = require('../common/listUtils')
+const { safePaging, stripOpenid } = require('./common/listUtils')
 
 exports.main = async (event, context) => {
   const { category = '' } = event
   const { page, pageSize } = safePaging(event, 10)
 
   try {
-    const conditions = []
+    // review 阻断：待复审内容不对村民公开
+    const conditions = [{ auditStatus: _.neq('待复审') }]
     if (category) conditions.push({ category: category })
     const where = conditions.length === 0 ? {} : (conditions.length === 1 ? conditions[0] : _.and(conditions))
 

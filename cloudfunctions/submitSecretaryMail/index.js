@@ -6,9 +6,9 @@ const cloud = require('wx-server-sdk')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
-const { MAIL_STATUS } = require('../common/constants')
-const { checkContentSecurity } = require('../common/checkAdmin')
-const { isBlocked } = require('../common/blocked')
+const { MAIL_STATUS } = require('./common/constants')
+const { checkContentSecurity, attachQueueRecord } = require('./common/checkAdmin')
+const { isBlocked } = require('./common/blocked')
 
 exports.main = async (event, context) => {
   const { OPENID } = cloud.getWXContext()
@@ -25,10 +25,16 @@ exports.main = async (event, context) => {
   if (content.length > 1000) {
     return { success: false, message: '内容不能超过1000字' }
   }
+  if (subject.length > 50) {
+    return { success: false, message: '主题不能超过50字' }
+  }
+  if (!['普通', '紧急', '特急'].includes(urgentLevel)) {
+    return { success: false, message: '紧急程度无效' }
+  }
 
   try {
     const textCheck = await checkContentSecurity(content, OPENID, { collection: 'secretary_mails' })
-    if (textCheck === false) {
+    if (textCheck.result === false) {
       return { success: false, message: '内容包含违规信息' }
     }
 
@@ -46,12 +52,17 @@ exports.main = async (event, context) => {
         isPublic: false,
         senderOpenid: isAnonymous ? '' : OPENID,
         senderInfo: '',
-        auditStatus: textCheck === 'review' ? '待复审' : '',
+        auditStatus: textCheck.result === 'review' ? '待复审' : '',
         createTime: now,
         updateTime: now,
         _openid: OPENID
       }
     })
+
+    // 复审队列回填
+    if (textCheck.result === 'review') {
+      await attachQueueRecord(textCheck.queueId, 'secretary_mails', res._id)
+    }
 
     await db.collection('messages').add({
       data: {

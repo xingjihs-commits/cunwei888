@@ -6,12 +6,12 @@
  *   3. 条件用 _.and 组合，避免链式 where
  */
 const cloud = require('wx-server-sdk')
-const { fail } = require('../common/errorUtils')
+const { fail } = require('./common/errorUtils')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
-const { FEEDBACK_TYPES } = require('../common/constants')
-const { checkAdmin } = require('../common/checkAdmin')
+const { FEEDBACK_TYPES } = require('./common/constants')
+const { checkAdmin } = require('./common/checkAdmin')
 
 exports.main = async (event, context) => {
   const { OPENID } = cloud.getWXContext()

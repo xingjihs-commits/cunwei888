@@ -7,7 +7,8 @@
  *   4. 管理员可看所有
  */
 const cloud = require('wx-server-sdk')
-const { fail } = require('../common/errorUtils')
+const { fail } = require('./common/errorUtils')
+const { pluckDoc } = require('./common/docUtils')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
@@ -22,18 +23,19 @@ exports.main = async (event, context) => {
 
   try {
     const res = await db.collection('records').doc(recordId).get()
-    if (res.data.length === 0) {
+    const record = pluckDoc(res)
+    if (!record) {
       return { success: false, message: '记录不存在' }
     }
 
-    const record = res.data[0]
-
     // 权限校验：创建者 / 责任人 / 管理员 / 公示记录 都可查看
-    const checkAdmin = require('../common/checkAdmin')
+    const checkAdmin = require('./common/checkAdmin')
     const isAdmin = await checkAdmin(OPENID)
     const isOwner = record._openid === OPENID
-    const isAssignee = record.assigneeOpenid === OPENID
-    const isPublic = record.isPublic === true
+    // 亲阅件仅书记可读：责任人分支不生效（历史 mark_secret 不清 assigneeOpenid 的旧数据防御）
+    const isAssignee = !record.isSecret && record.assigneeOpenid === OPENID
+    // 待复审内容不上公示墙（本人/责任人/管理员仍可见）
+    const isPublic = record.isPublic === true && record.auditStatus !== '待复审'
 
     if (!isOwner && !isAssignee && !isAdmin && !isPublic) {
       return { success: false, message: '无权查看' }

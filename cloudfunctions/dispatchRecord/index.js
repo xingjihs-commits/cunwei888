@@ -4,12 +4,13 @@
  * 改造点：superviseLevel 用中文'督办'
  */
 const cloud = require('wx-server-sdk')
-const { fail } = require('../common/errorUtils')
+const { fail } = require('./common/errorUtils')
+const { pluckDoc } = require('./common/docUtils')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
-const { RECORD_STATUS, SUPERVISE_LEVEL } = require('../common/constants')
-const { checkAdmin } = require('../common/checkAdmin')
-const { INTERNAL_TOKEN } = require('../common/internal')
+const { RECORD_STATUS, SUPERVISE_LEVEL } = require('./common/constants')
+const { checkAdmin, checkSecretary } = require('./common/checkAdmin')
+const { INTERNAL_TOKEN } = require('./common/internal')
 
 exports.main = async (event, context) => {
   const { OPENID } = cloud.getWXContext()
@@ -28,6 +29,21 @@ exports.main = async (event, context) => {
   try {
     const now = new Date()
 
+    // 校验记录存在（防止 update 静默成功造成假反馈）
+    const recordRes = await db.collection('records').doc(recordId).get()
+    const record = pluckDoc(recordRes)
+    if (!record) {
+      return { success: false, message: '工单不存在' }
+    }
+
+    // 亲阅件保护：重新派单会把 isSecret 洗掉，仅书记可操作
+    if (record.isSecret) {
+      const isSecretary = await checkSecretary(OPENID)
+      if (!isSecretary) {
+        return { success: false, message: '亲阅件仅书记可重新派单' }
+      }
+    }
+
     await db.collection('records').doc(recordId).update({
       data: {
         assignee: assigneeName,
@@ -45,19 +61,16 @@ exports.main = async (event, context) => {
       }
     })
 
-    // 查询工单详情用于通知
-    const record = await db.collection('records').doc(recordId).get()
-    const r = record.data[0]
-
+    // 直接用已读记录组装通知（不再二次 get）
     try {
       await cloud.callFunction({
         name: 'sendDispatchNotice',
         data: {
           recordId: recordId,
           assigneeOpenid: assigneeOpenid,
-          type: r.type,
-          urgentLevel: r.urgentLevel || '普通',
-          handleDeadline: r.handleDeadline,
+          type: record.type,
+          urgentLevel: record.urgentLevel || '普通',
+          handleDeadline: record.handleDeadline,
           note: note,
           _internal: INTERNAL_TOKEN
         }

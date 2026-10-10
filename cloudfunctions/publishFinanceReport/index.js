@@ -3,11 +3,11 @@
  * 改造点：内容安全（财务数据敏感）
  */
 const cloud = require('wx-server-sdk')
-const { fail } = require('../common/errorUtils')
+const { fail } = require('./common/errorUtils')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
-const { checkAdminWeight, checkContentSecurity } = require('../common/checkAdmin')
+const { checkAdminWeight, checkContentSecurity, attachQueueRecord } = require('./common/checkAdmin')
 
 exports.main = async (event, context) => {
   const { OPENID } = cloud.getWXContext()
@@ -17,7 +17,7 @@ exports.main = async (event, context) => {
     return fail('FORBIDDEN')
   }
 
-  const { title, period, incomes = [], expenses = [], assets = [], resources = [], summary = '' } = event
+  const { title, period, incomes = [], expenses = [], assets = [], resources = [], summary = '', audited = false, auditor = '' } = event
 
   if (!title || !period) {
     return { success: false, message: '请填写完整信息' }
@@ -25,12 +25,18 @@ exports.main = async (event, context) => {
   if (title.length > 50) {
     return { success: false, message: '标题不能超过50字' }
   }
+  if (summary.length > 1000) {
+    return { success: false, message: '摘要不能超过1000字' }
+  }
+  if (incomes.length + expenses.length > 100) {
+    return { success: false, message: '收支明细条目过多' }
+  }
 
   try {
     // 标题+备注汇总内容安全检测
     const checkText = title + '\n' + (summary || '') + incomes.map(i => i.remark || '').join(' ') + expenses.map(i => i.remark || '').join(' ')
     const textCheck = await checkContentSecurity(checkText, OPENID, { collection: 'finance_reports' })
-    if (textCheck === false) {
+    if (textCheck.result === false) {
       return { success: false, message: '内容包含违规信息' }
     }
 
@@ -53,9 +59,9 @@ exports.main = async (event, context) => {
         totalIncome: totalIncome,
         totalExpense: totalExpense,
         balance: balance,
-        audited: true,
-        auditor: '村务监督委员会',
-        auditStatus: textCheck === 'review' ? '待复审' : '',
+        audited: !!audited,
+        auditor: auditor,
+        auditStatus: textCheck.result === 'review' ? '待复审' : '',
         publisher: OPENID,
         viewCount: 0,
         createTime: now,
@@ -63,6 +69,9 @@ exports.main = async (event, context) => {
         _openid: OPENID
       }
     })
+
+    // 复审队列回填
+    if (textCheck.result === 'review') await attachQueueRecord(textCheck.queueId, 'finance_reports', res._id)
 
     return { success: true, id: res._id, message: '财务公示发布成功' }
   } catch (err) {

@@ -4,6 +4,7 @@
  * 收益：未来改 SDK、加审计日志、加缓存只需改本文件
  */
 const cloud = require('wx-server-sdk')
+const { pluckDoc } = require('./docUtils')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
@@ -40,10 +41,12 @@ async function updateOne(collection, id, data) {
 
 /**
  * 查询单条记录 by id
+ * 修复：doc().get() 返回的 data 是单个文档对象（IQuerySingleResult），
+ * 旧实现按数组判断导致永远返回 null。
  */
 async function getById(collection, id) {
   const res = await db.collection(collection).doc(id).get()
-  return res.data && res.data.length > 0 ? res.data[0] : null
+  return pluckDoc(res)
 }
 
 /**
@@ -78,6 +81,32 @@ async function updateWhere(collection, where, data) {
 }
 
 /**
+ * 全量分页拉取（绕过服务端单次 get 100 条上限）。
+ * 用于统计/群发场景，max 兜底防失控。
+ * @param {string} collection 集合名
+ * @param {object} where 查询条件（空对象 = 全表）
+ * @param {object} options { max=2000, batchSize=100 }
+ * @returns {Promise<Array>}
+ */
+async function fetchAll(collection, where = {}, options = {}) {
+  const { max = 2000, batchSize = 100 } = options
+  const out = []
+  let offset = 0
+  while (offset < max) {
+    const res = await db.collection(collection)
+      .where(where)
+      .skip(offset)
+      .limit(batchSize)
+      .get()
+    const batch = res.data || []
+    out.push(...batch)
+    if (batch.length < batchSize) break
+    offset += batch.length
+  }
+  return out
+}
+
+/**
  * 写入操作日志
  */
 async function writeLog(action, extra = {}) {
@@ -105,5 +134,6 @@ module.exports = {
   findOne,
   query,
   updateWhere,
+  fetchAll,
   writeLog
 }

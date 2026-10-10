@@ -56,6 +56,7 @@ exports.main = async (event, context) => {
     return { success: true, data: config }
   } catch (err) {
     console.error('查询失败:', err)
-    return { success: true, data: { modules: {} } }
+    // 降级返回空配置（degraded 供前端感知）
+    return { success: true, degraded: true, data: { modules: {} } }
   }
 }

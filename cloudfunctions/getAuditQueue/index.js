@@ -4,11 +4,12 @@
  * 入参：{ page, pageSize, status }
  */
 const cloud = require('wx-server-sdk')
-const { fail } = require('../common/errorUtils')
+const { fail } = require('./common/errorUtils')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
-const { checkAdmin } = require('../common/checkAdmin')
+const { checkAdmin } = require('./common/checkAdmin')
+const { safePaging } = require('./common/listUtils')
 
 exports.main = async (event, context) => {
   const { OPENID } = cloud.getWXContext()
@@ -18,7 +19,8 @@ exports.main = async (event, context) => {
     return fail('FORBIDDEN')
   }
 
-  const { page = 1, pageSize = 20, status = '待复审' } = event
+  const { status = '待复审' } = event
+  const { page, pageSize } = safePaging(event, 20)
 
   try {
     let query = db.collection('audit_queue')

@@ -83,8 +83,8 @@
 
 ## 2. 分层目录地图（全量）
 
-> 顶层统计：根 20 ｜ pages 71 ｜ components 18 ｜ cloudfunctions 93+common ｜
-> utils 15 ｜ store 2 ｜ composables 3 ｜ docs 53 ｜ scripts 7 ｜ tests 5 ｜ static 13。
+> 顶层统计：根 20 ｜ pages 71 ｜ components 21 ｜ cloudfunctions 94+common ｜
+> utils 16 ｜ store 2 ｜ composables 3 ｜ docs 53 ｜ scripts 10 ｜ tests 6 ｜ static 13。
 > **不纳入地图**：`node_modules/`、`dist/`、`unpackage/`、`.git/`（依赖与构建产物）。
 
 ### 2.1 根目录（22 个文件）
@@ -208,11 +208,15 @@
 - `pages/admin/leader-publish.vue` — 书记风采发布
 - `pages/admin/secret-list.vue` — 亲阅件
 
-### 2.3 components/ —— 组件（18 个）
+### 2.3 components/ —— 组件（22 个）
 
 > easycom 自动注册（`pages.json` → `easycom.autoscan=true`），部分页面也显式 import。
 
 **通用组件**
+- `components/AppIcon.vue` — ★ 统一线性图标（mask+SVG，替代 emoji）
+- `components/AppSectionTitle.vue` — ★ 区块标题（迷你红旗标 + 更多›）
+- `components/AppBanner.vue` — ★ 通用轮播（首页头条/村委一线风采共用）
+- `components/AppErrorBanner.vue` — 统一错误态横幅（可点重试）
 - `components/BigButton.vue` — 大按钮（含 loading 态，适老化大按钮）
 - `components/Disclaimer.vue` — 免责声明
 - `components/EmptyState.vue` — 空状态
@@ -236,31 +240,31 @@
 **管理端（components/admin）**
 - `components/admin/PublishExtraFields.vue` — 发布页按类型的额外字段
 
-### 2.4 cloudfunctions/ —— 云函数（93 业务 + common 公共模块）
+### 2.4 cloudfunctions/ —— 云函数（94 业务 + common 公共模块）
 
 > 每个业务云函数目录结构固定：`index.js` + `package.json`（个别含 `config.json`）。
 > 新增云函数须同步登记到 `scripts/gen-structure.js` 的分类映射，否则 `npm run check:doc` 报错。
 > 完整明细见 `docs/00a-云函数明细.md`。
 
-**公共模块（不部署，被 require）**
-- `cloudfunctions/common/checkAdmin.js` — 鉴权 + 内容安全（fail-closed + 复审队列）
+**公共模块（不部署，构建时由 `npm run sync:common` 复制到各云函数目录）**
+- `cloudfunctions/common/checkAdmin.js` — 鉴权 + 内容安全（fail-closed + 复审队列 + 分段检测 + checkSecretary）
 - `cloudfunctions/common/constants.js` — 中文常量 + normalizeStatus + expandStatuses
-- `cloudfunctions/common/db.js` — 数据访问层封装（insertOne/updateOne/query…）
+- `cloudfunctions/common/db.js` — 数据访问层封装（insertOne/updateOne/getById/findOne/query/updateWhere/fetchAll/writeLog）
+- `cloudfunctions/common/docUtils.js` — 纯函数工具（pluckDoc 双形态取值 / hashId 匿名哈希 / csvEscape / escapeRegExp）
 - `cloudfunctions/common/blocked.js` — 拉黑名单校验
 - `cloudfunctions/common/errorUtils.js` — 错误封装
-- `cloudfunctions/common/internal.js` — 内部调用工具
+- `cloudfunctions/common/internal.js` — 内部调用工具（令牌支持环境变量 INTERNAL_TOKEN 覆盖）
 - `cloudfunctions/common/listUtils.js` — 列表分页工具
 - `cloudfunctions/common/mediaReview.js` — 图片/媒体内容安全
 - `cloudfunctions/common/securityLogic.js` — 内容安全决策逻辑
-- `cloudfunctions/common/initData.js` — 初始化数据（被 initDatabase 引用）
 
-**业务云函数（93 个，按 10 类）** —— 目录 `cloudfunctions/<名字>/`：
+**业务云函数（94 个，按 10 类）** —— 目录 `cloudfunctions/<名字>/`：
 
 - **提交 / 表单类（7）**：`cloudfunctions/approveUser/`、`cloudfunctions/submitFeedback/`、`cloudfunctions/submitReport/`、`cloudfunctions/submitSecretaryMail/`、`cloudfunctions/submitSnapshot/`、`cloudfunctions/submitVote/`、`cloudfunctions/verifyUser/`
 - **发布类 publish\*（10）**：`cloudfunctions/publishBroadcast/`、`cloudfunctions/publishFinanceReport/`、`cloudfunctions/publishLeaderContent/`、`cloudfunctions/publishLostFound/`、`cloudfunctions/publishMarketPrice/`、`cloudfunctions/publishNews/`、`cloudfunctions/publishNotice/`、`cloudfunctions/publishProject/`、`cloudfunctions/publishTask/`、`cloudfunctions/publishTeamMember/`
 - **创建类 create\*（2）**：`cloudfunctions/createMeeting/`、`cloudfunctions/createVote/`
 - **工单 / 内容处理类（9）**：`cloudfunctions/dispatchRecord/`、`cloudfunctions/evaluateFeedback/`、`cloudfunctions/handleSecretRecord/`、`cloudfunctions/replySecretaryMail/`、`cloudfunctions/reviewContent/`、`cloudfunctions/updateFeedbackStatus/`、`cloudfunctions/updateMeetingMinutes/`、`cloudfunctions/updateSnapshotStatus/`、`cloudfunctions/updateTaskProgress/`
-- **查询类 get\*（43）**：`cloudfunctions/getAgriCalendar/`、`cloudfunctions/getAuditQueue/`、`cloudfunctions/getBroadcasts/`、`cloudfunctions/getCheckinStatus/`、`cloudfunctions/getDashboardStats/`、`cloudfunctions/getDispatchMap/`、`cloudfunctions/getFeedbackList/`、`cloudfunctions/getFinanceReports/`、`cloudfunctions/getHomeData/`、`cloudfunctions/getLeaderContentList/`、`cloudfunctions/getLostFoundList/`、`cloudfunctions/getMarketPrices/`、`cloudfunctions/getMeetingDetail/`、`cloudfunctions/getMeetingReviewList/`、`cloudfunctions/getMeetings/`、`cloudfunctions/getModuleConfig/`、`cloudfunctions/getMyDispatched/`、`cloudfunctions/getMyFeedback/`、`cloudfunctions/getMyMails/`、`cloudfunctions/getMyMessages/`、`cloudfunctions/getMySnapshots/`、`cloudfunctions/getMySubsidies/`、`cloudfunctions/getNewsDetail/`、`cloudfunctions/getNewsList/`、`cloudfunctions/getNoticeDetail/`、`cloudfunctions/getNotices/`、`cloudfunctions/getPerformanceDashboard/`、`cloudfunctions/getProjects/`、`cloudfunctions/getRecordDetail/`、`cloudfunctions/getSecretaryMails/`、`cloudfunctions/getServiceGuideDetail/`、`cloudfunctions/getServiceGuides/`、`cloudfunctions/getSnapshotWall/`、`cloudfunctions/getTaskDetail/`、`cloudfunctions/getTasks/`、`cloudfunctions/getTeamMemberDetail/`、`cloudfunctions/getTeamMembers/`、`cloudfunctions/getUpperReports/`、`cloudfunctions/getUserInfo/`、`cloudfunctions/getVoteDetail/`、`cloudfunctions/getVotes/`、`cloudfunctions/getWeather/`、`cloudfunctions/searchAll/`
+- **查询类 get\*（44）**：`cloudfunctions/getAgriCalendar/`、`cloudfunctions/getAuditQueue/`、`cloudfunctions/getBroadcasts/`、`cloudfunctions/getCheckinStatus/`、`cloudfunctions/getDashboardStats/`、`cloudfunctions/getDispatchMap/`、`cloudfunctions/getFeedbackList/`、`cloudfunctions/getFinanceReports/`、`cloudfunctions/getHomeData/`、`cloudfunctions/getLeaderContentList/`、`cloudfunctions/getLostFoundList/`、`cloudfunctions/getMarketPrices/`、`cloudfunctions/getMeetingDetail/`、`cloudfunctions/getMeetingReviewList/`、`cloudfunctions/getMeetings/`、`cloudfunctions/getModuleConfig/`、`cloudfunctions/getMyDispatched/`、`cloudfunctions/getMyFeedback/`、`cloudfunctions/getMyMails/`、`cloudfunctions/getMyMessages/`、`cloudfunctions/getMySnapshots/`、`cloudfunctions/getMySubsidies/`、`cloudfunctions/getNewsDetail/`、`cloudfunctions/getNewsList/`、`cloudfunctions/getNoticeDetail/`、`cloudfunctions/getNotices/`、`cloudfunctions/getPerformanceDashboard/`、`cloudfunctions/getProjects/`、`cloudfunctions/getRecordDetail/`、`cloudfunctions/getResolvedFeedback/`、`cloudfunctions/getSecretaryMails/`、`cloudfunctions/getServiceGuideDetail/`、`cloudfunctions/getServiceGuides/`、`cloudfunctions/getSnapshotWall/`、`cloudfunctions/getTaskDetail/`、`cloudfunctions/getTasks/`、`cloudfunctions/getTeamMemberDetail/`、`cloudfunctions/getTeamMembers/`、`cloudfunctions/getUpperReports/`、`cloudfunctions/getUserInfo/`、`cloudfunctions/getVoteDetail/`、`cloudfunctions/getVotes/`、`cloudfunctions/getWeather/`、`cloudfunctions/searchAll/`
 - **消息 / 通知类（5）**：`cloudfunctions/markMessageRead/`、`cloudfunctions/sendDispatchNotice/`、`cloudfunctions/sendOverdueReminder/`、`cloudfunctions/sendSubscribeMessage/`、`cloudfunctions/subscribePriceAlert/`
 - **点赞类（2）**：`cloudfunctions/likeNews/`、`cloudfunctions/likeSnapshot/`
 - **定时任务类（3）**：`cloudfunctions/detectAbnormalBehavior/`、`cloudfunctions/generatePerformanceReport/`、`cloudfunctions/generateUpperReport/`（触发器配置见 `docs/07-定时触发器配置/`）
@@ -294,6 +298,7 @@
 - `utils/nav.js` — 页面跳转封装（goPage）
 - `utils/subscribe.js` — 订阅消息
 - `utils/theme.js` — 设计 token（JS 侧，供组件属性色值使用，与 `uni.scss` 同值）
+- `utils/app-info.js` — 应用元信息（APP_VERSION 单源，页面展示引用）
 
 ### 2.6 docs/ —— 文档（41 顶层 + 子目录，共 53 文件）
 
@@ -304,7 +309,7 @@
 > 子目录：`docs/01-合规文本/`（协议/隐私/免责）、`docs/05-示例数据/`（集合示例 JSON）、
 > `docs/07-定时触发器配置/`（定时器配置 JSON）。
 
-### 2.7 scripts/ —— 工程脚本（7 个）
+### 2.7 scripts/ —— 工程脚本（9 个）
 
 - `scripts/uni-cli.js` — uni 编译包装（设置 UNI_INPUT_DIR，解决根目录布局）
 - `scripts/gen-structure.js` — 生成 `docs/00-代码结构清单.md`（`npm run gen:doc`）
@@ -312,16 +317,19 @@
 - `scripts/check-states.js` — 列表页三态体检（骨架/空态/错误态）
 - `scripts/check-project-map.js` — 校验本图是否漏登记文件（`npm run map:check`）
 - `scripts/check-style.js` — 检测 .vue 样式块硬编码色值（`npm run style:check`）
+- `scripts/compare-tokens.js` — 双源 token 校验 uni.scss ↔ utils/theme.js（`npm run check:tokens`）
 - `scripts/apply-a11y-pagemeta.js` — 批量注入适老化 page-meta
 - `scripts/gen-tabbar-icons.py` — 生成 tabBar 图标（Python）
+- `scripts/sync-common.js` — 同步 common 公共模块到各云函数目录（`npm run sync:common`，部署前必跑）
 
-### 2.8 tests/ —— 单元测试（vitest，5 文件）
+### 2.8 tests/ —— 单元测试（vitest，6 文件）
 
 - `tests/README.md` — 测试说明
 - `tests/constants.test.js` — `cloudfunctions/common/constants.js`（normalizeStatus / expandStatuses）
 - `tests/format.test.js` — `utils/format.js`
 - `tests/farming.test.js` — `utils/farmingCalendar.js`
 - `tests/security.test.js` — 内容安全决策 + 鉴权逻辑
+- `tests/docUtils.test.js` — `common/docUtils.js`（pluckDoc 双形态 / hashId / csvEscape / escapeRegExp）
 
 ### 2.9 static/ —— 静态资源（13 文件）
 

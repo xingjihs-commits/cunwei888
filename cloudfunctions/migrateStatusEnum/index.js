@@ -6,40 +6,13 @@
  * 入参：{ dryRun: true } 仅打印不修改
  */
 const cloud = require('wx-server-sdk')
-const { fail } = require('../common/errorUtils')
+const { fail } = require('./common/errorUtils')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
-const { checkAdmin } = require('../common/checkAdmin')
+const { checkAdmin } = require('./common/checkAdmin')
 
-const STATUS_MAP = {
-  // records
-  'pending': '待处理',
-  'assigned': '已派单',
-  'processing': '处理中',
-  'completed': '已完成',
-  'evaluated': '已评价',
-  'rejected': '已驳回',
-  // tasks
-  'todo': '待办',
-  'doing': '进行中',
-  'cancelled': '已取消',
-  // votes
-  'open': '进行中',
-  'closed': '已截止',
-  // meetings
-  'scheduled': '待召开',
-  'holding': '进行中',
-  'ended': '已结束',
-  // secretary_mails
-  'read': '已查阅',
-  'replied': '已回复',
-  // rectifications
-  'done': '已整改',
-  // audit / verify
-  'passed': '已通过',
-  'approved': '已通过'
-}
+const STATUS_MAP = require('./common/constants').STATUS_LEGACY_MAP
 
 exports.main = async (event, context) => {
   const { OPENID } = cloud.getWXContext()
@@ -72,6 +45,8 @@ exports.main = async (event, context) => {
       stats[key] = { scanned: 0, migrated: 0 }
 
       // 查找所有英文 status 的记录（分批 100 一批）
+      // 关键：迁移后记录不再匹配 where 条件，必须固定 skip(0) 循环取
+      // （旧实现 skip(processed) 会跳过未迁移记录，导致大量漏迁）
       for (const engStatus of Object.keys(STATUS_MAP)) {
         const cnStatus = STATUS_MAP[engStatus]
         let processed = 0
@@ -79,7 +54,6 @@ exports.main = async (event, context) => {
         while (hasMore) {
           const res = await db.collection(t.collection)
             .where({ [t.field]: engStatus })
-            .skip(processed)
             .limit(100)
             .get()
             .catch(() => ({ data: [] }))
@@ -107,8 +81,9 @@ exports.main = async (event, context) => {
             stats[key].migrated += res.data.length
           }
 
+          // dryRun 时记录不变化，固定 skip 会死循环，此处仅统计一批
           processed += res.data.length
-          if (res.data.length < 100) hasMore = false
+          if (dryRun || res.data.length < 100) hasMore = false
         }
       }
     }

@@ -5,12 +5,13 @@
  *   2. 回复内容安全检测
  */
 const cloud = require('wx-server-sdk')
-const { fail } = require('../common/errorUtils')
+const { fail } = require('./common/errorUtils')
+const { pluckDoc } = require('./common/docUtils')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
-const { MAIL_STATUS } = require('../common/constants')
-const { checkAdmin, checkContentSecurity } = require('../common/checkAdmin')
+const { MAIL_STATUS } = require('./common/constants')
+const { checkAdmin, checkContentSecurity } = require('./common/checkAdmin')
 
 exports.main = async (event, context) => {
   const { OPENID } = cloud.getWXContext()
@@ -30,9 +31,15 @@ exports.main = async (event, context) => {
   }
 
   try {
-    // 回复内容安全检测
+    // 先校验信件存在（防 update 静默成功）
+    const mailBefore = pluckDoc(await db.collection('secretary_mails').doc(mailId).get())
+    if (!mailBefore) {
+      return { success: false, message: '信件不存在' }
+    }
+
+    // 回复内容安全检测（ctx 带 recordId，复审队列自动关联）
     const textCheck = await checkContentSecurity(reply, OPENID, { collection: 'secretary_mails', recordId: mailId })
-    if (textCheck === false) {
+    if (textCheck.result === false) {
       return { success: false, message: '回复内容包含违规信息' }
     }
 
@@ -48,15 +55,14 @@ exports.main = async (event, context) => {
       }
     })
 
-    // 通知来信人
-    const mail = await db.collection('secretary_mails').doc(mailId).get()
-    if (mail.data.length > 0 && mail.data[0].senderOpenid) {
+    // 通知来信人（复用校验时已读的数据，mailBefore.senderOpenid 为空即匿名来信）
+    if (mailBefore.senderOpenid) {
       await db.collection('messages').add({
         data: {
           type: 'secretary_reply',
           title: '书记给您回信了',
           content: reply.substring(0, 50),
-          targetOpenid: mail.data[0].senderOpenid,
+          targetOpenid: mailBefore.senderOpenid,
           recordId: mailId,
           isRead: false,
           createTime: now

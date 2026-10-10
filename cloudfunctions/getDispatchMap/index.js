@@ -31,6 +31,7 @@ exports.main = async (event, context) => {
     return { success: true, data: DEFAULT_MAP }
   } catch (err) {
     console.error('查询失败:', err)
-    return { success: true, data: DEFAULT_MAP }
+    // 降级返回默认配置（degraded 供前端感知非权威数据）
+    return { success: true, degraded: true, data: DEFAULT_MAP }
   }
 }

@@ -4,16 +4,20 @@
  * 入参：dispatchMap(对象，如{ "环境卫生": {openid,name,duty}, ... })
  */
 const cloud = require('wx-server-sdk')
-const { fail } = require('../common/errorUtils')
+const { fail } = require('./common/errorUtils')
+const { checkAdminWeight } = require('./common/checkAdmin')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
+const { FEEDBACK_TYPES } = require('./common/constants')
+
+// dispatchMap 允许的 key（与工单类型白名单一致）
+const ALLOWED_MAP_KEYS = FEEDBACK_TYPES.concat(['其他'])
 
 exports.main = async (event, context) => {
   const { OPENID } = cloud.getWXContext()
   
-  // 校验管理员权限
-  const checkAdmin = require('../common/checkAdmin')
-  const isAdmin = await checkAdmin(OPENID)
+  // 门槛统一：与代理层 updateModuleConfig 一致（weight≥90），防低权重绕过
+  const isAdmin = await checkAdminWeight(OPENID, 90)
   if (!isAdmin) {
     return fail('FORBIDDEN')
   }
@@ -22,6 +26,24 @@ exports.main = async (event, context) => {
   
   if (!dispatchMap || typeof dispatchMap !== 'object') {
     return fail('INVALID_PARAMS')
+  }
+  // 结构校验：key 限工单类型，元素字段限长
+  for (const [key, val] of Object.entries(dispatchMap)) {
+    if (!ALLOWED_MAP_KEYS.includes(key)) {
+      return { success: false, message: `未知的工单类型：${key}` }
+    }
+    if (typeof val !== 'object' || !val) {
+      return { success: false, message: `${key} 的配置格式无效` }
+    }
+    if (val.name && String(val.name).length > 20) {
+      return { success: false, message: `${key} 责任人姓名过长` }
+    }
+    if (val.duty && String(val.duty).length > 30) {
+      return { success: false, message: `${key} 职责描述过长` }
+    }
+    if (val.openid && String(val.openid).length > 64) {
+      return { success: false, message: `${key} 责任人 openid 无效` }
+    }
   }
   
   try {

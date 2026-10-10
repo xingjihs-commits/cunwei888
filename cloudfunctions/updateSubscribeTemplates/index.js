@@ -4,11 +4,11 @@
  * 入参：{ templates: { new_feedback: 'tmpl_xxx', status_update: 'tmpl_yyy', ... } }
  */
 const cloud = require('wx-server-sdk')
-const { fail } = require('../common/errorUtils')
+const { fail } = require('./common/errorUtils')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
-const { checkAdmin } = require('../common/checkAdmin')
-const { writeLog } = require('../common/db')
+const { checkAdminWeight } = require('./common/checkAdmin')
+const { writeLog } = require('./common/db')
 
 // 7 个允许的模板 key
 const ALLOWED_TEMPLATE_KEYS = [
@@ -18,7 +18,8 @@ const ALLOWED_TEMPLATE_KEYS = [
 
 exports.main = async (event, context) => {
   const { OPENID } = cloud.getWXContext()
-  const isAdmin = await checkAdmin(OPENID)
+  // 门槛统一：与代理层 updateModuleConfig 一致（weight≥90）
+  const isAdmin = await checkAdminWeight(OPENID, 90)
   if (!isAdmin) return fail('FORBIDDEN')
 
   const { templates } = event

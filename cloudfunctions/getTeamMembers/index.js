@@ -7,7 +7,7 @@ const cloud = require('wx-server-sdk')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
-const { safePaging, stripOpenid } = require('../common/listUtils')
+const { safePaging, stripOpenid } = require('./common/listUtils')
 
 exports.main = async (event, context) => {
   const { type = 'committee' } = event
@@ -15,7 +15,8 @@ exports.main = async (event, context) => {
 
   // type: committee(班子) / party(党员) / rep(村民代表) / supervisor(监督委员会)
   try {
-    const query = db.collection('team_members').where({ type: type, enabled: true })
+    // review 阻断：待复审成员不对村民公开
+    const query = db.collection('team_members').where({ type: type, enabled: true, auditStatus: _.neq('待复审') })
     const total = await query.count()
     const list = await query
       .orderBy('sortOrder', 'asc')

@@ -12,11 +12,11 @@
  *   - phones → 本地 upsert moduleKey='village_info' 的 config.phones
  */
 const cloud = require('wx-server-sdk')
-const { fail } = require('../common/errorUtils')
+const { fail } = require('./common/errorUtils')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
-const { checkAdminWeight } = require('../common/checkAdmin')
-const { writeLog } = require('../common/db')
+const { checkAdminWeight } = require('./common/checkAdmin')
+const { writeLog } = require('./common/db')
 
 exports.main = async (event, context) => {
   const { OPENID } = cloud.getWXContext()
@@ -37,6 +37,32 @@ exports.main = async (event, context) => {
 
   const now = new Date()
   const results = []
+
+  // 结构校验（防任意结构写入配置）
+  if (feedbackTypes && (!Array.isArray(feedbackTypes) || feedbackTypes.length > 20 || !feedbackTypes.every(t => typeof t === 'string' && t.length <= 10))) {
+    return { success: false, message: 'feedbackTypes 结构无效（字符串数组，≤20 项）' }
+  }
+  if (snapshotTypes && (!Array.isArray(snapshotTypes) || snapshotTypes.length > 20 || !snapshotTypes.every(t => typeof t === 'string' && t.length <= 10))) {
+    return { success: false, message: 'snapshotTypes 结构无效（字符串数组，≤20 项）' }
+  }
+  if (dispatchMap) {
+    if (typeof dispatchMap !== 'object') return { success: false, message: 'dispatchMap 结构无效' }
+    for (const val of Object.values(dispatchMap)) {
+      if (typeof val !== 'object' || !val) return { success: false, message: 'dispatchMap 元素格式无效' }
+      if (val.name && String(val.name).length > 20) return { success: false, message: '责任人姓名过长' }
+    }
+  }
+  if (displayNames && typeof displayNames !== 'object') {
+    return { success: false, message: 'displayNames 结构无效' }
+  }
+  if (uiModules && typeof uiModules !== 'object') {
+    return { success: false, message: 'uiModules 结构无效' }
+  }
+  if (emergencyPhones.length > 0) {
+    if (!Array.isArray(emergencyPhones) || emergencyPhones.length > 20) {
+      return { success: false, message: '紧急电话列表无效（最多20项）' }
+    }
+  }
 
   // 1. 村基础信息 → updateVillageInfo
   const villageData = {}

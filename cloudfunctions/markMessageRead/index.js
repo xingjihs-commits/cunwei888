@@ -22,6 +22,9 @@ exports.main = async (event, context) => {
       if (!messageIds.length) {
         return { success: false, message: '缺少消息 ID', code: 'INVALID_PARAMS' }
       }
+      if (messageIds.length > 100) {
+        return { success: false, message: '单次最多标记100条', code: 'INVALID_PARAMS' }
+      }
       // 仅标记属于当前用户的消息（防越权标记他人消息）
       await db.collection('messages')
         .where({ _id: _.in(messageIds), targetOpenid: OPENID })

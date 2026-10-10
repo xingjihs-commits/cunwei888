@@ -1,16 +1,17 @@
 /**
- * cloudflows/publishBroadcast/index.js - 书记广播发布
+ * cloudfunctions/publishBroadcast/index.js - 书记广播发布
  * 改造点：
- *   1. 不截断 100 人，分批写入消息表（每批 20 条）
- *   2. 内容安全检测（广播直接推全村，必须先审）
- *   3. 图片内容安全
+ *   1. 疑似违规文本/图片（review）→ published:false 入复审，人工通过后才群发（阻断先发后审）
+ *   2. 音频无官方内容安全 API → 强制人工复审（published:false）
+ *   3. 认证村民分页拉取（fetchAll），破单次 get 100 条上限；消息分批写入
  */
 const cloud = require('wx-server-sdk')
-const { fail } = require('../common/errorUtils')
+const { fail } = require('./common/errorUtils')
+const { fetchAll } = require('./common/db')
+const { checkAdmin, checkContentSecurity, checkImagesSecurity, attachQueueRecord } = require('./common/checkAdmin')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
-const { checkAdmin, checkContentSecurity, checkImageSecurity, checkImagesSecurity } = require('../common/checkAdmin')
 
 exports.main = async (event, context) => {
   const { OPENID } = cloud.getWXContext()
@@ -31,11 +32,15 @@ exports.main = async (event, context) => {
   if (content.length > 1000) {
     return { success: false, message: '内容不能超过1000字' }
   }
+  if (images.length > 9) {
+    return { success: false, message: '最多上传9张图片' }
+  }
 
   try {
-    // 1. 文本内容安全
+    let imageQueueIds = []
+    // 1. 文本内容安全（分段检测）
     const textCheck = await checkContentSecurity(title + '\n' + content, OPENID, { collection: 'broadcasts' })
-    if (textCheck === false) {
+    if (textCheck.result === false) {
       return { success: false, message: '内容包含违规信息' }
     }
     // 2. 图片内容安全（并行检测）
@@ -44,10 +49,13 @@ exports.main = async (event, context) => {
       if (!imgRes.ok) {
         return { success: false, message: '图片包含违规内容' }
       }
+      if (imgRes.queueIds && imgRes.queueIds.length) imageQueueIds = imgRes.queueIds
     }
 
     const now = new Date()
     const needAudioReview = !!audioFileID
+    // 文本/图片/音频任一待复审 → 先不发布、不群发
+    const needReview = needAudioReview || textCheck.result === 'review' || imageQueueIds.length > 0
     const res = await db.collection('broadcasts').add({
       data: {
         title: title,
@@ -55,7 +63,7 @@ exports.main = async (event, context) => {
         audioFileID: audioFileID,
         images: images,
         urgent: urgent,
-        published: !needAudioReview,
+        published: !needReview,
         publisher: OPENID,
         viewCount: 0,
         createTime: now,
@@ -64,7 +72,15 @@ exports.main = async (event, context) => {
       }
     })
 
-    // 音频无官方内容安全 API，含音频时先入复审队列且不群发，人工审核通过后才发布
+    // 复审队列回填（此时记录已入库，recordId 可用）
+    if (textCheck.result === 'review') {
+      await attachQueueRecord(textCheck.queueId, 'broadcasts', res._id)
+    }
+    for (const qid of imageQueueIds) {
+      await attachQueueRecord(qid, 'broadcasts', res._id)
+    }
+
+    // 音频无官方内容安全 API，强制人工审核通过后才发布
     if (needAudioReview) {
       await db.collection('audit_queue').add({
         data: {
@@ -79,23 +95,22 @@ exports.main = async (event, context) => {
           createTime: now
         }
       }).catch((e) => console.warn('[publishBroadcast] 复审入队失败:', e && e.errMsg))
-      return { success: true, id: res._id, reviewed: true, message: '广播含音频，已提交人工复审' }
+      return { success: true, id: res._id, reviewed: true, message: '广播已提交人工复审，通过后发布' }
     }
 
-    // 给所有认证村民生成消息通知（分批写入，不截断）
-    // 云开发单次批量 add 最多 20 条，循环分批
-    const verifiedUsers = await db.collection('users')
-      .where({ isVerified: true })
-      .field({ _openid: true })
-      .get()
+    if (needReview) {
+      return { success: true, id: res._id, reviewed: true, message: '内容疑似违规，已提交人工复审，通过后发布' }
+    }
 
-    const totalCount = verifiedUsers.data.length
+    // 给所有认证村民生成消息通知（fetchAll 分页拉取 + 分批写入）
+    const verifiedUsers = await fetchAll('users', { isVerified: true }, { max: 5000 })
+    const totalCount = verifiedUsers.length
     let processed = 0
     const batchSize = 20
 
     while (processed < totalCount) {
-      const batch = verifiedUsers.data.slice(processed, processed + batchSize)
-      const addOps = batch.map(user => 
+      const batch = verifiedUsers.slice(processed, processed + batchSize)
+      const addOps = batch.map(user =>
         db.collection('messages').add({
           data: {
             type: 'broadcast',

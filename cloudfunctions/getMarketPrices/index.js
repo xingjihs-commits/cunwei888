@@ -7,16 +7,17 @@ const cloud = require('wx-server-sdk')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
-const { safePaging, stripOpenid } = require('../common/listUtils')
+const { safePaging, stripOpenid } = require('./common/listUtils')
+const { escapeRegExp } = require('./common/docUtils')
 
 exports.main = async (event, context) => {
   const { productName = '' } = event
   const { page, pageSize } = safePaging(event, 100)
 
   try {
-    const conditions = [{ expired: false }]
+    const conditions = [{ expired: false }, { auditStatus: _.neq('待复审') }]
     if (productName) {
-      conditions.push({ productName: db.RegExp({ regexp: productName, options: 'i' }) })
+      conditions.push({ productName: db.RegExp({ regexp: escapeRegExp(productName), options: 'i' }) })
     }
     const where = _.and(conditions)
 

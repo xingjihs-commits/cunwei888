@@ -9,7 +9,8 @@
 const cloud = require('wx-server-sdk')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
-const { checkAdmin, getAdminRole } = require('../common/checkAdmin')
+const { checkAdmin, getAdminRole } = require('./common/checkAdmin')
+const { fetchAll } = require('./common/db')
 
 exports.main = async (event, context) => {
   const { OPENID } = cloud.getWXContext()
@@ -24,11 +25,10 @@ exports.main = async (event, context) => {
       if (!isAdmin || roleInfo.weight < 90) {
         return { success: false, message: '无权查看用户列表', code: 'FORBIDDEN' }
       }
-      const res = await db.collection('users')
-        .orderBy('createTime', 'desc')
-        .limit(100)
-        .get()
-      return { success: true, data: { list: res.data } }
+      // 分页拉取（fetchAll 分页，破单次 get 100 条上限，支持全村用户）
+      const users = await fetchAll('users', {}, { max: 5000 })
+      users.sort((a, b) => new Date(b.createTime) - new Date(a.createTime))
+      return { success: true, data: { list: users, total: users.length } }
     }
 
     // 仅允许查询自己；查他人需管理员

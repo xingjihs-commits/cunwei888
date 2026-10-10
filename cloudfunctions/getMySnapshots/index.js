@@ -6,11 +6,12 @@ const cloud = require('wx-server-sdk')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
+const { safePaging } = require('./common/listUtils')
 
 
 exports.main = async (event, context) => {
   const { OPENID } = cloud.getWXContext()
-  const { page = 1, pageSize = 10 } = event
+  const { page, pageSize } = safePaging(event, 10)
   
   try {
     const query = db.collection('records').where({ 

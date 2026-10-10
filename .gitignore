@@ -28,3 +28,6 @@ build/
 # 微信开发者工具
 project.private.config.json
 cloudfunctions/project.config.json
+
+# 云函数 common 副本（部署前由 scripts/sync-common.js 生成，勿手改）
+cloudfunctions/*/common/

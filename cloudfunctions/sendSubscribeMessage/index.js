@@ -5,9 +5,11 @@
  *   2. 找不到模板时跳过并记录日志，不阻断业务
  */
 const cloud = require('wx-server-sdk')
+const { pluckDoc } = require('./common/docUtils')
+const { fetchAll } = require('./common/db')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
-const { isInternalCall } = require('../common/internal')
+const { isInternalCall } = require('./common/internal')
 
 // 默认模板 ID 映射（如未在 module_config 配置则用这里的占位）
 // 上线前需在 module_config 表 subscribe_templates 字段配置真实模板 ID
@@ -19,6 +21,17 @@ const DEFAULT_TEMPLATES = {
   overdue_reminder: '',
   dispatch_notice: '',
   overdue_escalation: ''
+}
+
+// 各类型通知点击后跳转的小程序页面（带查询参数）
+const TYPE_PAGE_MAP = {
+  new_feedback: 'pages/admin/feedback-list',
+  new_task: 'pages/admin/my-dispatched',
+  dispatch_notice: 'pages/admin/my-dispatched',
+  overdue_reminder: 'pages/admin/feedback-list',
+  overdue_escalation: 'pages/admin/dashboard',
+  status_update: 'pages/feedback/my-feedback',
+  price_update: 'pages/market/list'
 }
 
 // 内存缓存（云函数实例级）
@@ -80,18 +93,20 @@ exports.main = async (event, context) => {
     if (targetOpenid) {
       openids = [targetOpenid]
     } else if (targetRole === 'secretary') {
-      const admins = await db.collection('admins').where({ enabled: true }).get()
-      openids = admins.data.map(a => a._openid)
+      const admins = await fetchAll('admins', { enabled: true }, { max: 500 })
+      openids = admins.map(a => a._openid)
     } else if (type === 'new_feedback') {
-      const admins = await db.collection('admins').where({ enabled: true }).get()
-      openids = admins.data.map(a => a._openid)
+      const admins = await fetchAll('admins', { enabled: true }, { max: 500 })
+      openids = admins.map(a => a._openid)
     } else if (type === 'status_update' && recordId) {
-      const record = await db.collection('records').doc(recordId).get()
-      if (record.data.length > 0) openids = [record.data[0]._openid]
+      const record = pluckDoc(await db.collection('records').doc(recordId).get())
+      if (record && record._openid) openids = [record._openid]
     } else if (type === 'price_update' && data.productName) {
-      const subs = await db.collection('subscriptions').where({ productName: data.productName, type: 'price_alert' }).get()
-      openids = subs.data.map(s => s._openid)
+      const subs = await fetchAll('subscriptions', { productName: data.productName, type: 'price_alert' }, { max: 5000 })
+      openids = subs.map(s => s._openid)
     }
+
+    const page = TYPE_PAGE_MAP[type] || 'pages/message/center'
 
     let sent = 0
     for (const openid of openids) {
@@ -99,7 +114,7 @@ exports.main = async (event, context) => {
         await cloud.openapi.subscribeMessage.send({
           touser: openid,
           templateId: templateId,
-          page: 'pages/admin/feedback-list',
+          page: page,
           data: buildMessageData(type, data)
         })
         sent++

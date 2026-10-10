@@ -3,7 +3,8 @@
  * 改造点：用 runTransaction 防并发，避免重复点赞 / 重复取消
  */
 const cloud = require('wx-server-sdk')
-const { fail } = require('../common/errorUtils')
+const { fail } = require('./common/errorUtils')
+const { pluckDoc } = require('./common/docUtils')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
@@ -19,11 +20,11 @@ exports.main = async (event, context) => {
   try {
     const result = await db.runTransaction(async transaction => {
       const newsRes = await transaction.collection('news').doc(newsId).get()
-      if (newsRes.data.length === 0) {
+      const news = pluckDoc(newsRes)
+      if (!news) {
         throw new Error('新闻不存在')
       }
 
-      const news = newsRes.data[0]
       const likeUsers = news.likeUsers || []
       const liked = likeUsers.includes(OPENID)
 
@@ -51,6 +52,6 @@ exports.main = async (event, context) => {
     return { success: true, liked: result.liked }
   } catch (err) {
     console.error('[likeNews] 失败:', err)
-    return { success: false, message: err.message || '操作失败' }
+    return { success: false, message: '操作失败' }
   }
 }

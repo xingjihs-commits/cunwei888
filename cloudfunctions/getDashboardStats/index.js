@@ -3,12 +3,13 @@
  * 改造点：使用 expandStatuses 兼容中英文 status，确保老数据也能被统计
  */
 const cloud = require('wx-server-sdk')
-const { fail } = require('../common/errorUtils')
+const { fail } = require('./common/errorUtils')
+const { fetchAll } = require('./common/db')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
-const { RECORD_STATUS, RECORD_DONE_STATUSES, RECORD_OPEN_STATUSES, expandStatuses } = require('../common/constants')
-const { checkAdmin } = require('../common/checkAdmin')
+const { RECORD_STATUS, RECORD_DONE_STATUSES, RECORD_OPEN_STATUSES, normalizeStatus } = require('./common/constants')
+const { checkAdmin } = require('./common/checkAdmin')
 
 exports.main = async (event, context) => {
   const { OPENID } = cloud.getWXContext()
@@ -23,9 +24,12 @@ exports.main = async (event, context) => {
   const now = new Date()
   let y, m
   if (period) {
-    const parts = period.split('-')
+    const parts = String(period).split('-')
     y = parseInt(parts[0])
     m = parseInt(parts[1])
+    if (!Number.isInteger(y) || !Number.isInteger(m) || m < 1 || m > 12) {
+      return { success: false, message: 'period 参数无效（格式 YYYY-MM）' }
+    }
   } else {
     y = now.getFullYear()
     m = now.getMonth() + 1
@@ -34,22 +38,17 @@ exports.main = async (event, context) => {
   const endDate = new Date(y, m, 1)
 
   try {
-    const res = await db.collection('records')
-      .where({
-        createTime: _.gte(startDate).and(_.lt(endDate)),
-        isSecret: _.neq(true)
-      })
-      .get()
+    // fetchAll 分页拉取，破单次 get 100 条上限（月工单量大时统计才不失真）
+    const records = await fetchAll(
+      'records',
+      { createTime: _.gte(startDate).and(_.lt(endDate)), isSecret: _.neq(true) },
+      { max: 5000 }
+    )
 
-    const records = res.data
-
-    // 归一化 status 后统计（兼容老英文数据）
+    // 归一化 status 后统计（兼容老英文数据，统一走 constants.normalizeStatus）
     const doneSet = new Set(RECORD_DONE_STATUSES)
     const openSet = new Set(RECORD_OPEN_STATUSES)
-    const normalize = (s) => {
-      const map = { 'pending': '待处理', 'assigned': '已派单', 'processing': '处理中', 'completed': '已完成', 'evaluated': '已评价', 'rejected': '已驳回' }
-      return map[s] || s
-    }
+    const normalize = (s) => normalizeStatus(s)
 
     const overview = {
       total: records.length,
@@ -62,8 +61,10 @@ exports.main = async (event, context) => {
     overview.avgScore = scored.length > 0
       ? (scored.reduce((s, r) => s + r.evaluation, 0) / scored.length).toFixed(1)
       : '0.0'
+    // 按时率口径：完成且未超时 / 总数（与 generatePerformanceReport 一致）
+    const onTimeDone = records.filter(r => doneSet.has(normalize(r.status)) && !r.isOverdue).length
     overview.onTimeRate = overview.total > 0
-      ? Math.round((overview.completed - overview.overdue) / overview.total * 100) + '%'
+      ? Math.round(onTimeDone / overview.total * 100) + '%'
       : '0%'
 
     let dimensionData = []
@@ -77,13 +78,15 @@ exports.main = async (event, context) => {
             name: r.assigneeName || '未分配',
             duty: r.assigneeDuty || '',
             openid: r.assigneeOpenid || '',
-            total: 0, completed: 0, overdue: 0,
+            total: 0, completed: 0, completedOnTime: 0, overdue: 0,
             scoreSum: 0, scoreCount: 0, badReviews: 0
           }
         }
         const p = map[key]
         p.total++
-        if (doneSet.has(normalize(r.status))) p.completed++
+        const isDone = doneSet.has(normalize(r.status))
+        if (isDone) p.completed++
+        if (isDone && !r.isOverdue) p.completedOnTime++
         if (r.isOverdue) p.overdue++
         if (r.evaluation > 0) {
           p.scoreSum += r.evaluation
@@ -94,8 +97,10 @@ exports.main = async (event, context) => {
       dimensionData = Object.values(map).map(p => ({
         ...p,
         avgScore: p.scoreCount > 0 ? (p.scoreSum / p.scoreCount).toFixed(1) : '0.0',
-        onTimeRate: p.total > 0 ? Math.round((p.completed - p.overdue) / p.total * 100) + '%' : '0%'
+        // 按时率口径统一：完成且未超时 / 总数
+        onTimeRate: p.total > 0 ? Math.round(p.completedOnTime / p.total * 100) + '%' : '0%'
       })).sort((a, b) => b.completed - a.completed)
+
 
     } else if (dimension === 'module' || dimension === 'group') {
       const map = {}

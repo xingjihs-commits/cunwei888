@@ -3,16 +3,12 @@
  * 改造点：使用 normalizeStatus 兼容老英文 status
  */
 const cloud = require('wx-server-sdk')
+const { fetchAll } = require('./common/db')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
-const { RECORD_DONE_STATUSES, normalizeStatus } = require('../common/constants')
-const { checkAdmin } = require('../common/checkAdmin')
-
-const STATUS_MAP = {
-  'pending': '待处理', 'assigned': '已派单', 'processing': '处理中',
-  'completed': '已完成', 'evaluated': '已评价', 'rejected': '已驳回'
-}
+const { RECORD_DONE_STATUSES, normalizeStatus } = require('./common/constants')
+const { checkAdmin } = require('./common/checkAdmin')
 
 exports.main = async (event, context) => {
   const { OPENID } = cloud.getWXContext()
@@ -30,9 +26,12 @@ exports.main = async (event, context) => {
   const now = new Date()
   let y, m
   if (period) {
-    const parts = period.split('-')
+    const parts = String(period).split('-')
     y = parseInt(parts[0])
     m = parseInt(parts[1])
+    if (!Number.isInteger(y) || !Number.isInteger(m) || m < 1 || m > 12) {
+      return { success: false, message: 'period 参数无效（格式 YYYY-MM）' }
+    }
   } else {
     y = now.getFullYear()
     m = now.getMonth()
@@ -43,16 +42,19 @@ exports.main = async (event, context) => {
     const startDate = new Date(y, m - 1, 1)
     const endDate = new Date(y, m, 1)
 
-    const records = await db.collection('records')
-      .where({
+    // fetchAll 分页拉取，破单次 get 100 条上限
+    const records = await fetchAll(
+      'records',
+      {
         createTime: _.gte(startDate).and(_.lt(endDate)),
         isSecret: _.neq(true)
-      })
-      .get()
+      },
+      { max: 5000 }
+    )
 
     const stats = {}
     const doneSet = new Set(RECORD_DONE_STATUSES)
-    for (const r of records.data) {
+    for (const r of records) {
       const key = r.assigneeOpenid || 'unassigned'
       if (!stats[key]) {
         stats[key] = {
@@ -70,7 +72,7 @@ exports.main = async (event, context) => {
       }
       const s = stats[key]
       s.totalCases++
-      const normStatus = STATUS_MAP[r.status] || r.status
+      const normStatus = normalizeStatus(r.status)
       if (doneSet.has(normStatus)) {
         if (!r.isOverdue) s.completedOnTime++
       }

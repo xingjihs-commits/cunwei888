@@ -6,11 +6,12 @@
  *   3. 内容安全检测
  */
 const cloud = require('wx-server-sdk')
+const { pluckDoc } = require('./common/docUtils')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
-const { TASK_STATUS, normalizeStatus } = require('../common/constants')
-const { checkAdmin, checkContentSecurity } = require('../common/checkAdmin')
+const { TASK_STATUS, normalizeStatus } = require('./common/constants')
+const { checkAdmin, checkContentSecurity } = require('./common/checkAdmin')
 
 const ALLOWED_TASK_STATUSES = [
   TASK_STATUS.TODO, TASK_STATUS.ASSIGNED, TASK_STATUS.DOING, TASK_STATUS.COMPLETED, TASK_STATUS.CANCELLED,
@@ -32,10 +33,10 @@ exports.main = async (event, context) => {
   try {
     // 1. 鉴权：必须是任务指派人或管理员
     const taskRes = await db.collection('tasks').doc(taskId).get()
-    if (taskRes.data.length === 0) {
+    const task = pluckDoc(taskRes)
+    if (!task) {
       return { success: false, message: '任务不存在' }
     }
-    const task = taskRes.data[0]
 
     const isAdmin = await checkAdmin(OPENID)
     const isAssignee = task.assigneeOpenid && task.assigneeOpenid === OPENID
@@ -45,7 +46,7 @@ exports.main = async (event, context) => {
 
     // 2. 内容安全检测
     const check = await checkContentSecurity(content, OPENID, { collection: 'task_progress', recordId: taskId })
-    if (check === false) {
+    if (check.result === false) {
       return { success: false, message: '办理说明包含违规信息' }
     }
 

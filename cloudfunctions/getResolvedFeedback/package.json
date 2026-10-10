@@ -1,0 +1,9 @@
+{
+  "name": "getResolvedFeedback",
+  "version": "1.0.0",
+  "description": "为民办实事公开成果（已办结+好评+脱敏）",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

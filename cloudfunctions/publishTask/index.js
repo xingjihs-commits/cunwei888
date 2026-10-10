@@ -3,13 +3,13 @@
  * 改造点：status 全中文（已派单）+ 内容安全
  */
 const cloud = require('wx-server-sdk')
-const { fail } = require('../common/errorUtils')
+const { fail } = require('./common/errorUtils')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
-const { TASK_STATUS } = require('../common/constants')
-const { checkAdmin, checkContentSecurity } = require('../common/checkAdmin')
-const { INTERNAL_TOKEN } = require('../common/internal')
+const { TASK_STATUS } = require('./common/constants')
+const { checkAdmin, checkContentSecurity, attachQueueRecord } = require('./common/checkAdmin')
+const { INTERNAL_TOKEN } = require('./common/internal')
 
 exports.main = async (event, context) => {
   const { OPENID } = cloud.getWXContext()
@@ -29,10 +29,16 @@ exports.main = async (event, context) => {
   if (content.length > 2000) {
     return { success: false, message: '内容不能超过2000字' }
   }
+  if (assignee.length > 20) {
+    return { success: false, message: '责任人姓名不能超过20字' }
+  }
+  if (!['普通', '紧急', '特急'].includes(urgentLevel)) {
+    return { success: false, message: '紧急程度无效' }
+  }
 
   try {
     const textCheck = await checkContentSecurity(title + '\n' + content, OPENID, { collection: 'tasks' })
-    if (textCheck === false) {
+    if (textCheck.result === false) {
       return { success: false, message: '内容包含违规信息' }
     }
 
@@ -50,13 +56,18 @@ exports.main = async (event, context) => {
         status: TASK_STATUS.ASSIGNED,
         progress: 0,
         isOverdue: false,
-        auditStatus: textCheck === 'review' ? '待复审' : '',
+        auditStatus: textCheck.result === 'review' ? '待复审' : '',
         publisher: OPENID,
         createTime: now,
         updateTime: now,
         _openid: OPENID
       }
     })
+
+    // 复审队列回填
+    if (textCheck.result === 'review') {
+      await attachQueueRecord(textCheck.queueId, 'tasks', res._id)
+    }
 
     try {
       await cloud.callFunction({
