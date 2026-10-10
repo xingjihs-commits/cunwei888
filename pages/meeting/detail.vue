@@ -131,9 +131,9 @@ function goReport() {
   .status-banner {
     padding: $card-padding; border-radius: $card-radius; text-align: center; margin-bottom: $card-gap;
     background: $primary-light;
-    &.s-holding { background: rgba(230,81,0,0.1); }
-    &.s-ended { background: rgba(46,125,50,0.1); }
-    &.s-cancelled { background: rgba(198,40,40,0.1); }
+    &.s-holding { background: rgba($warning,0.1); }
+    &.s-ended { background: rgba($success,0.1); }
+    &.s-cancelled { background: rgba($danger,0.1); }
     text { font-size: $font-card-title; font-weight: bold; color: $text-main; }
     .attendance { display: block; font-size: $font-sub; color: $text-sub; margin-top: 8rpx; }
   }

@@ -412,9 +412,9 @@ async function onSubmit() {
       font-size: $font-body;
       color: $text-main;
       
-      &.active.urgent-normal { border-color: $success; background: rgba(46,125,50,0.1); color: $success; }
-      &.active.urgent-urgent { border-color: $warning; background: rgba(230,81,0,0.1); color: $warning; }
-      &.active.urgent-critical { border-color: $danger; background: rgba(198,40,40,0.1); color: $danger; }
+      &.active.urgent-normal { border-color: $success; background: rgba($success,0.1); color: $success; }
+      &.active.urgent-urgent { border-color: $warning; background: rgba($warning,0.1); color: $warning; }
+      &.active.urgent-critical { border-color: $danger; background: rgba($danger,0.1); color: $danger; }
     }
   }
   

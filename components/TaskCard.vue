@@ -84,12 +84,12 @@ function onTap() {
         margin-top: 6rpx;
         
         &.urgent-urgent {
-          background-color: rgba(230, 81, 0, 0.15);
+          background-color: rgba($warning, 0.15);
           color: $warning;
         }
         
         &.urgent-critical {
-          background-color: rgba(198, 40, 40, 0.15);
+          background-color: rgba($danger, 0.15);
           color: $danger;
         }
       }

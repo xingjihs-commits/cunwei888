@@ -219,9 +219,9 @@ async function onBlock(item) {
         padding: $space-xs $space-md;
         border-radius: $radius-sm;
         font-size: $font-micro;
-        &.tag-ok { background: rgba(46,125,50,0.1); color: $success; }
-        &.tag-warn { background: rgba(230,81,0,0.1); color: $warning; }
-        &.tag-danger { background: rgba(198,40,40,0.1); color: $danger; }
+        &.tag-ok { background: rgba($success,0.1); color: $success; }
+        &.tag-warn { background: rgba($warning,0.1); color: $warning; }
+        &.tag-danger { background: rgba($danger,0.1); color: $danger; }
       }
     }
 

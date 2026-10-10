@@ -260,9 +260,9 @@ function toggleAuto() {
       margin-bottom: 24rpx;
       border-left: 12rpx solid $border;
       
-      &.rank-1 { border-left-color: $medal-gold; background: rgba(255,215,0,0.1); }
-      &.rank-2 { border-left-color: $medal-silver; background: rgba(192,192,192,0.1); }
-      &.rank-3 { border-left-color: $medal-bronze; background: rgba(205,127,50,0.1); }
+      &.rank-1 { border-left-color: $medal-gold; background: rgba($star-gold,0.1); }
+      &.rank-2 { border-left-color: $medal-silver; background: rgba($medal-silver,0.1); }
+      &.rank-3 { border-left-color: $medal-bronze; background: rgba($medal-bronze,0.1); }
       
       .rank-num {
         font-size: 80rpx;

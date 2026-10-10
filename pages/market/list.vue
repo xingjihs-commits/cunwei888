@@ -201,8 +201,8 @@ function goDetail(item) {
           border-radius: $radius-sm;
           font-size: $font-micro;
           
-          &.trend-up { background: rgba(198,40,40,0.1); color: $danger; }
-          &.trend-down { background: rgba(46,125,50,0.1); color: $success; }
+          &.trend-up { background: rgba($danger,0.1); color: $danger; }
+          &.trend-down { background: rgba($success,0.1); color: $success; }
           &.trend-stable { background: $border; color: $text-sub; }
         }
       }

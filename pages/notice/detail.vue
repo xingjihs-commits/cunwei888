@@ -132,7 +132,7 @@ function goReport() {
       margin-bottom: 16rpx;
       
       &.cat-finance { background: $gold-light; color: $gold; }
-      &.cat-emergency { background: rgba(198,40,40,0.1); color: $danger; }
+      &.cat-emergency { background: rgba($danger,0.1); color: $danger; }
     }
     
     .notice-title {
@@ -191,7 +191,7 @@ function goReport() {
   }
   
   .audit-card {
-    background: rgba(46,125,50,0.08);
+    background: rgba($success,0.08);
     text-align: center;
     
     .audit-text {

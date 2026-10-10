@@ -16,15 +16,18 @@
     </view>
     
     <scroll-view scroll-y class="list" @scrolltolower="loadMore">
-      <Skeleton v-if="loading && list.length === 0" type="list" />
-      <TaskCard 
-        v-for="item in list"
-        :key="item._id"
-        :item="item"
-        @tap="goDetail"
-      />
-      <EmptyState v-if="list.length === 0 && !loading" :text="t('emptyState.noData', '暂无任务')" icon="📋" />
-      <view v-if="loading" class="loading">加载中...</view>
+      <AppErrorBanner v-if="error" mode="inline" @retry="refresh" />
+      <template v-else>
+        <Skeleton v-if="loading && list.length === 0" type="list" />
+        <TaskCard 
+          v-for="item in list"
+          :key="item._id"
+          :item="item"
+          @tap="goDetail"
+        />
+        <EmptyState v-if="list.length === 0 && !loading" :text="t('emptyState.noData', '暂无任务')" icon="📋" />
+        <view v-if="loading" class="loading">加载中...</view>
+      </template>
     </scroll-view>
   </view>
 </template>
@@ -37,6 +40,7 @@ import { callFunction } from '@/utils/request.js'
 import TaskCard from '@/components/TaskCard.vue'
 import EmptyState from '@/components/EmptyState.vue'
 import Skeleton from '@/components/Skeleton.vue'
+import AppErrorBanner from '@/components/AppErrorBanner.vue'
 import { useConfigStore } from '@/store/config.js'
 import { usePagination } from '@/composables/usePagination.js'
 const rootFontSize = useRootFontSize()
@@ -53,7 +57,7 @@ const statusFilters = [
   { value: 'completed', label: '已完成' }
 ]
 
-const { list, loading, refresh, loadMore } = usePagination(
+const { list, loading, error, refresh, loadMore } = usePagination(
   (params) => callFunction('getTasks', {
     ...params,
     status: currentStatus.value

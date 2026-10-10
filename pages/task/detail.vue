@@ -276,7 +276,7 @@ async function submitProgress() {
     margin-bottom: $card-gap;
     
     &.status-assigned, &.status-processing { background: $primary-light; }
-    &.status-completed { background: rgba(46,125,50,0.1); }
+    &.status-completed { background: rgba($success,0.1); }
     
     text { font-size: $font-card-title; font-weight: bold; color: $text-main; }
     .overdue-tip { margin-left: 12rpx; color: $danger; }

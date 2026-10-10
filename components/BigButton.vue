@@ -115,7 +115,7 @@ function handleClick() {
   // 高对比度：加深文字与描边
   &.btn-contrast {
     font-weight: 800;
-    border: 2rpx solid rgba(0, 0, 0, 0.35);
+    border: 2rpx solid rgba($text-main, 0.35);
   }
 
   // loading 态
@@ -127,7 +127,7 @@ function handleClick() {
   .btn-spinner {
     width: 36rpx;
     height: 36rpx;
-    border: 4rpx solid rgba(255, 255, 255, 0.3);
+    border: 4rpx solid rgba($white, 0.3);
     border-top-color: $white;
     border-radius: $radius-full;
     margin-right: 12rpx;

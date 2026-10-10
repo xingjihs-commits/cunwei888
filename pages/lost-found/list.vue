@@ -74,8 +74,8 @@ function goPublish() { uni.navigateTo({ url: '/pages/lost-found/publish' }) }
   .lf-card { background: $white; border-radius: $card-radius; padding: $card-padding; box-shadow: $card-shadow; margin-bottom: $card-gap;
     .card-header { display: flex; justify-content: space-between; margin-bottom: 12rpx; }
     .type-tag { padding: $space-xs $space-md; border-radius: $radius-sm; font-size: $font-micro;
-      &.lost { background: rgba(230,81,0,0.1); color: $warning; }
-      &.found { background: rgba(46,125,50,0.1); color: $success; } }
+      &.lost { background: rgba($warning,0.1); color: $warning; }
+      &.found { background: rgba($success,0.1); color: $success; } }
     .lf-time { font-size: $font-sub; color: $text-weak; }
     .lf-title { font-size: $font-card-title; font-weight: bold; color: $text-main; display: block; margin-bottom: 8rpx; }
     .lf-content { font-size: $font-sub; color: $text-sub; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
@@ -84,5 +84,5 @@ function goPublish() { uni.navigateTo({ url: '/pages/lost-found/publish' }) }
     .lf-location { font-size: $font-sub; color: $text-sub; }
     &:active { background: $bg; } }
   .loading { text-align: center; padding: $card-padding; font-size: $font-sub; color: $text-weak; }
-  .fab { position: fixed; right: 32rpx; bottom: 100rpx; width: 100rpx; height: 100rpx; background: $primary; color: $white; border-radius: $radius-full; display: flex; align-items: center; justify-content: center; font-size: 60rpx; box-shadow: 0 4rpx 16rpx rgba(196, 30, 36, 0.4); } }
+  .fab { position: fixed; right: 32rpx; bottom: 100rpx; width: 100rpx; height: 100rpx; background: $primary; color: $white; border-radius: $radius-full; display: flex; align-items: center; justify-content: center; font-size: 60rpx; box-shadow: 0 4rpx 16rpx rgba($primary, 0.4); } }
 </style>

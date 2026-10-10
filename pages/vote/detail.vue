@@ -175,7 +175,7 @@ async function submitVote() {
 <style lang="scss" scoped>
 .page-vote-detail { min-height: 100vh; background: $bg; padding: $page-padding; padding-bottom: 200rpx;
   .status-banner { padding: $card-padding; border-radius: $card-radius; text-align: center; margin-bottom: $card-gap;
-    &.s-open { background: rgba(46,125,50,0.1); }
+    &.s-open { background: rgba($success,0.1); }
     &.s-closed { background: rgba(189,189,189,0.2); }
     text { font-size: $font-card-title; font-weight: bold; color: $text-main; }
     .deadline { display: block; font-size: $font-sub; color: $text-sub; margin-top: 8rpx; } }

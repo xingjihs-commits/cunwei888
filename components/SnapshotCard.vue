@@ -97,7 +97,7 @@ function onTap() {
       top: 16rpx;
       right: 16rpx;
       padding: 6rpx 16rpx;
-      background-color: rgba(0, 0, 0, 0.6);
+      background-color: rgba($scrim, 0.6);
       color: $white;
       border-radius: 20rpx;
       font-size: $font-sub;

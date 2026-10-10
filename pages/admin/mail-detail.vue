@@ -122,12 +122,12 @@ async function onReply() {
   .card { background: $white; border-radius: $card-radius; padding: $card-padding; box-shadow: $card-shadow; margin-bottom: $card-gap;
     .subject { font-size: $font-title; font-weight: bold; color: $text-main; display: block; margin-bottom: 16rpx; line-height: 1.4; }
     .meta { display: flex; gap: 16rpx; font-size: $font-sub; color: $text-weak; flex-wrap: wrap;
-      .urgent-tag { padding: 2rpx 12rpx; background: rgba(198,40,40,0.1); color: $danger; border-radius: $radius-sm; }
+      .urgent-tag { padding: 2rpx 12rpx; background: rgba($danger,0.1); color: $danger; border-radius: $radius-sm; }
     }
     .card-title { font-size: $font-card-title; font-weight: bold; color: $text-main; border-left: 8rpx solid $primary; padding-left: 16rpx; margin-bottom: 24rpx; }
     .content { font-size: $font-body; color: $text-main; line-height: 1.8; white-space: pre-wrap; }
   }
-  .reply-card { background: rgba(46,125,50,0.05);
+  .reply-card { background: rgba($success,0.05);
     .reply-text { font-size: $font-body; color: $text-main; line-height: 1.8; white-space: pre-wrap; display: block; margin-bottom: 16rpx; }
     .reply-time { font-size: $font-sub; color: $text-weak; display: block; }
   }

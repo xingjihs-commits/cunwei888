@@ -1,11 +1,11 @@
-# 村务连心桥 · 项目规则（供 opencode 读取）
+﻿# 村务连心桥 · 项目规则（供 opencode 读取）
 
 > 只写项目特有内容；通用规则见全局 `~/.claude/CLAUDE.md`。
 
 ## 项目概况
 - 技术栈：uni-app 3 + Vue 3（`<script setup>`）+ Pinia，目标 **微信小程序** + 微信云开发
 - 仓库：https://github.com/xingjihs-commits/cunwei888 （分支 `main`）
-- 规模：页面 71（路由 69，`vote` 2 页下线）/ 云函数 93 业务 + `common/` / 组件 18 / utils 14
+- 规模：页面 71（路由 69，`vote` 2 页下线）/ 云函数 94 业务 + `common/` / 组件 21 / utils 16
 
 ## 目录布局（重要）
 - **根目录布局**（HBuilderX 风格）：`manifest.json`、`pages.json`、`App.vue` 在**项目根**，**不是** `src/`。
@@ -27,7 +27,7 @@
 
 ## 分层与规范（企业标准，改前必读）
 - **分层**：视图(`pages/`) → 应用(`store/` `composables/`) → 接口(`utils/request.js`) → 云函数(`cloudfunctions/`) → 数据(云开发)。禁止跨层直连：视图**不得**直连数据库或 `wx.cloud.callFunction`（必须走 `request.js`）；store 不碰数据库。详见 `docs/28-架构分层说明.md`。
-- **UI**：间距/圆角/阴影/颜色/字号**只能用 `uni.scss` 变量**；卡片复用 `.card`、按钮 `.btn-primary`/`.btn-default`、页面容器 `.page-container`；正文 ≥32rpx、按钮 ≥88rpx、行高 ≥1.4。详见 `docs/31-UI布局规范.md`。
+- **UI**：间距/圆角/阴影/颜色/字号**只能用 `uni.scss` 变量**；卡片复用 `.card`、按钮 `.btn-primary`/`.btn-default`、页面容器 `.page-container`；正文 ≥32rpx、按钮 ≥88rpx、行高 ≥1.4。详见 `docs/31-UI布局规范.md`；通用设计底线见全局 `~/.claude/rules/ui-design-system.md`。
 - **命名**：页面 kebab-case、组件 PascalCase、云函数 camelCase、常量 UPPER_SNAKE、集合 snake_case、字段 camelCase。
 - **大小上限**：页面 ≤500 行、云函数 ≤150 行、组件 ≤200 行；超限即拆。
 - **返回格式/鉴权/错误处理**：见 `docs/28` §28.4/28.5/28.7。

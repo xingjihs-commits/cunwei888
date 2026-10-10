@@ -92,9 +92,9 @@ function goMailbox() {
       display: flex; justify-content: space-between; align-items: center; margin-bottom: 12rpx;
       .status-tag {
         padding: $space-xs $space-md; border-radius: $radius-sm; font-size: $font-micro;
-        &.s-pending { background: rgba(230,81,0,0.1); color: $warning; }
+        &.s-pending { background: rgba($warning,0.1); color: $warning; }
         &.s-read { background: $primary-light; color: $primary; }
-        &.s-replied { background: rgba(46,125,50,0.1); color: $success; }
+        &.s-replied { background: rgba($success,0.1); color: $success; }
         &.s-closed { background: $border; color: $text-sub; }
       }
       .mail-time { font-size: $font-sub; color: $text-weak; }

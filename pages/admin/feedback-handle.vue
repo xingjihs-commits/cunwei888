@@ -275,10 +275,10 @@ async function onSubmit() {
     text-align: center;
     margin-bottom: $card-gap;
     
-    &.status-pending { background: rgba(230,81,0,0.1); }
+    &.status-pending { background: rgba($warning,0.1); }
     &.status-processing, &.status-assigned { background: $primary-light; }
-    &.status-completed, &.status-evaluated { background: rgba(46,125,50,0.1); }
-    &.status-rejected { background: rgba(198,40,40,0.1); }
+    &.status-completed, &.status-evaluated { background: rgba($success,0.1); }
+    &.status-rejected { background: rgba($danger,0.1); }
     
     text { font-size: $font-card-title; font-weight: bold; color: $text-main; }
   }

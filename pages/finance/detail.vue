@@ -122,7 +122,7 @@ async function loadData() {
   .header-card { background: linear-gradient(135deg, $gold, $gold-dark); color: $white; border-radius: $card-radius; padding: $card-padding; margin-bottom: $card-gap;
     .finance-title { font-size: $font-title; font-weight: bold; display: block; margin-bottom: 12rpx; line-height: 1.4; }
     .meta-row { display: flex; align-items: center; gap: 16rpx;
-      .meta-period { padding: $space-xs $space-md; background: rgba(255,255,255,0.2); border-radius: $radius-sm; font-size: $font-micro; }
+      .meta-period { padding: $space-xs $space-md; background: rgba($white,0.2); border-radius: $radius-sm; font-size: $font-micro; }
       .meta-audited { font-size: $font-sub; } } }
   .card { background: $white; border-radius: $card-radius; padding: $card-padding; box-shadow: $card-shadow; margin-bottom: $card-gap;
     .card-title { font-size: $font-card-title; font-weight: bold; color: $text-main; border-left: 8rpx solid $primary; padding-left: 16rpx; margin-bottom: 24rpx; } }

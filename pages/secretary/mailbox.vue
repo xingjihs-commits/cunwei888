@@ -191,9 +191,9 @@ async function onSubmit() {
       border: 4rpx solid $border;
       border-radius: $radius-md;
       font-size: $font-body;
-      &.active.u-normal { border-color: $success; background: rgba(46,125,50,0.1); color: $success; }
-      &.active.u-urgent { border-color: $warning; background: rgba(230,81,0,0.1); color: $warning; }
-      &.active.u-critical { border-color: $danger; background: rgba(198,40,40,0.1); color: $danger; }
+      &.active.u-normal { border-color: $success; background: rgba($success,0.1); color: $success; }
+      &.active.u-urgent { border-color: $warning; background: rgba($warning,0.1); color: $warning; }
+      &.active.u-critical { border-color: $danger; background: rgba($danger,0.1); color: $danger; }
     }
     .check-row { display: flex; align-items: center; }
     .check-box {

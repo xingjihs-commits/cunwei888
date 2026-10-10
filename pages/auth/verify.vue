@@ -150,7 +150,7 @@ function goPrivacy() { uni.navigateTo({ url: '/pages/privacy/index' }) }
   .notice {
     display: flex;
     align-items: center;
-    background: rgba(230,81,0,0.08);
+    background: rgba($warning,0.08);
     border-left: 6rpx solid $warning;
     padding: $card-padding;
     border-radius: $radius-sm;

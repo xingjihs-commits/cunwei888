@@ -26,23 +26,26 @@
     </view>
     
     <scroll-view scroll-y class="list" @scrolltolower="loadMore">
-      <Skeleton v-if="loading && list.length === 0" type="list" />
-      <view class="notice-card" v-for="item in list" :key="item._id" @click="goDetail(item)">
-        <view class="card-header">
-          <view class="cat-tag" :class="'cat-' + getCategoryClass(item.category)">{{ item.category }}</view>
-          <text class="notice-time">{{ formatDate(item.createTime, 'MM-DD') }}</text>
+      <AppErrorBanner v-if="error" mode="inline" @retry="refresh" />
+      <template v-else>
+        <Skeleton v-if="loading && list.length === 0" type="list" />
+        <view class="notice-card" v-for="item in list" :key="item._id" @click="goDetail(item)">
+          <view class="card-header">
+            <view class="cat-tag" :class="'cat-' + getCategoryClass(item.category)">{{ item.category }}</view>
+            <text class="notice-time">{{ formatDate(item.createTime, 'MM-DD') }}</text>
+          </view>
+          <text class="notice-title">{{ item.title }}</text>
+          <text class="notice-summary">{{ item.content }}</text>
+          <view v-if="item.category === '财务'" class="audit-tag">
+            ✓ 经村务监督委员会审核
+          </view>
+          <view v-if="item.responsible" class="responsible">
+            <text>责任人: {{ item.responsible }}</text>
+          </view>
         </view>
-        <text class="notice-title">{{ item.title }}</text>
-        <text class="notice-summary">{{ item.content }}</text>
-        <view v-if="item.category === '财务'" class="audit-tag">
-          ✓ 经村务监督委员会审核
-        </view>
-        <view v-if="item.responsible" class="responsible">
-          <text>责任人: {{ item.responsible }}</text>
-        </view>
-      </view>
-      <EmptyState v-if="list.length === 0 && !loading" :text="t('emptyState.noData', '暂无公示')" icon="📢" />
-      <view v-if="loading" class="loading">加载中...</view>
+        <EmptyState v-if="list.length === 0 && !loading" :text="t('emptyState.noData', '暂无公示')" icon="📢" />
+        <view v-if="loading" class="loading">加载中...</view>
+      </template>
     </scroll-view>
   </view>
 </template>
@@ -55,6 +58,7 @@ import { callFunction } from '@/utils/request.js'
 import { formatDate } from '@/utils/format.js'
 import EmptyState from '@/components/EmptyState.vue'
 import Skeleton from '@/components/Skeleton.vue'
+import AppErrorBanner from '@/components/AppErrorBanner.vue'
 import { useConfigStore } from '@/store/config.js'
 import { usePagination } from '@/composables/usePagination.js'
 import { setCache, getCacheStale } from '@/utils/cache.js'
@@ -86,7 +90,7 @@ async function fetchNotices(params) {
   }
 }
 
-const { list, total, loading, refresh, loadMore } = usePagination(fetchNotices, { pageSize: 20 })
+const { list, total, loading, error, refresh, loadMore } = usePagination(fetchNotices, { pageSize: 20 })
 
 onMounted(() => {
   uni.setNavigationBarTitle({ title: t('pageTitle.notice', '村务公开') })
@@ -191,9 +195,9 @@ function goDetail(item) {
         background: $primary-light;
         color: $primary;
         
-        &.cat-party { background: rgba(196,30,36,0.15); color: $primary; }
+        &.cat-party { background: rgba($primary,0.15); color: $primary; }
         &.cat-finance { background: $gold-light; color: $gold; }
-        &.cat-emergency { background: rgba(198,40,40,0.1); color: $danger; }
+        &.cat-emergency { background: rgba($danger,0.1); color: $danger; }
       }
       
       .notice-time { font-size: $font-sub; color: $text-weak; }
@@ -220,7 +224,7 @@ function goDetail(item) {
     .audit-tag {
       margin-top: 12rpx;
       padding: $space-sm $space-md;
-      background: rgba(46,125,50,0.1);
+      background: rgba($success,0.1);
       color: $success;
       border-radius: $radius-sm;
       font-size: $font-micro;

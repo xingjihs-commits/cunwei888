@@ -102,7 +102,7 @@ function callPhone() {
     .guide-title { font-size: $font-title; font-weight: bold; display: block; margin-bottom: 12rpx; }
     .guide-meta {
       display: flex; justify-content: center; gap: 24rpx;
-      .meta-cat { padding: $space-xs $space-md; background: rgba(255,255,255,0.2); border-radius: $radius-sm; font-size: $font-micro; }
+      .meta-cat { padding: $space-xs $space-md; background: rgba($white,0.2); border-radius: $radius-sm; font-size: $font-micro; }
       .meta-views { font-size: $font-sub; opacity: 0.9; }
     }
   }

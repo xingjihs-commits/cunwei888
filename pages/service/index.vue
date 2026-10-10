@@ -1,56 +1,62 @@
 <!--
-  pages/service/index.vue - 办事（tabBar「办事」）
-  对齐《示范村 App 完整布局方案》Tab2：
-    搜索栏 + 4 快捷入口 + 5 大类卡片 + 常用电话九宫格
-  名称读 display_names，显隐读 modules
+  pages/service/index.vue - 办事（tabBar「办事」，服务与学习智库）
+  红旗风格 v3：
+    ① 简版红旗顶栏（fixed，无应急条）
+    ② 搜索框
+    ③ 服务大厅 2×2 宫格（党建学习/政务指南/生活百事通/就业培训）
+    ④ 常用电话
+  与首页去重：反映/随手拍入口收口在首页，本页不再重复
 -->
 <template>
   <page-meta :root-font-size="rootFontSize" />
   <view class="page-service">
+    <!-- ① 红旗顶栏（fixed） -->
     <view class="nav-bar" :style="{ paddingTop: statusBarHeight + 'px' }">
-      <text class="nav-title">{{ t('pageTitle.service', '办事') }}</text>
+      <view class="flag-body">
+        <AppIcon class="flag-star-bg" name="star" :size="300" :color="FLAG_VEIL" />
+        <view class="flag-ribbon flag-ribbon-1"></view>
+        <text class="nav-title">{{ t('pageTitle.service', '办事') }}</text>
+      </view>
+      <view class="flag-wave">
+        <view class="wave-circle wave-1"></view>
+        <view class="wave-circle wave-2"></view>
+        <view class="wave-circle wave-3"></view>
+        <view class="wave-circle wave-4"></view>
+        <view class="wave-circle wave-5"></view>
+      </view>
     </view>
 
-    <view class="body">
-      <!-- 搜索栏 -->
+    <view class="page-body" :style="{ paddingTop: contentTop }">
+      <!-- ② 搜索栏 -->
       <view class="search-bar" @click="onSearch">
-        <text class="search-icon">🔍</text>
+        <AppIcon name="search" :size="32" :color="TEXT_WEAK" />
         <text class="search-ph">{{ t('home.searchHint', '搜办事：低保、停水、医保...') }}</text>
       </view>
 
-      <!-- 快捷入口 -->
-      <view class="quick-row">
-        <view v-for="q in quickActions" :key="q.key" class="quick-item" @click="go(q.path)">
-          <view class="quick-icon">{{ q.icon }}</view>
-          <text class="quick-text">{{ q.name }}</text>
+      <!-- ③ 服务大厅 2×2 宫格 -->
+      <AppSectionTitle title="服务大厅" :more-text="''" />
+      <view class="service-grid">
+        <view
+          v-for="g in serviceGrid"
+          :key="g.key"
+          class="grid-item"
+          @click="go(g.path)"
+        >
+          <view class="grid-icon" :style="{ background: g.bg }">
+            <AppIcon :name="g.icon" :size="48" :color="g.color" />
+          </view>
+          <text class="grid-name">{{ g.name }}</text>
+          <text class="grid-desc">{{ g.desc }}</text>
         </view>
       </view>
 
-      <!-- 5 大类卡片 -->
-      <view v-for="c in cards" :key="c.key" class="card">
-        <view class="card-head" @click="go(c.path)">
-          <text class="card-icon">{{ c.icon }}</text>
-          <text class="card-title">{{ t('category.' + c.key) }}</text>
-          <text class="card-arrow">›</text>
-        </view>
-        <view class="card-subs">
-          <text
-            v-for="s in c.subs"
-            :key="s.key"
-            class="sub-tag"
-            @click.stop="s.path && go(s.path)"
-          >{{ subName(s.key) }}</text>
-        </view>
-      </view>
-
-      <!-- 常用电话 -->
+      <!-- ④ 常用电话 -->
+      <AppSectionTitle :title="t('subCategory.phone', '常用电话')" :more-text="''" />
       <view class="phone-card">
-        <view class="card-head">
-          <text class="card-icon">📞</text>
-          <text class="card-title">{{ t('subCategory.phone', '常用电话') }}</text>
-        </view>
         <PhoneGrid :phones="phones" @call="callPhone" />
       </view>
+
+      <view class="page-footer-space"></view>
     </view>
   </view>
 </template>
@@ -60,65 +66,26 @@ import { ref, computed, onMounted } from 'vue'
 import { useConfigStore } from '@/store/config.js'
 import { goPage } from '@/utils/nav.js'
 import PhoneGrid from '@/components/home/PhoneGrid.vue'
+import AppSectionTitle from '@/components/AppSectionTitle.vue'
+import AppIcon from '@/components/AppIcon.vue'
+import { CHIP_BG, CHIP_TEXT, FLAG_VEIL, TEXT_WEAK } from '@/utils/theme.js'
 import { useRootFontSize } from '@/composables/useA11y.js'
 
 const configStore = useConfigStore()
 const rootFontSize = useRootFontSize()
 const statusBarHeight = ref(20)
 
+// 旗面 88px + 下摆 16px + 下间隙 12px
+const contentTop = computed(() => `${statusBarHeight.value + 88 + 28}px`)
+
 function t(p, d = '') { return configStore.getDisplay(p, d) }
-function subName(key) { return configStore.getDisplay('subCategory.' + key, key) }
 
-const quickActions = [
-  { key: 'report', icon: '📝', name: '我要反映', path: '/pages/feedback/feedback' },
-  { key: 'snapshot', icon: '📷', name: '随手拍照', path: '/pages/snapshot/snapshot' },
-  { key: 'study', icon: '📚', name: '我要学习', path: '/pages/category/list?type=study' },
-  { key: 'guide', icon: '📖', name: '我要办事', path: '/pages/service/guide' }
-]
-
-const cards = [
-  {
-    key: 'info', icon: '📢', path: '/pages/category/list?type=info',
-    subs: [
-      { key: 'finance', path: '/pages/finance/list' },
-      { key: 'project', path: '/pages/project/list' },
-      { key: 'meeting', path: '/pages/meeting/list' },
-      { key: 'policy', path: '/pages/task/list' }
-    ]
-  },
-  {
-    key: 'complaint', icon: '📝', path: '/pages/category/list?type=complaint',
-    subs: [
-      { key: 'feedback', path: '/pages/feedback/feedback' },
-      { key: 'snapshot', path: '/pages/snapshot/snapshot' },
-      { key: 'mailbox', path: '/pages/secretary/mailbox' },
-      { key: 'vote', path: '/pages/vote/list' }
-    ]
-  },
-  {
-    key: 'study', icon: '📚', path: '/pages/category/list?type=study',
-    subs: [
-      { key: 'policyStudy' },
-      { key: 'partyStudy' },
-      { key: 'agriStudy' },
-      { key: 'task', path: '/pages/task/list' }
-    ]
-  },
-  {
-    key: 'service', icon: '📖', path: '/pages/service/guide',
-    subs: [
-      { key: 'guide', path: '/pages/service/guide' },
-      { key: 'market', path: '/pages/market/list' }
-    ]
-  },
-  {
-    key: 'life', icon: '🏠', path: '/pages/category/list?type=life',
-    subs: [
-      { key: 'calendar', path: '/pages/agri/calendar' },
-      { key: 'checkin', path: '/pages/agri/checkin' },
-      { key: 'lostFound', path: '/pages/lost-found/list' }
-    ]
-  }
+// 服务大厅 4 维度（村民服务与学习智库）
+const serviceGrid = [
+  { key: 'study', icon: 'flag', bg: CHIP_BG.red, color: CHIP_TEXT.red, name: '党建学习', desc: '传达上级精神', path: '/pages/category/list?type=study' },
+  { key: 'guide', icon: 'book', bg: CHIP_BG.gold, color: CHIP_TEXT.gold, name: '政务指南', desc: '少跑腿白话指南', path: '/pages/service/guide' },
+  { key: 'life', icon: 'home', bg: CHIP_BG.blue, color: CHIP_TEXT.blue, name: '生活百事通', desc: '防诈·技能·农事', path: '/pages/news/list?category=生活百事通' },
+  { key: 'job', icon: 'briefcase', bg: CHIP_BG.green, color: CHIP_TEXT.green, name: '就业培训', desc: '技能教学·招工', path: '/pages/news/list?category=就业培训' }
 ]
 
 const phones = computed(() => configStore.phones || [])
@@ -139,7 +106,7 @@ function onSearch() {
 
 function callPhone(number) {
   if (!number) {
-    uni.showToast({ title: '电话未配置', icon: 'none' })
+    uni.showToast({ title: '电话暂未登记，请到村委会咨询', icon: 'none' })
     return
   }
   uni.makePhoneCall({ phoneNumber: number })
@@ -152,114 +119,143 @@ function callPhone(number) {
   min-height: 100vh;
   background: $bg;
 
+  // ===== 红旗顶栏（fixed） =====
   .nav-bar {
-    background: linear-gradient(135deg, $primary 0%, $primary-dark 100%);
-    color: $white;
-    padding: 0 $page-padding 24rpx;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
 
-    .nav-title {
-      display: block;
-      padding: $space-md 0;
-      font-size: $font-title;
-      font-weight: bold;
+    .flag-body {
+      position: relative;
+      height: 88px; // contentTop 计算基准（px 定值，防大屏 rpx 放大导致遮挡）
+      background: $flag-gradient;
+      color: $white;
+      padding: 0 $page-padding;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+
+      .flag-star-bg {
+        position: absolute;
+        right: -40rpx;
+        top: -60rpx;
+        pointer-events: none;
+      }
+
+      .flag-ribbon {
+        position: absolute;
+        left: -10%;
+        width: 120%;
+        height: 60rpx;
+        background: linear-gradient(105deg, rgba($white, 0) 30%, rgba($white, 0.06) 50%, rgba($white, 0) 70%);
+        transform: rotate(-8deg);
+        pointer-events: none;
+      }
+      .flag-ribbon-1 { top: 30%; }
+
+      .nav-title {
+        position: relative;
+        font-size: $font-title;
+        font-weight: 600;
+      }
+    }
+
+    .flag-wave {
+      position: relative;
+      height: 16px;
+      overflow: hidden;
+
+      .wave-circle {
+        position: absolute;
+        top: -24px;
+        width: 40px;
+        height: 40px;
+        border-radius: $radius-full;
+        background: $flag-dark;
+      }
+      .wave-1 { left: 5%; }
+      .wave-2 { left: 28%; }
+      .wave-3 { left: 50%; }
+      .wave-4 { left: 72%; }
+      .wave-5 { left: 94%; }
     }
   }
 
-  .body { padding: $page-padding; }
+  .page-body {
+    padding: 0 $page-padding;
+    min-height: 100vh;
+  }
 
   .search-bar {
     display: flex;
     align-items: center;
-    height: 80rpx;
-    padding: 0 $card-padding;
-    background: $white;
-    border-radius: $btn-radius;
-    box-shadow: $card-shadow;
-    margin-bottom: $card-gap;
+    height: 88rpx;
+    padding: 0 32rpx;
+    background: $chip-gray-bg;
+    border-radius: $radius-full;
+    margin-top: 24rpx;
 
-    .search-icon { margin-right: 12rpx; }
-    .search-ph { font-size: $font-sub; color: $text-weak; }
-    &:active { background: $bg; }
+    :deep(.app-icon),
+    .app-icon { margin-right: 12rpx; }
+    .search-ph { font-size: $font-body; color: $text-weak; }
+    &:active { background: $border; }
   }
 
-  .quick-row {
+  // ===== 2×2 服务宫格 =====
+  .service-grid {
     display: flex;
+    flex-wrap: wrap;
     gap: 16rpx;
-    padding: $card-padding;
-    background: $white;
-    border-radius: $card-radius;
-    box-shadow: $card-shadow;
-    margin-bottom: $card-gap;
 
-    .quick-item {
-      flex: 1;
+    .grid-item {
+      width: 335rpx;
+      height: 200rpx;
+      background: $white;
+      border-radius: $radius-card;
+      box-shadow: $shadow-md;
+      padding: 24rpx;
+      box-sizing: border-box;
       display: flex;
       flex-direction: column;
-      align-items: center;
       justify-content: center;
-      min-height: 160rpx;
-      border-radius: $radius-md;
+      transition: transform $tap-time ease;
 
-      &:active { background: $bg; }
-      .quick-icon {
-        width: 80rpx;
-        height: 80rpx;
-        line-height: 80rpx;
-        text-align: center;
-        font-size: 48rpx;
-        background: $primary-light;
-        border-radius: $radius-full;
-        margin-bottom: 12rpx;
+      &:active { transform: scale($tap-scale); }
+
+      .grid-icon {
+        width: 88rpx;
+        height: 88rpx;
+        border-radius: 24rpx;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 16rpx;
       }
-      .quick-text { font-size: $font-sub; color: $text-main; }
-    }
-  }
-
-  .card {
-    background: $white;
-    border-radius: $card-radius;
-    box-shadow: $card-shadow;
-    padding: $card-padding;
-    margin-bottom: $card-gap;
-
-    .card-head {
-      display: flex;
-      align-items: center;
-      &:active { opacity: 0.7; }
-      .card-icon { font-size: $font-number; margin-right: 16rpx; }
-      .card-title { flex: 1; font-size: $font-card-title; font-weight: bold; color: $text-main; }
-      .card-arrow { font-size: $font-number; color: $text-weak; }
-    }
-
-    .card-subs {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12rpx;
-      margin-top: 16rpx;
-
-      .sub-tag {
-        padding: $space-xs $space-md;
-        background: $bg;
+      .grid-name {
+        font-size: $font-card-title;
+        font-weight: 600;
+        color: $text-main;
+        line-height: 1.3;
+      }
+      .grid-desc {
+        font-size: $font-sub;
         color: $text-sub;
-        border-radius: $radius-sm;
-        font-size: $font-micro;
+        margin-top: 4rpx;
       }
     }
   }
 
   .phone-card {
     background: $white;
-    border-radius: $card-radius;
-    box-shadow: $card-shadow;
-    padding: $card-padding;
+    border-radius: $radius-card;
+    box-shadow: $shadow-md;
+    padding: 24rpx;
+  }
 
-    .card-head {
-      display: flex;
-      align-items: center;
-      margin-bottom: $card-gap;
-      .card-icon { font-size: $font-number; margin-right: 16rpx; }
-      .card-title { font-size: $font-card-title; font-weight: bold; color: $text-main; }
-    }
+  .page-footer-space {
+    height: 40rpx;
   }
 }
 </style>

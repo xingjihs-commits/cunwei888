@@ -12,26 +12,29 @@
     </view>
     
     <scroll-view scroll-y class="list" @scrolltolower="loadMore">
-      <Skeleton v-if="loading && list.length === 0" type="list" />
-      <view v-for="item in list" :key="item._id" class="meeting-card" @click="goDetail(item)">
-        <view class="card-header">
-          <view class="type-tag" :class="'t-' + item.type">{{ typeText(item.type) }}</view>
-          <view v-if="(item.status === '已结束' || item.status === 'ended')" class="status-tag ended">{{ t('meeting.meetingEnded', '已结束') }}</view>
-          <view v-else-if="(item.status === '进行中' || item.status === 'holding')" class="status-tag holding">{{ t('meeting.meetingHolding', '进行中') }}</view>
-          <view v-else class="status-tag">{{ t('meeting.meetingScheduled', '待召开') }}</view>
+      <AppErrorBanner v-if="error" mode="inline" @retry="refresh" />
+      <template v-else>
+        <Skeleton v-if="loading && list.length === 0" type="list" />
+        <view v-for="item in list" :key="item._id" class="meeting-card" @click="goDetail(item)">
+          <view class="card-header">
+            <view class="type-tag" :class="'t-' + item.type">{{ typeText(item.type) }}</view>
+            <view v-if="(item.status === '已结束' || item.status === 'ended')" class="status-tag ended">{{ t('meeting.meetingEnded', '已结束') }}</view>
+            <view v-else-if="(item.status === '进行中' || item.status === 'holding')" class="status-tag holding">{{ t('meeting.meetingHolding', '进行中') }}</view>
+            <view v-else class="status-tag">{{ t('meeting.meetingScheduled', '待召开') }}</view>
+          </view>
+          <text class="meeting-title">{{ item.title }}</text>
+          <view class="meeting-info">
+            <text class="info-item">🕐 {{ formatDate(item.meetingTime, 'MM月DD日 HH:mm') }}</text>
+            <text class="info-item">📍 {{ item.location }}</text>
+          </view>
+          <view v-if="item.attendees && item.attendees.length" class="attendees">
+            参会：{{ item.attendees.length }}人
+          </view>
+          <view v-if="item.minutes" class="has-minutes">✓ {{ t('meeting.hasMinutes', '已出纪要') }}</view>
         </view>
-        <text class="meeting-title">{{ item.title }}</text>
-        <view class="meeting-info">
-          <text class="info-item">🕐 {{ formatDate(item.meetingTime, 'MM月DD日 HH:mm') }}</text>
-          <text class="info-item">📍 {{ item.location }}</text>
-        </view>
-        <view v-if="item.attendees && item.attendees.length" class="attendees">
-          参会：{{ item.attendees.length }}人
-        </view>
-        <view v-if="item.minutes" class="has-minutes">✓ {{ t('meeting.hasMinutes', '已出纪要') }}</view>
-      </view>
-      <EmptyState v-if="list.length === 0 && !loading" :text="t('emptyState.noData', '暂无会议')" icon="📋" />
-      <view v-if="loading" class="loading">{{ t('emptyState.loading', '加载中...') }}</view>
+        <EmptyState v-if="list.length === 0 && !loading" :text="t('emptyState.noData', '暂无会议')" icon="📋" />
+        <view v-if="loading" class="loading">{{ t('emptyState.loading', '加载中...') }}</view>
+      </template>
     </scroll-view>
     
     <view v-if="userStore.isAdmin" class="fab" @click="goCreate">
@@ -49,6 +52,7 @@ import { formatDate } from '@/utils/format.js'
 import { useUserStore } from '@/store/user.js'
 import EmptyState from '@/components/EmptyState.vue'
 import Skeleton from '@/components/Skeleton.vue'
+import AppErrorBanner from '@/components/AppErrorBanner.vue'
 import { useConfigStore } from '@/store/config.js'
 import { usePagination } from '@/composables/usePagination.js'
 const rootFontSize = useRootFontSize()
@@ -66,7 +70,7 @@ const typeFilters = [
   { value: 'special', label: '专题会', labelKey: 'meeting.typeSpecial' }
 ]
 
-const { list, loading, refresh, loadMore } = usePagination(
+const { list, loading, error, refresh, loadMore } = usePagination(
   (params) => callFunction('getMeetings', { ...params, type: currentType.value }),
   { pageSize: 20 }
 )
@@ -116,15 +120,15 @@ function goCreate() {
     .type-tag {
       padding: $space-xs $space-md; border-radius: $radius-sm; font-size: $font-micro;
       background: $primary-light; color: $primary;
-      &.t-party { background: rgba(196,30,36,0.15); }
+      &.t-party { background: rgba($primary,0.15); }
       &.t-representative { background: $gold-light; color: $gold; }
-      &.t-special { background: rgba(46,125,50,0.1); color: $success; }
+      &.t-special { background: rgba($success,0.1); color: $success; }
     }
     .status-tag {
       padding: $space-xs $space-md; border-radius: $radius-sm; font-size: $font-micro;
       background: $bg; color: $text-sub;
-      &.holding { background: rgba(230,81,0,0.1); color: $warning; }
-      &.ended { background: rgba(46,125,50,0.1); color: $success; }
+      &.holding { background: rgba($warning,0.1); color: $warning; }
+      &.ended { background: rgba($success,0.1); color: $success; }
     }
     .meeting-title { font-size: $font-card-title; font-weight: bold; color: $text-main; display: block; margin-bottom: 12rpx; line-height: 1.4; }
     .meeting-info { display: flex; flex-direction: column; gap: 8rpx; }
@@ -139,7 +143,7 @@ function goCreate() {
     width: 100rpx; height: 100rpx;
     background: $primary; color: $white;
     border-radius: $radius-full; display: flex; align-items: center; justify-content: center;
-    font-size: 60rpx; box-shadow: 0 4rpx 16rpx rgba(196, 30, 36, 0.4);
+    font-size: 60rpx; box-shadow: 0 4rpx 16rpx rgba($primary, 0.4);
   }
 }
 </style>

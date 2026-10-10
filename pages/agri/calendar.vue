@@ -76,7 +76,7 @@ function changeMonth(delta) {
   .list { height: calc(100vh - 120rpx); padding: $page-padding; box-sizing: border-box; }
   .agri-card { background: $white; border-radius: $card-radius; padding: $card-padding; box-shadow: $card-shadow; margin-bottom: $card-gap;
     .card-header { display: flex; align-items: center; margin-bottom: 16rpx; }
-    .term-tag { padding: $space-xs $space-md; background: rgba(46,125,50,0.1); color: $success; border-radius: $radius-sm; font-size: $font-micro; margin-right: 16rpx; }
+    .term-tag { padding: $space-xs $space-md; background: rgba($success,0.1); color: $success; border-radius: $radius-sm; font-size: $font-micro; margin-right: 16rpx; }
     .card-title { font-size: $font-card-title; font-weight: bold; color: $text-main; flex: 1; }
     .agri-content { font-size: $font-body; color: $text-main; line-height: 1.7; display: block; margin-bottom: 16rpx; }
     .task-list { display: flex; flex-direction: column; gap: 8rpx; }

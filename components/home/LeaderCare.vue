@@ -95,7 +95,7 @@ const isVideo = computed(() => !!(props.item && props.item.type === 'video'))
         right: 16rpx;
         bottom: 16rpx;
         padding: 4rpx 16rpx;
-        background: rgba(0, 0, 0, 0.5);
+        background: rgba($scrim, 0.5);
         color: $white;
         font-size: $font-micro;
         border-radius: $radius-sm;

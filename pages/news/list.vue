@@ -16,15 +16,18 @@
     </view>
     
     <scroll-view scroll-y class="list" @scrolltolower="loadMore">
-      <Skeleton v-if="loading && list.length === 0" type="list" />
-      <NewsCard 
-        v-for="item in list"
-        :key="item._id"
-        :news="item"
-        @tap="goDetail"
-      />
-      <EmptyState v-if="list.length === 0 && !loading" :text="t('emptyState.noData', '暂无新闻')" icon="📰" />
-      <view v-if="loading" class="loading">加载中...</view>
+      <AppErrorBanner v-if="error" mode="inline" @retry="refresh" />
+      <template v-else>
+        <Skeleton v-if="loading && list.length === 0" type="list" />
+        <NewsCard 
+          v-for="item in list"
+          :key="item._id"
+          :news="item"
+          @tap="goDetail"
+        />
+        <EmptyState v-if="list.length === 0 && !loading" :text="t('emptyState.noData', '暂无新闻')" icon="📰" />
+        <view v-if="loading" class="loading">加载中...</view>
+      </template>
     </scroll-view>
     
     <view class="fab" @click="goHome">
@@ -35,11 +38,12 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { onPullDownRefresh } from '@dcloudio/uni-app'
+import { onLoad, onPullDownRefresh } from '@dcloudio/uni-app'
 import { callFunction } from '@/utils/request.js'
 import NewsCard from '@/components/NewsCard.vue'
 import EmptyState from '@/components/EmptyState.vue'
 import Skeleton from '@/components/Skeleton.vue'
+import AppErrorBanner from '@/components/AppErrorBanner.vue'
 import { useConfigStore } from '@/store/config.js'
 import { usePagination } from '@/composables/usePagination.js'
 import { useRootFontSize } from '@/composables/useA11y.js'
@@ -50,7 +54,16 @@ function t(p, d = '') { return configStore.getDisplay(p, d) }
 const rootFontSize = useRootFontSize()
 
 const currentCategory = ref('全部')
-const categories = ['全部', '村务', '党建', '通知', '活动']
+const categories = ['全部', '村务', '党建', '通知', '活动', '生活百事通', '就业培训']
+
+// 支持外部带分类进入（办事页宫格：生活百事通/就业培训）
+onLoad((option) => {
+  if (option && option.category) {
+    let cat = option.category
+    try { cat = decodeURIComponent(cat) } catch (e) { /* 保持原值 */ }
+    if (categories.includes(cat)) currentCategory.value = cat
+  }
+})
 
 async function fetchNews(params) {
   try {
@@ -69,7 +82,7 @@ async function fetchNews(params) {
   }
 }
 
-const { list, loading, refresh, loadMore } = usePagination(fetchNews, { pageSize: 10 })
+const { list, loading, error, refresh, loadMore } = usePagination(fetchNews, { pageSize: 10 })
 
 onMounted(() => {
   uni.setNavigationBarTitle({ title: t('pageTitle.news', '村里事') })
@@ -147,7 +160,7 @@ function goHome() {
     align-items: center;
     justify-content: center;
     font-size: $font-number;
-    box-shadow: 0 4rpx 16rpx rgba(196, 30, 36, 0.4);
+    box-shadow: 0 4rpx 16rpx rgba($primary, 0.4);
   }
 }
 </style>

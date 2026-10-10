@@ -131,7 +131,7 @@ onUnmounted(() => {
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.6);
+    background: rgba($scrim, 0.6);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -159,7 +159,7 @@ onUnmounted(() => {
     }
 
     .voice-hint {
-      color: rgba(255,255,255,0.7);
+      color: rgba($white, 0.7);
       font-size: $font-sub;
       margin-top: 8rpx;
     }

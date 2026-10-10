@@ -1,6 +1,7 @@
 <!--
-  StatusTag.vue - 状态标签组件
+  StatusTag.vue - 状态标签组件（chip 六色体系）
   用途：工单状态、紧急程度等标签展示
+  API 保持不变：text / type / dot
 -->
 <template>
   <view class="status-tag" :class="['tag-' + type]">
@@ -13,7 +14,7 @@
 defineProps({
   // 标签文字
   text: { type: String, default: '' },
-  // 类型：primary/success/warning/danger/gold/default
+  // 类型：primary/success/warning/danger/gold/blue/default
   type: { type: String, default: 'default' },
   // 是否显示圆点
   dot: { type: Boolean, default: false }
@@ -21,66 +22,67 @@ defineProps({
 </script>
 
 <style lang="scss" scoped>
-
+// chip 规格：高 44rpx · padding 0 16rpx · 圆角 12 · 字号 24 · 圆点 12
 .status-tag {
   display: inline-flex;
   align-items: center;
-  padding: $space-xs $space-md;
-  border-radius: $radius-sm;
+  padding: 0 16rpx;
+  height: 44rpx;
+  border-radius: $radius-md;
   font-size: $font-sub;
+  font-weight: 500;
   line-height: 1.4;
-  
+  box-sizing: border-box;
+
   .tag-dot {
     width: 12rpx;
     height: 12rpx;
     border-radius: $radius-full;
-    margin-right: 10rpx;
+    margin-right: 8rpx;
   }
-  
-  .tag-text {
-    color: inherit;
-  }
-  
+
+  .tag-text { color: inherit; }
+
   &.tag-primary {
-    background-color: $primary-light;
-    color: $primary;
-    
-    .tag-dot { background-color: $primary; }
+    background-color: $chip-red-bg;
+    color: $chip-red-text;
+    .tag-dot { background-color: $chip-red-text; }
   }
-  
+
   &.tag-success {
-    background-color: rgba(46, 125, 50, 0.1);
-    color: $success;
-    
-    .tag-dot { background-color: $success; }
+    background-color: $chip-green-bg;
+    color: $chip-green-text;
+    .tag-dot { background-color: $chip-green-text; }
   }
-  
+
   &.tag-warning {
-    background-color: rgba(230, 81, 0, 0.1);
-    color: $warning;
-    
-    .tag-dot { background-color: $warning; }
+    background-color: $chip-orange-bg;
+    color: $chip-orange-text;
+    .tag-dot { background-color: $chip-orange-text; }
   }
-  
+
   &.tag-danger {
-    background-color: rgba(198, 40, 40, 0.1);
+    background-color: $chip-red-bg;
     color: $danger;
-    
     .tag-dot { background-color: $danger; }
   }
-  
+
   &.tag-gold {
-    background-color: $gold-light;
-    color: $gold;
-    
-    .tag-dot { background-color: $gold; }
+    background-color: $chip-gold-bg;
+    color: $chip-gold-text;
+    .tag-dot { background-color: $chip-gold-text; }
   }
-  
+
+  &.tag-blue {
+    background-color: $chip-blue-bg;
+    color: $chip-blue-text;
+    .tag-dot { background-color: $chip-blue-text; }
+  }
+
   &.tag-default {
-    background-color: $border;
-    color: $text-sub;
-    
-    .tag-dot { background-color: $text-sub; }
+    background-color: $chip-gray-bg;
+    color: $chip-gray-text;
+    .tag-dot { background-color: $chip-gray-text; }
   }
 }
 </style>

@@ -143,7 +143,7 @@ function formatTime(t) {
 
 .timeline-item.current .timeline-dot {
   background: $primary;
-  box-shadow: 0 0 0 8rpx rgba(196, 30, 36, 0.2);
+  box-shadow: 0 0 0 8rpx rgba($primary, 0.2);
 }
 
 .timeline-line {

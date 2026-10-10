@@ -139,10 +139,10 @@ function goDetail(id) {
       .status-tag { padding: $space-xs $space-md; border-radius: $radius-sm; font-size: $font-micro;
         &.s-pending { background: $warning; color: $white; }
         &.s-processing { background: $primary-light; color: $primary; }
-        &.s-completed { background: rgba(46,125,50,0.1); color: $success; }
-        &.s-rejected { background: rgba(198,40,40,0.1); color: $danger; }
+        &.s-completed { background: rgba($success,0.1); color: $success; }
+        &.s-rejected { background: rgba($danger,0.1); color: $danger; }
       }
-      .overdue-tag { padding: $space-xs $space-md; background: rgba(198,40,40,0.1); color: $danger; border-radius: $radius-sm; font-size: $font-micro; font-weight: bold; }
+      .overdue-tag { padding: $space-xs $space-md; background: rgba($danger,0.1); color: $danger; border-radius: $radius-sm; font-size: $font-micro; font-weight: bold; }
       .time { font-size: $font-micro; color: $text-weak; margin-left: auto; }
     }
     .title { font-size: $font-body; color: $text-main; font-weight: bold; line-height: 1.4; display: block; margin-bottom: 12rpx; }
@@ -151,8 +151,8 @@ function goDetail(id) {
       .group { font-size: $font-micro; color: $text-sub; }
       .urgent-tag { padding: 2rpx 12rpx; border-radius: $radius-sm; font-size: $font-micro;
         &.u-normal { background: $bg; color: $text-sub; }
-        &.u-urgent { background: rgba(230,81,0,0.1); color: $warning; }
-        &.u-critical { background: rgba(198,40,40,0.1); color: $danger; }
+        &.u-urgent { background: rgba($warning,0.1); color: $warning; }
+        &.u-critical { background: rgba($danger,0.1); color: $danger; }
       }
     }
     .deadline { font-size: $font-micro; color: $warning; }

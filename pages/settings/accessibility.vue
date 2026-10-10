@@ -228,7 +228,7 @@ function onSave() {
   }
 
   .tips-card {
-    background: rgba(212, 168, 67, 0.08);
+    background: rgba($gold, 0.08);
 
     .tips-title {
       display: block;

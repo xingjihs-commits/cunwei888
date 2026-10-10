@@ -83,7 +83,7 @@ function goCreate() { uni.navigateTo({ url: '/pages/vote/create' }) }
   .vote-card { background: $white; border-radius: $card-radius; padding: $card-padding; box-shadow: $card-shadow; margin-bottom: $card-gap;
     .card-header { display: flex; justify-content: space-between; margin-bottom: 12rpx; }
     .status-tag { padding: $space-xs $space-md; border-radius: $radius-sm; font-size: $font-micro;
-      &.s-open { background: rgba(46,125,50,0.1); color: $success; }
+      &.s-open { background: rgba($success,0.1); color: $success; }
       &.s-closed { background: $border; color: $text-sub; } }
     .vote-time { font-size: $font-sub; color: $text-weak; }
     .vote-title { font-size: $font-card-title; font-weight: bold; color: $text-main; display: block; margin-bottom: 12rpx; }
@@ -91,6 +91,6 @@ function goCreate() { uni.navigateTo({ url: '/pages/vote/create' }) }
     .vote-stats { display: flex; justify-content: space-between; margin-top: 16rpx; padding-top: 16rpx; border-top: 2rpx solid $border; font-size: $font-sub; color: $text-sub; }
     &:active { background: $bg; } }
   .loading { text-align: center; padding: $card-padding; font-size: $font-sub; color: $text-weak; }
-  .fab { position: fixed; right: 32rpx; bottom: 100rpx; width: 100rpx; height: 100rpx; background: $primary; color: $white; border-radius: $radius-full; display: flex; align-items: center; justify-content: center; font-size: 60rpx; box-shadow: 0 4rpx 16rpx rgba(196, 30, 36, 0.4); }
+  .fab { position: fixed; right: 32rpx; bottom: 100rpx; width: 100rpx; height: 100rpx; background: $primary; color: $white; border-radius: $radius-full; display: flex; align-items: center; justify-content: center; font-size: 60rpx; box-shadow: 0 4rpx 16rpx rgba($primary, 0.4); }
 }
 </style>

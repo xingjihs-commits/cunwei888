@@ -4,23 +4,31 @@
  * 所有页面必须使用这些变量，不直接写色值
  */
 
-/* ===================== 主色——中国红 ===================== */
-$primary: #C41E24;          // 顶部栏、主按钮、选中态
+/* ===================== 主色——中国红（主色，非满屏底色） ===================== */
+/* 渐变只允许：顶部旗面 / 村委头卡 / 用户卡（见 $flag-gradient） */
+$primary: #C41E24;          // 导航、主按钮、重点标题、选中态
 $primary-dark: #A01820;    // 按压态
 $primary-light: #FDE8E8;   // 标签底色、选中背景
+$flag-gradient: linear-gradient(160deg, #C41E24 0%, #A01820 55%, #9A151A 100%); // 旗面
+$flag-dark: #9A151A;       // 应急通知条、深色文字（旗内）
 
-/* ===================== 辅助色——金色 ===================== */
+/* ===================== 辅助色——金色（仅五角星/认证/荣誉点缀） ===================== */
 $gold: #D4A843;            // 荣誉、表彰
 $gold-light: #F5E6C8;     // 荣誉卡片背景
 $gold-dark: #BA8E2A;      // $gold 加深 10%（渐变深端 / 按压）
+$star-gold: #FFD700;       // 五角星专用（旗面主星、金星装饰）
+$star-gold-dim: rgba($star-gold, 0.35); // 星形装饰弱化态
+$gold-quote-bg: linear-gradient(180deg, #F5E6C8 0%, #FBF3DF 100%); // 书记寄语卡
 
 /* ===================== 中性色 ===================== */
 $white: #FFFFFF;           // 卡片
+$scrim: #000000;           // 图片压暗遮罩（轮播底部渐隐）
 $bg: #FAF7F2;              // 页面底色（米白）
 $text-main: #212121;       // 标题、正文
-$text-sub: #757575;        // 辅助说明
+$text-sub: #8A8A8A;        // 辅助说明（三档字号中的辅助档标准色）
 $text-weak: #9E9E9E;       // 占位、禁用（修复WCAG AA对比度）
 $border: #EEEEEE;          // 分割线
+$flag-veil: rgba($white, 0.07); // 旗面底纹星弱化白（依赖 $white，须在其后定义）
 
 /* 骨架屏（Skeleton 组件） */
 $skeleton-bg: #F0F0F0;     // 骨架屏底色
@@ -33,17 +41,18 @@ $warning: #E65100;         // 超时、待处理
 $danger: #C62828;          // 拒绝、紧急
 $price: #E63946;           // 价格数字
 
-/* ===================== 字号（适老化） ===================== */
+/* ===================== 字号（适老化 · 全站三档制） ===================== */
 /* 方案 B：以 rem 为单位，基准 32rpx = 1rem；页面通过 <page-meta :root-font-size>
-   动态设置 rem 基准（含字号倍数），实现全站缩放。基准详见 composables/useA11y.js。 */
-$font-title: 1.25rem;        // 页面标题（40rpx）
-$font-card-title: 1.125rem;  // 卡片标题（36rpx）
-$font-body: 1rem;            // 正文（32rpx）
-$font-sub: 0.875rem;         // 辅助文字（28rpx）
-$font-btn: 1.125rem;         // 按钮文字（36rpx）
-$font-number: 1.5rem;        // 数字强调（48rpx）
-$font-micro: 0.75rem;        // 最小字号（24rpx，不推荐用于正文，仅辅助标签）
-$font-large-number: 1.75rem; // 大数字（56rpx，看板排行榜）
+   动态设置 rem 基准（含字号倍数），实现全站缩放。基准详见 composables/useA11y.js。
+   三档纪律：一级标题 32/600 ｜ 卡片标题 30/500-600 ｜ 辅助信息 24 · $text-sub */
+$font-title: 1rem;           // 一级标题（32rpx，600）
+$font-card-title: 0.9375rem; // 卡片标题（30rpx，500-600）
+$font-body: 0.875rem;        // 正文（28rpx）
+$font-sub: 0.75rem;          // 辅助信息（24rpx，配 $text-sub）
+$font-btn: 1rem;             // 按钮文字（32rpx）
+$font-number: 1.25rem;       // 数字强调（40rpx）
+$font-micro: 0.6875rem;      // 最小字号（22rpx，仅徽标/时间戳，禁用于正文）
+$font-large-number: 1.5rem;  // 大数字（48rpx，看板排行榜）
 
 /* 兼容旧变量名（历史页面 privacy / report 使用） */
 $font-small: $font-sub;     // 小字号 → 28rpx
@@ -81,22 +90,36 @@ $spacing-md: $space-md;
 $spacing-lg: $space-lg;
 $spacing-xl: $space-xl;
 
-/* ===================== 圆角（统一体系） ===================== */
+/* ===================== 圆角（收敛体系：防"处处皆圆"软化感） ===================== */
 $radius-xs: 4rpx;          // 极小圆角（标签、徽章）
-$radius-sm: 8rpx;          // 小圆角（按钮、输入框）
-$radius-md: 12rpx;         // 中圆角（图片缩略图）
-$radius-lg: 16rpx;         // 大圆角（卡片）
-$radius-xl: 24rpx;         // 超大圆角（弹窗、特殊卡片）
-$radius-full: 9999rpx;     // 全圆角（圆形按钮、头像）
+$radius-sm: 8rpx;          // 小圆角（输入框内元素）
+$radius-md: 12rpx;         // 中圆角（chip、图片内元素）
+$radius-list: 20rpx;       // 列表卡圆角（行卡、条目卡）
+$radius-card: 24rpx;       // 大卡/旗面卡圆角（统一大卡圆角）
+$radius-lg: 16rpx;         // 缩略图、图片圆角
+$radius-xl: 24rpx;         // 弹窗（与大卡一致）
+$radius-full: 9999rpx;     // 全圆角（按钮胶囊、搜索框、头像）
 
 /* 兼容旧变量名 */
-$card-radius: $radius-lg;  // 卡片圆角
+$card-radius: $radius-card; // 卡片圆角（大卡）
 $btn-radius: $radius-full; // 按钮圆角（胶囊形）
 $btn-height: 88rpx;        // 按钮高度（适老化）
 
+/* ===================== chip 六色体系（状态/分类标签） ===================== */
+$chip-red-bg: #FDE8E8;    $chip-red-text: $primary;
+$chip-gold-bg: #F9F0DC;   $chip-gold-text: #B8902E;
+$chip-green-bg: #E8F5E9;  $chip-green-text: $success;
+$chip-blue-bg: #E3F2FD;   $chip-blue-text: #1565C0;
+$chip-orange-bg: #FFF3E0; $chip-orange-text: $warning;
+$chip-gray-bg: #F0F1F3;   $chip-gray-text: #8A8A8A;
+
+/* ===================== 按压反馈（全站统一 tap-scale） ===================== */
+$tap-scale: 0.97;
+$tap-time: 0.12s;
+
 /* ===================== 阴影（统一体系） ===================== */
 $shadow-sm: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);     // 轻阴影（次要卡片）
-$shadow-md: 0 2rpx 12rpx rgba(0, 0, 0, 0.06);     // 中阴影（主要卡片，默认）
+$shadow-md: 0 4rpx 16rpx rgba(0, 0, 0, 0.05);     // 中阴影（主要卡片，默认）
 $shadow-lg: 0 4rpx 16rpx rgba(0, 0, 0, 0.08);      // 重阴影（弹窗、置顶卡片）
 $shadow-top: 0 -2rpx 12rpx rgba(0, 0, 0, 0.06);   // 顶部阴影（底部固定栏）
 

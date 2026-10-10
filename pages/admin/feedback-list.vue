@@ -294,8 +294,8 @@ async function markSecret(item) {
       font-size: $font-micro;
       
       &.auto { background: $primary-light; color: $primary; }
-      &.manual { background: rgba(212,168,67,0.15); color: $gold; }
-      &.secret { background: rgba(196,40,40,0.15); color: $danger; }
+      &.manual { background: rgba($gold,0.15); color: $gold; }
+      &.secret { background: rgba($danger, 0.15); color: $danger; }
     }
   }
   

@@ -183,7 +183,7 @@ function showAddDialog() {
           height: 60rpx;
           line-height: 60rpx;
           text-align: center;
-          background: rgba(198,40,40,0.1);
+          background: rgba($danger,0.1);
           color: $danger;
           border-radius: $radius-full;
           font-size: $font-body;

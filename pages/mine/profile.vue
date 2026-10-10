@@ -157,8 +157,8 @@ function clearCache() {
           border-radius: $radius-sm;
           font-size: $font-sub;
           
-          &.verified { background: rgba(46,125,50,0.1); color: $success; }
-          &.unverified { background: rgba(230,81,0,0.1); color: $warning; }
+          &.verified { background: rgba($success,0.1); color: $success; }
+          &.unverified { background: rgba($warning,0.1); color: $warning; }
           &.admin { background: $gold-light; color: $gold; }
         }
       }

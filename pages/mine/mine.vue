@@ -1,69 +1,84 @@
 <!--
-  pages/mine/mine.vue - 我的（tabBar「我的」）
-  对齐《示范村 App 完整布局方案》Tab4：
-    ① 用户信息 + 导航栏「字号 A+」
-    ② 我的记录（反映/随手拍/信件/消息/办理）
-    ③ 设置（字号/通知/隐私/关于）
-    ④ 管理入口（仅村委，九宫格）
+  pages/mine/mine.vue - 我的（tabBar「我的」，个人·清爽）
+  红旗风格 v3：
+    ① 原生红导航（pages.json，系统固定）
+    ② 用户旗卡（旗面渐变+星纹：头像/昵称/认证）
+    ③ 我的记录 / 设置（条目式列表，AppIcon 统一图标）
+    ④ 管理入口（仅村委）
+  反映/上传入口不在此页（收口在首页找书记三入口）
 -->
 <template>
   <page-meta :root-font-size="rootFontSize" />
   <view class="page-mine">
-    <view class="header" :style="{ paddingTop: statusBarHeight + 'px' }">
-      <view class="header-top">
-        <text class="header-title">{{ t('pageTitle.mine', '我的') }}</text>
-        <view class="font-btn" @click="cycleFont">{{ fontLabel }} A+</view>
-      </view>
-      <view class="user-card">
-        <button class="avatar-btn" open-type="chooseAvatar" @chooseavatar="onChooseAvatar">
-          <image class="avatar" :src="userStore.avatarUrl || defaultAvatar" mode="aspectFill" />
-        </button>
-        <view class="user-info">
-          <input
-            v-if="!userStore.realName"
-            class="user-name-input"
-            type="nickname"
-            :placeholder="t('placeholder.nickname', '点击设置昵称')"
-            @blur="onNicknameConfirm"
-          />
-          <text v-else class="user-name">{{ userStore.displayName }}</text>
-          <view class="verify-row">
-            <view class="verify-tag" :class="verifyClass">{{ verifyText }}</view>
-            <view v-if="!userStore.isVerified" class="verify-btn" @click="goVerify">去认证</view>
-          </view>
-          <text v-if="userStore.villageGroup" class="user-group">{{ userStore.villageGroup }}</text>
+    <!-- ① 用户旗卡 -->
+    <view class="user-flag-card">
+      <AppIcon class="flag-star-bg" name="star" :size="240" :color="FLAG_VEIL" />
+      <view class="flag-ribbon flag-ribbon-1"></view>
+      <button class="avatar-btn" open-type="chooseAvatar" @chooseavatar="onChooseAvatar">
+        <image class="avatar" :src="userStore.avatarUrl || defaultAvatar" mode="aspectFill" />
+      </button>
+      <view class="user-info">
+        <input
+          v-if="!userStore.realName"
+          class="user-name-input"
+          type="nickname"
+          :placeholder="t('placeholder.nickname', '点击设置昵称')"
+          @blur="onNicknameConfirm"
+        />
+        <text v-else class="user-name">{{ userStore.displayName }}</text>
+        <view class="verify-row">
+          <view class="verify-tag" :class="verifyClass">{{ verifyText }}</view>
+          <view v-if="!userStore.isVerified && !userStore.isAdmin" class="verify-btn" @click="goVerify">去认证</view>
         </view>
+        <text v-if="userStore.villageGroup" class="user-group">{{ userStore.villageGroup }}</text>
       </view>
     </view>
 
     <!-- ② 我的记录 -->
     <view class="section">
-      <view class="section-title">我的记录</view>
+      <AppSectionTitle title="我的记录" :more-text="''" />
       <view class="menu-card">
+        <view class="menu-item" @click="goPage('/pages/task/my-progress')">
+          <view class="menu-icon-wrap" :style="{ background: CHIP_BG.red }">
+            <AppIcon name="clipboard" :size="32" :color="CHIP_TEXT.red" />
+          </view>
+          <text class="menu-text">我的办事记录</text>
+          <text class="menu-arrow">›</text>
+        </view>
         <view class="menu-item" @click="goPage('/pages/feedback/my-feedback')">
-          <text class="menu-icon">💬</text>
-          <text class="menu-text">{{ t('subCategory.myFeedback', '我的反映') }}</text>
+          <view class="menu-icon-wrap" :style="{ background: CHIP_BG.blue }">
+            <AppIcon name="chat" :size="32" :color="CHIP_TEXT.blue" />
+          </view>
+          <text class="menu-text">{{ t('subCategory.myFeedback', '我的反馈') }}</text>
           <text class="menu-arrow">›</text>
         </view>
         <view class="menu-item" @click="goPage('/pages/snapshot/my-snapshots')">
-          <text class="menu-icon">📷</text>
+          <view class="menu-icon-wrap" :style="{ background: CHIP_BG.green }">
+            <AppIcon name="camera" :size="32" :color="CHIP_TEXT.green" />
+          </view>
           <text class="menu-text">我的随手拍</text>
           <text class="menu-arrow">›</text>
         </view>
         <view class="menu-item" @click="goPage('/pages/secretary/my-mails')">
-          <text class="menu-icon">✉️</text>
+          <view class="menu-icon-wrap" :style="{ background: CHIP_BG.gold }">
+            <AppIcon name="mail" :size="32" :color="CHIP_TEXT.gold" />
+          </view>
           <text class="menu-text">我的信件</text>
           <text class="menu-arrow">›</text>
         </view>
         <view class="menu-item" @click="goPage('/pages/message/center')">
-          <text class="menu-icon">🔔</text>
+          <view class="menu-icon-wrap" :style="{ background: CHIP_BG.red }">
+            <AppIcon name="bell" :size="32" :color="CHIP_TEXT.red" />
+          </view>
           <text class="menu-text">我的消息</text>
           <view v-if="unreadCount > 0" class="msg-badge">{{ unreadCount > 99 ? '99+' : unreadCount }}</view>
           <text class="menu-arrow">›</text>
         </view>
-        <view class="menu-item" @click="goPage('/pages/task/my-progress')">
-          <text class="menu-icon">📋</text>
-          <text class="menu-text">我办的事</text>
+        <view class="menu-item" @click="goPage('/pages/category/list?type=study')">
+          <view class="menu-icon-wrap" :style="{ background: CHIP_BG.gold }">
+            <AppIcon name="book" :size="32" :color="CHIP_TEXT.gold" />
+          </view>
+          <text class="menu-text">学习进度</text>
           <text class="menu-arrow">›</text>
         </view>
       </view>
@@ -71,25 +86,26 @@
 
     <!-- ③ 设置 -->
     <view class="section">
-      <view class="section-title">设置</view>
+      <AppSectionTitle title="设置" :more-text="''" />
       <view class="menu-card">
         <view class="menu-item" @click="goPage('/pages/settings/accessibility')">
-          <text class="menu-icon">♿</text>
+          <view class="menu-icon-wrap" :style="{ background: CHIP_BG.gray }">
+            <AppIcon name="gear" :size="32" :color="CHIP_TEXT.gray" />
+          </view>
           <text class="menu-text">字号设置</text>
           <text class="menu-arrow">›</text>
         </view>
-        <view class="menu-item" @click="onNotification">
-          <text class="menu-icon">🔕</text>
-          <text class="menu-text">消息通知</text>
-          <text class="menu-arrow">›</text>
-        </view>
         <view class="menu-item" @click="goPage('/pages/privacy/index')">
-          <text class="menu-icon">🔐</text>
+          <view class="menu-icon-wrap" :style="{ background: CHIP_BG.gray }">
+            <AppIcon name="lock" :size="32" :color="CHIP_TEXT.gray" />
+          </view>
           <text class="menu-text">隐私政策</text>
           <text class="menu-arrow">›</text>
         </view>
         <view class="menu-item" @click="showAbout">
-          <text class="menu-icon">ℹ️</text>
+          <view class="menu-icon-wrap" :style="{ background: CHIP_BG.gray }">
+            <AppIcon name="info" :size="32" :color="CHIP_TEXT.gray" />
+          </view>
           <text class="menu-text">关于我们</text>
           <text class="menu-arrow">›</text>
         </view>
@@ -98,17 +114,19 @@
 
     <!-- ④ 管理入口（仅村委） -->
     <view v-if="userStore.isAdmin" class="section">
-      <view class="section-title">管理入口</view>
+      <AppSectionTitle title="管理入口" :more-text="''" />
       <view class="admin-grid">
         <view v-for="e in visibleAdminEntries" :key="e.path" class="admin-item" @click="goPage(e.path)">
-          <text class="admin-icon">{{ e.icon }}</text>
+          <view class="admin-icon-wrap">
+            <text class="admin-icon">{{ e.icon }}</text>
+          </view>
           <text class="admin-name">{{ e.name }}</text>
         </view>
       </view>
     </view>
 
     <view class="footer">
-      <text class="footer-text">村务连心桥 v1.7.0</text>
+      <text class="footer-text">村务连心桥 v{{ APP_VERSION }}</text>
       <text v-if="icpNumber" class="footer-icp">{{ icpNumber }}</text>
       <text v-if="policeIcpNumber" class="footer-icp">{{ policeIcpNumber }}</text>
     </view>
@@ -122,14 +140,16 @@ import { useUserStore } from '@/store/user.js'
 import { useConfigStore } from '@/store/config.js'
 import { callFunction } from '@/utils/request.js'
 import { goPage } from '@/utils/nav.js'
-import { a11y, saveA11y } from '@/utils/accessibility.js'
+import AppSectionTitle from '@/components/AppSectionTitle.vue'
+import AppIcon from '@/components/AppIcon.vue'
+import { CHIP_BG, CHIP_TEXT, FLAG_VEIL } from '@/utils/theme.js'
+import { APP_VERSION } from '@/utils/app-info.js'
 import { useRootFontSize } from '@/composables/useA11y.js'
 
 const userStore = useUserStore()
 const configStore = useConfigStore()
 function t(p, d = '') { return configStore.getDisplay(p, d) }
 const rootFontSize = useRootFontSize()
-const statusBarHeight = ref(20)
 const unreadCount = ref(0)
 
 const defaultAvatar = '/static/images/default-avatar.png'
@@ -138,13 +158,6 @@ const verifyText = computed(() => userStore.verifyText)
 const verifyClass = computed(() => userStore.isAdmin ? 'admin' : (userStore.isVerified ? 'verified' : 'unverified'))
 const icpNumber = computed(() => configStore.icpNumber || '')
 const policeIcpNumber = computed(() => configStore.policeIcpNumber || '')
-
-const FONT_STEPS = [
-  { scale: 1, label: '标准' },
-  { scale: 1.2, label: '大' },
-  { scale: 1.4, label: '超大' }
-]
-const fontLabel = computed(() => (FONT_STEPS.find(s => s.scale === a11y.fontScale) || FONT_STEPS[0]).label)
 
 const adminEntries = [
   { icon: '📥', name: '反映处理', path: '/pages/admin/feedback-list', min: 70 },
@@ -169,10 +182,6 @@ const adminEntries = [
 const visibleAdminEntries = computed(() => adminEntries.filter(e => userStore.committeeWeight >= e.min))
 
 onMounted(() => {
-  // #ifdef MP-WEIXIN
-  const sysInfo = wx.getWindowInfo()
-  statusBarHeight.value = sysInfo.statusBarHeight || 20
-  // #endif
   configStore.loadConfig()
 })
 
@@ -188,13 +197,6 @@ async function loadUnread() {
   } catch (e) {
     // 未登录/游客模式忽略
   }
-}
-
-function cycleFont() {
-  const idx = FONT_STEPS.findIndex(s => s.scale === a11y.fontScale)
-  const next = FONT_STEPS[(idx + 1) % FONT_STEPS.length]
-  saveA11y({ fontScale: next.scale })
-  uni.showToast({ title: '字号：' + next.label, icon: 'none' })
 }
 
 function onChooseAvatar(e) {
@@ -220,10 +222,6 @@ function goVerify() {
   uni.navigateTo({ url: '/pages/auth/verify' })
 }
 
-function onNotification() {
-  uni.showToast({ title: '消息通知设置即将上线', icon: 'none' })
-}
-
 function showAbout() {
   uni.showModal({
     title: '关于我们',
@@ -239,122 +237,148 @@ function showAbout() {
   min-height: 100vh;
   background: $bg;
 
-  .header {
-    background: linear-gradient(135deg, $primary, $primary-dark);
+  // ===== 用户旗卡 =====
+  .user-flag-card {
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin: 24rpx $page-padding 0;
+    padding: 32rpx;
+    background: $flag-gradient;
+    border-radius: $radius-card;
     color: $white;
-    padding: $card-padding $page-padding 48rpx;
+    overflow: hidden;
+    box-shadow: 0 8rpx 24rpx rgba($primary, 0.22);
 
-    .header-top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: $card-padding;
+    .flag-star-bg {
+      position: absolute;
+      right: -20rpx;
+      top: -40rpx;
+      pointer-events: none;
+    }
 
-      .header-title { font-size: $font-title; font-weight: bold; }
-      .font-btn {
-        padding: $space-sm $space-lg;
-        background: rgba(255,255,255,0.2);
+    .flag-ribbon {
+      position: absolute;
+      left: -10%;
+      width: 120%;
+      height: 48rpx;
+      background: linear-gradient(105deg, rgba($white, 0) 30%, rgba($white, 0.06) 50%, rgba($white, 0) 70%);
+      transform: rotate(-8deg);
+      pointer-events: none;
+    }
+    .flag-ribbon-1 { top: 24%; }
+
+    .avatar-btn {
+      position: relative;
+      margin: 0 24rpx 0 0;
+      padding: 0;
+      background: transparent;
+      border: none;
+      line-height: 1;
+
+      &::after { border: none; }
+
+      .avatar {
+        width: 112rpx;
+        height: 112rpx;
         border-radius: $radius-full;
-        font-size: $font-sub;
-        font-weight: bold;
+        border: 4rpx solid rgba($white, 0.6);
+        background: $bg;
       }
     }
 
-    .user-card {
-      display: flex;
-      align-items: center;
+    .user-info {
+      flex: 1;
+      min-width: 0;
 
-      .avatar-btn {
-        margin: 0 24rpx 0 0;
-        padding: 0;
-        background: transparent;
-        border: none;
-        line-height: 1;
+      .user-name {
+        font-size: $font-title;
+        font-weight: 600;
+        display: block;
+        margin-bottom: 8rpx;
+      }
+      .user-name-input {
+        font-size: $font-title;
+        font-weight: 600;
+        color: $white;
+        background: rgba($white, 0.18);
+        border-radius: $radius-md;
+        padding: $space-sm $space-md;
+        margin-bottom: 8rpx;
+        min-height: 60rpx;
+      }
 
-        &::after { border: none; }
+      .verify-row {
+        display: flex;
+        align-items: center;
+        gap: 12rpx;
 
-        .avatar {
-          width: 128rpx;
-          height: 128rpx;
-          border-radius: $radius-full;
-          border: 4rpx solid rgba(255,255,255,0.3);
-          background: $bg;
+        .verify-tag {
+          height: 44rpx;
+          line-height: 44rpx;
+          padding: 0 16rpx;
+          border-radius: $radius-md;
+          font-size: $font-sub;
+          &.verified { background: rgba($white, 0.3); }
+          // 未认证：白 ghost 描边（不用黑块压红底，避免显脏）
+          &.unverified {
+            background: transparent;
+            border: 2rpx solid rgba($white, 0.6);
+            box-sizing: border-box;
+            line-height: 40rpx;
+          }
+          &.admin { background: $star-gold; color: $flag-dark; font-weight: 600; }
+        }
+        .verify-btn {
+          height: 44rpx;
+          line-height: 44rpx;
+          padding: 0 16rpx;
+          background: $white;
+          color: $primary;
+          border-radius: $radius-md;
+          font-size: $font-sub;
+          font-weight: 600;
         }
       }
 
-      .user-info {
-        flex: 1;
-
-        .user-name { font-size: $font-title; font-weight: bold; display: block; margin-bottom: 8rpx; }
-        .user-name-input {
-          font-size: $font-title;
-          font-weight: bold;
-          color: $white;
-          background: rgba(255,255,255,0.15);
-          border-radius: $radius-md;
-          padding: $space-sm $space-md;
-          margin-bottom: 8rpx;
-          min-height: 60rpx;
-        }
-
-        .verify-row {
-          display: flex;
-          align-items: center;
-          gap: 12rpx;
-          margin-bottom: 8rpx;
-
-          .verify-tag {
-            padding: $space-xs $space-md;
-            border-radius: $radius-sm;
-            font-size: $font-micro;
-            &.verified { background: rgba(255,255,255,0.3); }
-            &.unverified { background: rgba(0,0,0,0.3); }
-            &.admin { background: $gold; }
-          }
-          .verify-btn {
-            padding: $space-xs $space-md;
-            background: $white;
-            color: $primary;
-            border-radius: $radius-sm;
-            font-size: $font-micro;
-            font-weight: bold;
-          }
-        }
-
-        .user-group { font-size: $font-sub; opacity: 0.9; }
+      .user-group {
+        display: block;
+        font-size: $font-sub;
+        color: rgba($white, 0.8);
+        margin-top: 8rpx;
       }
     }
   }
 
   .section {
     padding: 0 $page-padding;
-    margin-top: $card-gap;
-
-    .section-title {
-      font-size: $font-card-title;
-      font-weight: bold;
-      color: $text-main;
-      padding: $space-md 0;
-    }
   }
 
   .menu-card {
     background: $white;
-    border-radius: $card-radius;
-    box-shadow: $card-shadow;
-    overflow: hidden;
+    border-radius: $radius-card;
+    box-shadow: $shadow-md;
+    padding: 8rpx 24rpx;
 
     .menu-item {
       display: flex;
       align-items: center;
-      padding: $card-padding;
+      height: 104rpx;
       border-bottom: 2rpx solid $border;
       &:last-child { border-bottom: none; }
       &:active { background: $bg; }
 
-      .menu-icon { font-size: $font-btn; margin-right: 24rpx; width: 60rpx; text-align: center; }
-      .menu-text { flex: 1; font-size: $font-body; color: $text-main; }
-      .menu-arrow { font-size: $font-sub; color: $text-weak; }
+      .menu-icon-wrap {
+        width: 56rpx;
+        height: 56rpx;
+        border-radius: $radius-lg;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 20rpx;
+      }
+      .menu-text { flex: 1; font-size: $font-body; font-weight: 500; color: $text-main; }
+      .menu-arrow { font-size: 40rpx; color: $primary; line-height: 1; }
       .msg-badge {
         min-width: 32rpx;
         height: 32rpx;
@@ -372,30 +396,44 @@ function showAbout() {
 
   .admin-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 16rpx;
     background: $white;
-    border-radius: $card-radius;
-    box-shadow: $card-shadow;
-    padding: $card-padding;
+    border-radius: $radius-card;
+    box-shadow: $shadow-md;
+    padding: 24rpx;
 
     .admin-item {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      min-height: 160rpx;
-      border-radius: $radius-md;
+      min-height: 140rpx;
+      border-radius: $radius-list;
       &:active { background: $bg; }
 
-      .admin-icon { font-size: 48rpx; margin-bottom: 12rpx; }
-      .admin-name { font-size: $font-sub; color: $text-main; text-align: center; }
+      .admin-icon-wrap {
+        width: 64rpx;
+        height: 64rpx;
+        border-radius: 20rpx;
+        background: $primary-light;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 12rpx;
+      }
+      .admin-icon { font-size: 36rpx; line-height: 1; }
+      .admin-name {
+        font-size: $font-micro;
+        color: $text-main;
+        text-align: center;
+      }
     }
   }
 
   .footer {
     text-align: center;
-    padding: $space-2xl 0;
+    padding: 48rpx 0 40rpx;
 
     .footer-text { display: block; font-size: $font-sub; color: $text-weak; margin-bottom: 8rpx; }
     .footer-icp { display: block; font-size: $font-micro; color: $text-weak; margin-top: 4rpx; }

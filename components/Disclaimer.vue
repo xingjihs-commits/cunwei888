@@ -29,7 +29,7 @@ defineProps({
 .disclaimer {
   margin: $card-gap 0;
   padding: $card-padding;
-  background-color: rgba(230, 81, 0, 0.08);
+  background-color: rgba($warning, 0.08);
   border-left: 6rpx solid $warning;
   border-radius: $radius-sm;
   

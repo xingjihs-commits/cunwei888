@@ -76,16 +76,16 @@ function statusText(status) {
     box-shadow: $card-shadow; margin-bottom: $card-gap;
     .mail-header { display: flex; justify-content: space-between; margin-bottom: 16rpx; }
     .status-tag { padding: $space-xs $space-md; border-radius: $radius-sm; font-size: $font-micro;
-      &.s-pending { background: rgba(230,81,0,0.1); color: $warning; }
-      &.s-replied { background: rgba(46,125,50,0.1); color: $success; }
+      &.s-pending { background: rgba($warning,0.1); color: $warning; }
+      &.s-replied { background: rgba($success,0.1); color: $success; }
     }
     .mail-time { font-size: $font-sub; color: $text-weak; }
     .mail-subject { font-size: $font-title; font-weight: bold; color: $text-main; display: block; margin-bottom: 16rpx; }
     .mail-content { font-size: $font-body; color: $text-main; line-height: 1.8; white-space: pre-wrap; }
-    .urgent-info { margin-top: 16rpx; padding: $space-sm 16rpx; background: rgba(230,81,0,0.08); border-radius: $radius-sm; font-size: $font-sub; color: $warning; }
+    .urgent-info { margin-top: 16rpx; padding: $space-sm 16rpx; background: rgba($warning,0.08); border-radius: $radius-sm; font-size: $font-sub; color: $warning; }
   }
   .reply-card {
-    background: linear-gradient(135deg, rgba(196,30,36,0.05), rgba(212,168,67,0.05));
+    background: linear-gradient(135deg, rgba($primary,0.05), rgba($gold,0.05));
     .reply-header { display: flex; align-items: center; margin-bottom: 16rpx; }
     .reply-avatar {
       width: 80rpx; height: 80rpx; border-radius: $radius-full;

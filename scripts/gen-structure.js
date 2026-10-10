@@ -23,7 +23,8 @@ const CLOUD_CLASSIFY = [
     'getLostFoundList', 'getMarketPrices', 'getMeetingDetail', 'getMeetingReviewList', 'getMeetings', 'getModuleConfig',
     'getMyMessages', 'getMySnapshots', 'getMySubsidies', 'getNewsDetail', 'getNewsList', 'getNoticeDetail', 'getNotices',
     'getProjects', 'getServiceGuideDetail', 'getServiceGuides', 'getSnapshotWall', 'getTaskDetail', 'getTasks',
-    'getTeamMemberDetail', 'getTeamMembers', 'getVoteDetail', 'getVotes', 'getLeaderContentList', 'getWeather', 'searchAll'
+    'getTeamMemberDetail', 'getTeamMembers', 'getVoteDetail', 'getVotes', 'getLeaderContentList', 'getWeather', 'searchAll',
+    'getResolvedFeedback'
   ]],
   ['消息 / 通知类', ['sendDispatchNotice', 'sendSubscribeMessage', 'sendOverdueReminder', 'subscribePriceAlert', 'markMessageRead']],
   ['点赞类', ['likeNews', 'likeSnapshot']],

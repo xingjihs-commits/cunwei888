@@ -90,7 +90,7 @@ const publishTypes = [
 ]
 
 const noticeCategories = ['党务', '村务', '财务', '惠农', '应急']
-const newsCategories = ['村务', '党建', '通知', '活动']
+const newsCategories = ['村务', '党建', '通知', '活动', '生活百事通', '就业培训']
 const urgentOptions = [
   { value: '普通', label: '普通' },
   { value: '紧急', label: '紧急' },

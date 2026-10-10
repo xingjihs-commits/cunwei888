@@ -118,9 +118,9 @@ async function doCheckin() {
     .card-title { font-size: $font-card-title; font-weight: bold; color: $text-main; margin-bottom: 24rpx; }
     .status-options { display: flex; gap: 16rpx; margin-bottom: 32rpx; }
     .status-opt { flex: 1; display: flex; flex-direction: column; align-items: center; padding: $card-padding 16rpx; background: $bg; border: 4rpx solid transparent; border-radius: $radius-md;
-      &.active.st-normal { border-color: $success; background: rgba(46,125,50,0.1); }
-      &.active.st-help_needed { border-color: $warning; background: rgba(230,81,0,0.1); }
-      &.active.st-urgent { border-color: $danger; background: rgba(198,40,40,0.1); }
+      &.active.st-normal { border-color: $success; background: rgba($success,0.1); }
+      &.active.st-help_needed { border-color: $warning; background: rgba($warning,0.1); }
+      &.active.st-urgent { border-color: $danger; background: rgba($danger,0.1); }
       .status-icon { font-size: 56rpx; margin-bottom: 12rpx; }
       .status-label { font-size: $font-sub; color: $text-main; } }
     .form-group { margin-bottom: 24rpx; }

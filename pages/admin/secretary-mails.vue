@@ -128,7 +128,7 @@ function goDetail(id) {
       .status-tag { padding: $space-xs $space-md; border-radius: $radius-sm; font-size: $font-micro;
         &.s-pending { background: $warning; color: $white; }
         &.s-read { background: $primary-light; color: $primary; }
-        &.s-replied { background: rgba(46,125,50,0.1); color: $success; }
+        &.s-replied { background: rgba($success,0.1); color: $success; }
         &.s-closed { background: $border; color: $text-weak; }
       }
     }
@@ -137,8 +137,8 @@ function goDetail(id) {
       .time { font-size: $font-micro; color: $text-weak; }
       .urgent-tag { padding: $space-xs $space-md; border-radius: $radius-sm; font-size: $font-micro;
         &.u-normal { background: $bg; color: $text-sub; }
-        &.u-urgent { background: rgba(230,81,0,0.1); color: $warning; }
-        &.u-critical { background: rgba(198,40,40,0.1); color: $danger; }
+        &.u-urgent { background: rgba($warning,0.1); color: $warning; }
+        &.u-critical { background: rgba($danger,0.1); color: $danger; }
       }
     }
   }

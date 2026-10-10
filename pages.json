@@ -5,7 +5,8 @@
       "style": {
         "navigationBarTitleText": "村务连心桥",
         "enablePullDownRefresh": true,
-        "navigationStyle": "custom"
+        "navigationStyle": "custom",
+        "backgroundColorTop": "#9A151A"
       }
     },
     {
@@ -143,7 +144,7 @@
       "path": "pages/mine/mine",
       "style": {
         "navigationBarTitleText": "我的",
-        "navigationStyle": "custom"
+        "backgroundColorTop": "#C41E24"
       }
     },
     {
@@ -367,8 +368,8 @@
       {
         "pagePath": "pages/team/index",
         "text": "村委",
-        "iconPath": "static/tabbar/message.png",
-        "selectedIconPath": "static/tabbar/message-active.png"
+        "iconPath": "static/tabbar/flag.png",
+        "selectedIconPath": "static/tabbar/flag-active.png"
       },
       {
         "pagePath": "pages/mine/mine",

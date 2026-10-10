@@ -145,8 +145,8 @@ async function onSubmit() {
     .form-label { font-size: $font-body; color: $text-main; display: block; margin-bottom: 12rpx; font-weight: bold; }
     .type-row { display: flex; gap: 16rpx; }
     .type-opt { flex: 1; height: $btn-height; line-height: $btn-height; text-align: center; background: $bg; border: 4rpx solid $border; border-radius: $radius-md; font-size: $font-body;
-      &.active.lost  /* 保留 CSS 类名，避免破坏样式 */ { border-color: $warning; background: rgba(230,81,0,0.1); color: $warning; }
-      &.active.found  /* 保留 CSS 类名，避免破坏样式 */ { border-color: $success; background: rgba(46,125,50,0.1); color: $success; } }
+      &.active.lost  /* 保留 CSS 类名，避免破坏样式 */ { border-color: $warning; background: rgba($warning,0.1); color: $warning; }
+      &.active.found  /* 保留 CSS 类名，避免破坏样式 */ { border-color: $success; background: rgba($success,0.1); color: $success; } }
     .input { width: 100%; height: $btn-height; background: $bg; border-radius: $radius-md; padding: 0 $space-lg; font-size: $font-body; box-sizing: border-box; }
     .textarea { width: 100%; min-height: 200rpx; background: $bg; border-radius: $radius-md; padding: $card-padding; font-size: $font-body; box-sizing: border-box; }
     .image-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12rpx;
